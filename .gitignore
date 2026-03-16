@@ -1,0 +1,12 @@
+node_modules
+.next
+dist
+.env
+.env.*
+
+/generated/prisma
+
+# Local certificates / experiments / accidental temp files
+certs/
+scripts/pg-test.js
+{console.error(e)

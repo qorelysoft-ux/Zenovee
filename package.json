@@ -1,0 +1,24 @@
+{
+  "name": "zenovee",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "dotenv": "^17.3.1",
+    "prisma": "^7.5.0"
+  },
+  "scripts": {
+    "dev": "npm -w @zenovee/web run dev",
+    "dev:api": "npm -w @zenovee/api run dev",
+    "build": "npm -w @zenovee/web run build && npm -w @zenovee/api run build",
+    "start": "npm -w @zenovee/api run start",
+    "lint": "npm -w @zenovee/web run lint",
+    "prisma": "prisma"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.99.1"
+  }
+}
