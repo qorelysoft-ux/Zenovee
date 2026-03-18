@@ -1,14 +1,151 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id                 String                @id @default(cuid())
+  // Link to Supabase auth.users.id (UUID). Used for API auth + entitlements.
+  supabaseUserId      String?               @unique
+  email              String                @unique
+  emailVerifiedAt    DateTime?
+  name               String?
+  imageUrl           String?
+  role               UserRole              @default(USER)
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  entitlements       CategoryEntitlement[]
+  oauthAccounts      OAuthAccount[]
+  passwordCredential PasswordCredential?
+  payments           Payment[]
+  refreshTokens      RefreshToken[]
+  toolRuns           ToolRun[]
+}
+
+model PasswordCredential {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model OAuthAccount {
+  id                String   @id @default(cuid())
+  userId            String
+  provider          String
+  providerAccountId String
+  accessToken       String?
+  refreshToken      String?
+  expiresAt         Int?
+  tokenType         String?
+  scope             String?
+  idToken           String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CategoryEntitlement {
+  id                     String             @id @default(cuid())
+  userId                 String
+  category               ToolCategory
+  status                 SubscriptionStatus
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  canceledAt             DateTime?
+  razorpaySubscriptionId String?            @unique
+  razorpayPlanId         String?
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  user                   User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category])
+  @@index([category])
+}
+
+model Payment {
+  id                String          @id @default(cuid())
+  userId            String
+  provider          PaymentProvider
+  status            PaymentStatus
+  amount            Int
+  currency          String
+  category          ToolCategory?
+  razorpayPaymentId String?         @unique
+  razorpayOrderId   String?
+  razorpayInvoiceId String?
+  rawPayload        Json?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([provider])
+}
+
+model WebhookEvent {
+  id          String          @id @default(cuid())
+  provider    PaymentProvider
+  eventType   String
+  eventId     String?
+  signature   String?
+  payload     Json
+  receivedAt  DateTime        @default(now())
+  processedAt DateTime?
+  error       String?
+
+  @@unique([provider, eventId])
+  @@index([provider])
+  @@index([eventType])
+}
+
+model Tool {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        String
+  category    ToolCategory
+  description String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  runs        ToolRun[]
+
+  @@index([category])
+}
+
+model ToolRun {
+  id        String   @id @default(cuid())
+  userId    String
+  toolId    String
+  createdAt DateTime @default(now())
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([toolId])
 }
 
 enum UserRole {
@@ -43,158 +180,4 @@ enum PaymentStatus {
   CAPTURED
   FAILED
   REFUNDED
-}
-
-model User {
-  id              String   @id @default(cuid())
-  email           String   @unique
-  emailVerifiedAt DateTime?
-  name            String?
-  imageUrl        String?
-  role            UserRole @default(USER)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  passwordCredential PasswordCredential?
-  oauthAccounts      OAuthAccount[]
-  refreshTokens      RefreshToken[]
-  entitlements       CategoryEntitlement[]
-  payments           Payment[]
-  toolRuns           ToolRun[]
-}
-
-model PasswordCredential {
-  id           String   @id @default(cuid())
-  userId       String   @unique
-  passwordHash String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model OAuthAccount {
-  id                String   @id @default(cuid())
-  userId            String
-  provider          String
-  providerAccountId String
-
-  accessToken  String?
-  refreshToken String?
-  expiresAt    Int?
-  tokenType    String?
-  scope        String?
-  idToken      String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@index([userId])
-}
-
-model RefreshToken {
-  id        String   @id @default(cuid())
-  userId    String
-  tokenHash String   @unique
-  expiresAt DateTime
-  revokedAt DateTime?
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-}
-
-model CategoryEntitlement {
-  id                   String             @id @default(cuid())
-  userId               String
-  category             ToolCategory
-  status               SubscriptionStatus
-  currentPeriodStart   DateTime?
-  currentPeriodEnd     DateTime?
-  canceledAt           DateTime?
-
-  // Razorpay subscription linkage (one per category).
-  razorpaySubscriptionId String? @unique
-  razorpayPlanId         String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, category])
-  @@index([category])
-}
-
-model Payment {
-  id          String          @id @default(cuid())
-  userId      String
-  provider    PaymentProvider
-  status      PaymentStatus
-  amount      Int
-  currency    String
-  category    ToolCategory?
-
-  razorpayPaymentId String? @unique
-  razorpayOrderId   String?
-  razorpayInvoiceId String?
-
-  rawPayload Json?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([provider])
-}
-
-model WebhookEvent {
-  id          String          @id @default(cuid())
-  provider    PaymentProvider
-  eventType   String
-  eventId     String?
-  signature   String?
-  payload     Json
-
-  receivedAt  DateTime @default(now())
-  processedAt DateTime?
-  error       String?
-
-  @@index([provider])
-  @@index([eventType])
-  @@unique([provider, eventId])
-}
-
-model Tool {
-  id          String       @id @default(cuid())
-  slug        String       @unique
-  name        String
-  category    ToolCategory
-  description String?
-  isActive    Boolean      @default(true)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-
-  runs ToolRun[]
-
-  @@index([category])
-}
-
-model ToolRun {
-  id        String   @id @default(cuid())
-  userId    String
-  toolId    String
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tool Tool @relation(fields: [toolId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([toolId])
 }
