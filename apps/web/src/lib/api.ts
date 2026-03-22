@@ -1,12 +1,16 @@
 import { supabase } from './supabaseClient'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:4000'
+// In production we use same-origin Next.js Route Handlers under /api.
+// Optionally you can point this to an external API later.
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? ''
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const { data } = await supabase.auth.getSession()
   const accessToken = data.session?.access_token
 
-  const res = await fetch(`${API_BASE}${path}`, {
+  const normalizedPath = path.startsWith('/api/') ? path : `/api${path.startsWith('/') ? '' : '/'}${path}`
+
+  const res = await fetch(`${API_BASE}${normalizedPath}`, {
     ...init,
     headers: {
       'content-type': 'application/json',
