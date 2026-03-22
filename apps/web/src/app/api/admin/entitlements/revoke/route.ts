@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       where: { email: safeEmail },
       create: { email: safeEmail, supabaseUserId },
       update: { supabaseUserId },
-      select: { role: true },
+      select: { id: true, role: true },
     })
 
     if (requester.role !== 'ADMIN') {
@@ -35,6 +35,20 @@ export async function POST(req: Request) {
       where: { userId_category: { userId: user.id, category: body.category } },
       data: { status: 'CANCELED', canceledAt: new Date() },
     })
+
+    // Best-effort audit log. If the table isn't migrated yet, we do not fail the request.
+    prisma.adminAuditLog
+      .create({
+        data: {
+          actorUserId: requester.id,
+          actorEmail: safeEmail,
+          action: 'ENTITLEMENT_REVOKE',
+          targetEmail: body.email,
+          category: body.category,
+          metadata: { via: 'admin_ui' },
+        },
+      })
+      .catch(() => null)
 
     return NextResponse.json({ ok: true, entitlement })
   } catch (e) {

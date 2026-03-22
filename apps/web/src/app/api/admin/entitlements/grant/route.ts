@@ -46,6 +46,20 @@ export async function POST(req: Request) {
       },
     })
 
+    // Best-effort audit log. If the table isn't migrated yet, we do not fail the request.
+    prisma.adminAuditLog
+      .create({
+        data: {
+          actorUserId: requester.id,
+          actorEmail: safeEmail,
+          action: 'ENTITLEMENT_GRANT',
+          targetEmail: body.email,
+          category: body.category,
+          metadata: { via: 'admin_ui' },
+        },
+      })
+      .catch(() => null)
+
     return NextResponse.json({ ok: true, entitlement })
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'unknown'

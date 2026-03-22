@@ -17,6 +17,15 @@ type AdminUserRow = {
   entitlements: { category: string; status: string; currentPeriodEnd: string | null }[]
 }
 
+type AuditLogRow = {
+  id: string
+  actorEmail: string | null
+  action: string
+  targetEmail: string | null
+  category: string | null
+  createdAt: string
+}
+
 export default function AdminPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -29,6 +38,9 @@ export default function AdminPage() {
   const [q, setQ] = useState('')
   const [users, setUsers] = useState<AdminUserRow[]>([])
   const [usersLoading, setUsersLoading] = useState(false)
+
+  const [logs, setLogs] = useState<AuditLogRow[]>([])
+  const [logsLoading, setLogsLoading] = useState(false)
 
   const categories = useMemo(
     () => ['AI', 'DEVELOPER', 'IMAGE', 'SEO', 'TEXT', 'UTILITY'] as Category[],
@@ -51,6 +63,7 @@ export default function AdminPage() {
         // If not admin, API returns 403; we show a clean message.
         await apiFetch<{ ok: true; user: any }>('/me')
         await refreshUsers('')
+        await refreshLogs()
       } finally {
         setLoading(false)
       }
@@ -73,6 +86,19 @@ export default function AdminPage() {
       setError(e instanceof Error ? e.message : 'failed_to_load_users')
     } finally {
       setUsersLoading(false)
+    }
+  }
+
+  async function refreshLogs() {
+    setLogsLoading(true)
+    setError(null)
+    try {
+      const resp = await apiFetch<{ ok: true; logs: AuditLogRow[] }>(`/admin/audit-logs?take=50`)
+      setLogs(resp.logs)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'failed_to_load_logs')
+    } finally {
+      setLogsLoading(false)
     }
   }
 
@@ -174,6 +200,62 @@ export default function AdminPage() {
             </p>
           ) : null}
         </div>
+      </div>
+
+      <div className="mt-8 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-medium">Audit logs</h2>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Shows recent admin actions (grant/revoke). If empty, run the DB migration and then do one grant/revoke.
+            </p>
+          </div>
+          <button
+            onClick={refreshLogs}
+            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
+          >
+            Refresh
+          </button>
+        </div>
+
+        {logsLoading ? (
+          <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-300">Loading logs…</p>
+        ) : (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full border-separate border-spacing-0 text-left text-sm">
+              <thead>
+                <tr className="text-xs text-zinc-500">
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">When</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Actor</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Action</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Target</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Category</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logs.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-4 text-zinc-600 dark:text-zinc-300">
+                      No audit logs yet.
+                    </td>
+                  </tr>
+                ) : (
+                  logs.map((l) => (
+                    <tr key={l.id}>
+                      <td className="border-b border-zinc-100 py-3 pr-4 text-xs text-zinc-500 dark:border-zinc-900">
+                        {new Date(l.createdAt).toLocaleString()}
+                      </td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{l.actorEmail ?? '—'}</td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{l.action}</td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{l.targetEmail ?? '—'}</td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{l.category ?? '—'}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <div className="mt-8 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">

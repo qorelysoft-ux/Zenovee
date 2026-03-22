@@ -26,6 +26,7 @@ model User {
   payments           Payment[]
   refreshTokens      RefreshToken[]
   toolRuns           ToolRun[]
+  adminAuditLogs     AdminAuditLog[]
 }
 
 model PasswordCredential {
@@ -120,6 +121,23 @@ model WebhookEvent {
   @@unique([provider, eventId])
   @@index([provider])
   @@index([eventType])
+}
+
+model AdminAuditLog {
+  id              String   @id @default(cuid())
+  actorUserId     String
+  actorEmail      String?
+  action          String
+  targetEmail     String?
+  category        ToolCategory?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  actorUser User @relation(fields: [actorUserId], references: [id], onDelete: Cascade)
+
+  @@index([actorUserId])
+  @@index([action])
+  @@index([createdAt])
 }
 
 model Tool {
