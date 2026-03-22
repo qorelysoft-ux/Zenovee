@@ -8,6 +8,15 @@ import { apiFetch } from '@/lib/api'
 
 type Category = 'AI' | 'DEVELOPER' | 'IMAGE' | 'SEO' | 'TEXT' | 'UTILITY'
 
+type AdminUserRow = {
+  id: string
+  email: string
+  role: string
+  supabaseUserId: string | null
+  createdAt: string
+  entitlements: { category: string; status: string; currentPeriodEnd: string | null }[]
+}
+
 export default function AdminPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -16,6 +25,10 @@ export default function AdminPage() {
   const [category, setCategory] = useState<Category>('DEVELOPER')
   const [status, setStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  const [q, setQ] = useState('')
+  const [users, setUsers] = useState<AdminUserRow[]>([])
+  const [usersLoading, setUsersLoading] = useState(false)
 
   const categories = useMemo(
     () => ['AI', 'DEVELOPER', 'IMAGE', 'SEO', 'TEXT', 'UTILITY'] as Category[],
@@ -37,6 +50,7 @@ export default function AdminPage() {
       try {
         // If not admin, API returns 403; we show a clean message.
         await apiFetch<{ ok: true; user: any }>('/me')
+        await refreshUsers('')
       } finally {
         setLoading(false)
       }
@@ -46,6 +60,21 @@ export default function AdminPage() {
       mounted = false
     }
   }, [router])
+
+  async function refreshUsers(nextQ: string) {
+    setUsersLoading(true)
+    setError(null)
+    try {
+      const resp = await apiFetch<{ ok: true; users: AdminUserRow[] }>(
+        `/admin/users?q=${encodeURIComponent(nextQ)}&take=50`,
+      )
+      setUsers(resp.users)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'failed_to_load_users')
+    } finally {
+      setUsersLoading(false)
+    }
+  }
 
   async function grant() {
     setStatus(null)
@@ -145,6 +174,92 @@ export default function AdminPage() {
             </p>
           ) : null}
         </div>
+      </div>
+
+      <div className="mt-8 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-medium">Users</h2>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Search users and see their active entitlements.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-3">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search by email or supabaseUserId"
+            className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm outline-none dark:border-zinc-700 md:w-[420px]"
+          />
+          <button
+            onClick={() => refreshUsers(q)}
+            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
+          >
+            Search
+          </button>
+          <button
+            onClick={() => {
+              setQ('')
+              refreshUsers('')
+            }}
+            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
+          >
+            Reset
+          </button>
+        </div>
+
+        {usersLoading ? (
+          <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-300">Loading users…</p>
+        ) : (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full border-separate border-spacing-0 text-left text-sm">
+              <thead>
+                <tr className="text-xs text-zinc-500">
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Email</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Role</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Entitlements</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="py-4 text-zinc-600 dark:text-zinc-300">
+                      No users found.
+                    </td>
+                  </tr>
+                ) : (
+                  users.map((u) => (
+                    <tr key={u.id}>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">
+                        <div className="font-medium">{u.email}</div>
+                        <div className="mt-1 text-xs text-zinc-500">{u.supabaseUserId ?? '—'}</div>
+                      </td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{u.role}</td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">
+                        <div className="flex flex-wrap gap-2">
+                          {u.entitlements.length === 0 ? (
+                            <span className="text-xs text-zinc-500">—</span>
+                          ) : (
+                            u.entitlements.map((e, idx) => (
+                              <span
+                                key={`${u.id}-${e.category}-${idx}`}
+                                className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] font-medium text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-200"
+                              >
+                                {e.category}
+                              </span>
+                            ))
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   )
