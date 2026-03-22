@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 import { requireSupabaseUserFromRequest } from '../../../_lib/auth'
 import { prisma } from '../../../_lib/prisma'
+import { rateLimitOrThrow } from '../../../_lib/rateLimit'
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -11,6 +12,8 @@ const bodySchema = z.object({
 
 export async function POST(req: Request) {
   try {
+    rateLimitOrThrow(req, { keyPrefix: 'admin:grant', limit: 20, windowMs: 60_000 })
+
     const { supabaseUserId, email: requesterEmail } = await requireSupabaseUserFromRequest(req)
     const safeEmail = requesterEmail ?? `supabase:${supabaseUserId}`
     const requester = await prisma.user.upsert({
@@ -46,6 +49,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, entitlement })
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'unknown'
+    const status = (e as any)?.status
+    if (status === 429) {
+      return NextResponse.json(
+        { ok: false, error: msg, retryAfterSeconds: (e as any)?.retryAfterSeconds ?? 60 },
+        { status: 429 },
+      )
+    }
     const code = msg === 'missing_bearer_token' || msg === 'invalid_token' ? 401 : 500
     return NextResponse.json({ ok: false, error: msg }, { status: code })
   }
