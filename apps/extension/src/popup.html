@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zenovee</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="title">Zenovee</div>
+        <a class="link" href="https://www.zenovee.in" target="_blank" rel="noreferrer">Open</a>
+      </div>
+
+      <div id="status" class="status">Loading…</div>
+
+      <div class="section">
+        <div class="label">Login</div>
+        <input id="email" class="input" placeholder="Email" />
+        <input id="password" type="password" class="input" placeholder="Password" />
+        <button id="login" class="button">Login</button>
+        <button id="logout" class="button secondary">Logout</button>
+      </div>
+
+      <div class="section">
+        <div class="label">Quick links</div>
+        <div class="links">
+          <a class="pill" href="https://www.zenovee.in/dashboard" target="_blank" rel="noreferrer">Dashboard</a>
+          <a class="pill" href="https://www.zenovee.in/tools" target="_blank" rel="noreferrer">Tools</a>
+          <a class="pill" href="https://www.zenovee.in/tools/json-formatter" target="_blank" rel="noreferrer">JSON</a>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="label">Entitlements</div>
+        <div id="ents" class="ents">—</div>
+      </div>
+    </div>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "@zenovee/extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node ./scripts/build.mjs",
+    "dev": "node ./scripts/build.mjs --watch"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.99.1"
+  }
+}

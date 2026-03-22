@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Zenovee Tools",
+  "version": "0.1.0",
+  "description": "Access Zenovee paid tools from your browser.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Zenovee"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["https://www.zenovee.in/*"],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
