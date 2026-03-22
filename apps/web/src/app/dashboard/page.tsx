@@ -25,6 +25,7 @@ export default function DashboardPage() {
   const [entitlements, setEntitlements] = useState<Entitlement[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const activeEntitlements = entitlements.filter((e) => e.status === 'ACTIVE')
 
   useEffect(() => {
     let mounted = true
@@ -82,46 +83,80 @@ export default function DashboardPage() {
         </button>
       </div>
 
-      <div className="mt-10 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
-        <h2 className="text-lg font-medium">Your access</h2>
-        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-          Tools are paid-only. You can only use tools in categories you’ve purchased.
-        </p>
+      <div className="mt-10 grid grid-cols-1 gap-6">
+        <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+          <h2 className="text-lg font-medium">Profile</h2>
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Basic account details.</p>
 
-        {error ? (
-          <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>
-        ) : null}
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          {entitlements.length === 0 ? (
-            <span className="text-sm text-zinc-600 dark:text-zinc-300">
-              No active subscriptions yet.
-            </span>
-          ) : (
-            entitlements.map((e) => (
-              <span
-                key={e.id}
-                className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-200"
-              >
-                {e.category}
-              </span>
-            ))
-          )}
+          <dl className="mt-4 grid grid-cols-1 gap-3 text-sm">
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-zinc-500">Email</dt>
+              <dd className="font-medium">{user?.email ?? '—'}</dd>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-zinc-500">Account status</dt>
+              <dd className="font-medium">Active</dd>
+            </div>
+          </dl>
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link
-            href="/pricing"
-            className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-zinc-900"
-          >
-            View pricing
-          </Link>
-          <Link
-            href="/tools"
-            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
-          >
-            Browse tools
-          </Link>
+        <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+          <h2 className="text-lg font-medium">Your access</h2>
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+            Tools are paid-only. You can only use tools in categories you’ve purchased.
+          </p>
+
+          {error ? <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p> : null}
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {activeEntitlements.length === 0 ? (
+              <span className="text-sm text-zinc-600 dark:text-zinc-300">No active subscriptions yet.</span>
+            ) : (
+              activeEntitlements.map((e) => (
+                <span
+                  key={e.id}
+                  className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-200"
+                >
+                  {e.category}
+                </span>
+              ))
+            )}
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href="/pricing"
+              className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-zinc-900"
+            >
+              View pricing
+            </Link>
+            <Link
+              href="/tools"
+              className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
+            >
+              Browse tools
+            </Link>
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+          <h2 className="text-lg font-medium">API Keys</h2>
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+            Coming soon. You’ll be able to create API keys to access tools programmatically.
+          </p>
+          <div className="mt-4 rounded-md border border-dashed border-zinc-300 p-4 text-sm text-zinc-500 dark:border-zinc-700">
+            No API keys yet.
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+          <h2 className="text-lg font-medium">Payment history</h2>
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+            Coming soon. Once Razorpay is enabled, you’ll see invoices and past payments here.
+          </p>
+          <div className="mt-4 rounded-md border border-dashed border-zinc-300 p-4 text-sm text-zinc-500 dark:border-zinc-700">
+            No payments recorded.
+          </div>
         </div>
       </div>
     </div>
