@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import esbuild from 'esbuild'
 
 const args = new Set(process.argv.slice(2))
 const watch = args.has('--watch')
@@ -15,19 +16,35 @@ function copyFile(rel) {
   fs.copyFileSync(from, to)
 }
 
-function build() {
+async function bundle(entryRel, outRel) {
+  const entry = path.join(srcDir, entryRel)
+  const outfile = path.join(distDir, outRel)
+  await esbuild.build({
+    entryPoints: [entry],
+    bundle: true,
+    format: 'esm',
+    platform: 'browser',
+    target: ['chrome114'],
+    outfile,
+    sourcemap: false,
+    legalComments: 'none',
+    logLevel: 'silent',
+  })
+}
+
+async function build() {
   fs.rmSync(distDir, { recursive: true, force: true })
   fs.mkdirSync(distDir, { recursive: true })
 
   copyFile('manifest.json')
   copyFile('popup.html')
-  copyFile('popup.js')
   copyFile('style.css')
-  copyFile('background.js')
+  await bundle('popup.js', 'popup.js')
+  await bundle('background.js', 'background.js')
   console.log('[extension] built to apps/extension/dist')
 }
 
-build()
+await build()
 
 if (watch) {
   console.log('[extension] watching for changes...')

@@ -8,6 +8,7 @@
     "dev": "node ./scripts/build.mjs --watch"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.99.1"
+    "@supabase/supabase-js": "^2.99.1",
+    "esbuild": "^0.25.10"
   }
 }

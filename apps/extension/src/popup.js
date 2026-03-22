@@ -1,7 +1,4 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-// NOTE: For a real publishable extension, avoid using a public CDN import.
-// Next step will be bundling this locally. This scaffold is to get you working quickly.
+import { createClient } from '@supabase/supabase-js'
 
 const SUPABASE_URL = 'https://dzxyireteouaufqpzyuo.supabase.co'
 // This is a public key, safe to ship in client/extension.
