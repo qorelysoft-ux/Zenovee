@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "node ./scripts/build.mjs",
-    "dev": "node ./scripts/build.mjs --watch"
+    "dev": "node ./scripts/build.mjs --watch",
+    "package": "node ./scripts/package.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.1",

@@ -39,6 +39,10 @@ async function build() {
   copyFile('manifest.json')
   copyFile('popup.html')
   copyFile('style.css')
+  // Icons are required for Chrome Web Store listing
+  copyFile('icon16.png')
+  copyFile('icon48.png')
+  copyFile('icon128.png')
   await bundle('popup.js', 'popup.js')
   await bundle('background.js', 'background.js')
   console.log('[extension] built to apps/extension/dist')
