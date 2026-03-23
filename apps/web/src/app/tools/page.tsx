@@ -1,13 +1,6 @@
 import Link from 'next/link'
 
-const categories = [
-  { slug: 'ai', name: 'AI Productivity Tools' },
-  { slug: 'developer', name: 'Developer Tools' },
-  { slug: 'image', name: 'Image Tools' },
-  { slug: 'seo', name: 'SEO Tools' },
-  { slug: 'text', name: 'Text Tools' },
-  { slug: 'utilities', name: 'Utility Tools' },
-] as const
+import { categoryPages } from '@/lib/toolsCatalog'
 
 export default function ToolsDirectoryPage() {
   return (
@@ -18,7 +11,7 @@ export default function ToolsDirectoryPage() {
       </p>
 
       <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
-        {categories.map((c) => (
+        {categoryPages.map((c) => (
           <Link
             key={c.slug}
             href={`/tools/${c.slug}`}

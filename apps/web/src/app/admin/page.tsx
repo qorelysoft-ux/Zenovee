@@ -26,6 +26,11 @@ type AuditLogRow = {
   createdAt: string
 }
 
+type ToolRunRow = {
+  tool: { id: string; slug: string; name: string; category: string }
+  runCount: number
+}
+
 export default function AdminPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -41,6 +46,9 @@ export default function AdminPage() {
 
   const [logs, setLogs] = useState<AuditLogRow[]>([])
   const [logsLoading, setLogsLoading] = useState(false)
+
+  const [toolRuns, setToolRuns] = useState<ToolRunRow[]>([])
+  const [toolRunsLoading, setToolRunsLoading] = useState(false)
 
   const categories = useMemo(
     () => ['AI', 'DEVELOPER', 'IMAGE', 'SEO', 'TEXT', 'UTILITY'] as Category[],
@@ -64,6 +72,7 @@ export default function AdminPage() {
         await apiFetch<{ ok: true; user: any }>('/me')
         await refreshUsers('')
         await refreshLogs()
+        await refreshToolRuns()
       } finally {
         setLoading(false)
       }
@@ -99,6 +108,19 @@ export default function AdminPage() {
       setError(e instanceof Error ? e.message : 'failed_to_load_logs')
     } finally {
       setLogsLoading(false)
+    }
+  }
+
+  async function refreshToolRuns() {
+    setToolRunsLoading(true)
+    setError(null)
+    try {
+      const resp = await apiFetch<{ ok: true; rows: ToolRunRow[] }>(`/admin/analytics/tool-runs?take=20`)
+      setToolRuns(resp.rows)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'failed_to_load_tool_runs')
+    } finally {
+      setToolRunsLoading(false)
     }
   }
 
@@ -200,6 +222,61 @@ export default function AdminPage() {
             </p>
           ) : null}
         </div>
+      </div>
+
+      <div className="mt-8 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-medium">Tool analytics</h2>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Shows top tools by number of runs. Runs are recorded when an entitled user unlocks a tool page.
+            </p>
+          </div>
+          <button
+            onClick={refreshToolRuns}
+            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
+          >
+            Refresh
+          </button>
+        </div>
+
+        {toolRunsLoading ? (
+          <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-300">Loading analytics…</p>
+        ) : (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full border-separate border-spacing-0 text-left text-sm">
+              <thead>
+                <tr className="text-xs text-zinc-500">
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Tool</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Category</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 text-right dark:border-zinc-800">Runs</th>
+                </tr>
+              </thead>
+              <tbody>
+                {toolRuns.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="py-4 text-zinc-600 dark:text-zinc-300">
+                      No tool runs recorded yet.
+                    </td>
+                  </tr>
+                ) : (
+                  toolRuns.map((r) => (
+                    <tr key={r.tool.id}>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">
+                        <div className="font-medium">{r.tool.name}</div>
+                        <div className="mt-1 text-xs text-zinc-500">/tools/{r.tool.slug}</div>
+                      </td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{r.tool.category}</td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 text-right dark:border-zinc-900">
+                        {r.runCount}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <div className="mt-8 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">

@@ -8,7 +8,15 @@ This repository is **in progress** toward the full “Paid Halal Multi-Tools Saa
 - Monorepo structure: `apps/web` (Next.js + Tailwind) and `apps/api` (Express + TypeScript)
 - Supabase client wiring for backend + frontend
 - Basic auth pages on the web app (login/register/callback/dashboard)
+- Tools routing skeleton:
+  - `/tools` directory
+  - Category pages: `/tools/ai`, `/tools/developer`, `/tools/image`, `/tools/seo`, `/tools/text`, `/tools/utilities`
+  - Individual tool SEO pages: `/tools/<tool-slug>` (placeholder UI + entitlement gate)
 - Build stability: `npm run build` works end-to-end
+- Chrome Extension install/distribution pages:
+  - `/extension` (guide + download button)
+  - `/install` (redirect)
+  - `/downloads/zenovee-tools-v0.1.0.zip` (hosted ZIP)
 
 ⏳ Still to implement (major items):
 - Razorpay subscriptions + webhook verification + subscription lifecycle
@@ -17,6 +25,28 @@ This repository is **in progress** toward the full “Paid Halal Multi-Tools Saa
 - User dashboard (subscriptions/payment history) + Admin dashboard
 - Chrome extension
 - Security hardening + analytics + caching + full deployment docs
+
+---
+
+## Chrome Extension distribution (current approach)
+
+Until the extension is published to the Chrome Web Store, Zenovee distributes it as an **unpacked extension**.
+
+### Download link (production)
+
+- `https://www.zenovee.in/extension`
+- ZIP download: `https://www.zenovee.in/downloads/zenovee-tools-v0.1.0.zip`
+
+### Build/package locally
+
+```bash
+npm -w @zenovee/extension run build
+npm -w @zenovee/extension run package
+```
+
+Output:
+
+`apps/extension/release/zenovee-tools-v0.1.0.zip`
 
 ---
 
