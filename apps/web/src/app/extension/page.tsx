@@ -11,10 +11,30 @@ export default function ExtensionHelpPage() {
         Install the extension to access Zenovee tools faster from your browser.
       </p>
 
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+        <a
+          className="inline-flex items-center justify-center rounded-md bg-black px-5 py-3 text-sm font-medium text-white hover:bg-zinc-900 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+          href="/downloads/zenovee-tools-v0.1.0.zip"
+        >
+          Download Extension ZIP
+        </a>
+        <a
+          className="inline-flex items-center justify-center rounded-md border border-zinc-300 px-5 py-3 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
+          href="https://www.zenovee.in/login"
+        >
+          Login to Zenovee
+        </a>
+      </div>
+
       <div className="prose prose-zinc mt-10 max-w-none dark:prose-invert">
         <h2>Download</h2>
         <p>
           Your admin will share you a ZIP file like: <code>zenovee-tools-v0.1.0.zip</code>.
+        </p>
+
+        <p>
+          If you are on Zenovee website right now, you can download it from this link:{' '}
+          <a href="/downloads/zenovee-tools-v0.1.0.zip">/downloads/zenovee-tools-v0.1.0.zip</a>
         </p>
 
         <h2>Install (Step-by-step)</h2>
