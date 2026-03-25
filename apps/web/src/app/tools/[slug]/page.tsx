@@ -5,12 +5,17 @@ import { getToolBySlug } from '@/lib/toolsCatalog'
 import { ToolGatePlaceholder } from '@/components/ToolGatePlaceholder'
 import { ColdOutreachPersonalizationTool } from '@/components/tools/ColdOutreachPersonalizationTool'
 import { AdCopyConversionTool } from '@/components/tools/AdCopyConversionTool'
+import { ApiRequestConverterTool } from '@/components/tools/ApiRequestConverterTool'
 import { BrandVoiceReplicationTool } from '@/components/tools/BrandVoiceReplicationTool'
+import { CronScheduleTranslatorTool } from '@/components/tools/CronScheduleTranslatorTool'
 import { CustomerPersonaIntelligenceTool } from '@/components/tools/CustomerPersonaIntelligenceTool'
 import { EcommerceConversionBoosterTool } from '@/components/tools/EcommerceConversionBoosterTool'
+import { EnvironmentConfigGeneratorTool } from '@/components/tools/EnvironmentConfigGeneratorTool'
+import { GitErrorFixAssistantTool } from '@/components/tools/GitErrorFixAssistantTool'
 import { LandingPageConversionWriterTool } from '@/components/tools/LandingPageConversionWriterTool'
 import { LeadMagnetCreatorTool } from '@/components/tools/LeadMagnetCreatorTool'
 import { SeoAuthorityBuilderTool } from '@/components/tools/SeoAuthorityBuilderTool'
+import { SmartRegexBuilderTool } from '@/components/tools/SmartRegexBuilderTool'
 import { SocialThreadGrowthTool } from '@/components/tools/SocialThreadGrowthTool'
 import { ViralShortCreatorTool } from '@/components/tools/ViralShortCreatorTool'
 
@@ -66,6 +71,16 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <LandingPageConversionWriterTool />
             ) : tool.slug === 'brand-voice-replication-engine' ? (
               <BrandVoiceReplicationTool />
+            ) : tool.slug === 'smart-regex-builder' ? (
+              <SmartRegexBuilderTool />
+            ) : tool.slug === 'cron-schedule-translator' ? (
+              <CronScheduleTranslatorTool />
+            ) : tool.slug === 'environment-config-generator' ? (
+              <EnvironmentConfigGeneratorTool />
+            ) : tool.slug === 'git-error-fix-assistant' ? (
+              <GitErrorFixAssistantTool />
+            ) : tool.slug === 'api-request-converter' ? (
+              <ApiRequestConverterTool />
             ) : (
               <>
                 <div className="text-sm font-medium">Tool interface</div>
