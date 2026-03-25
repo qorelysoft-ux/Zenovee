@@ -18,14 +18,18 @@ import { DatabaseVisualMapperTool } from '@/components/tools/DatabaseVisualMappe
 import { EcommerceConversionBoosterTool } from '@/components/tools/EcommerceConversionBoosterTool'
 import { EnvironmentConfigGeneratorTool } from '@/components/tools/EnvironmentConfigGeneratorTool'
 import { GitErrorFixAssistantTool } from '@/components/tools/GitErrorFixAssistantTool'
+import { GiveawayWinnerSelectorTool } from '@/components/tools/GiveawayWinnerSelectorTool'
+import { GlobalTimeSyncTool } from '@/components/tools/GlobalTimeSyncTool'
 import { KeywordClusterEngineTool } from '@/components/tools/KeywordClusterEngineTool'
 import { LandingPageConversionWriterTool } from '@/components/tools/LandingPageConversionWriterTool'
 import { LeadMagnetCreatorTool } from '@/components/tools/LeadMagnetCreatorTool'
 import { MultiPlatformImageResizerTool } from '@/components/tools/MultiPlatformImageResizerTool'
+import { PdfToMarkdownConverterTool } from '@/components/tools/PdfToMarkdownConverterTool'
 import { SecurityVulnerabilityScannerTool } from '@/components/tools/SecurityVulnerabilityScannerTool'
 import { SeoAuthorityBuilderTool } from '@/components/tools/SeoAuthorityBuilderTool'
 import { SqlPerformanceOptimizerTool } from '@/components/tools/SqlPerformanceOptimizerTool'
 import { SmartRegexBuilderTool } from '@/components/tools/SmartRegexBuilderTool'
+import { SmartUnitCurrencyConverterTool } from '@/components/tools/SmartUnitCurrencyConverterTool'
 import { SocialThreadGrowthTool } from '@/components/tools/SocialThreadGrowthTool'
 import { SvgConversionEngineTool } from '@/components/tools/SvgConversionEngineTool'
 import { ViralShortCreatorTool } from '@/components/tools/ViralShortCreatorTool'
@@ -82,6 +86,16 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <AiAltTextGeneratorTool />
             ) : tool.slug === 'brand-color-kit-generator' ? (
               <BrandColorKitGeneratorTool />
+            ) : tool.slug === 'pdf-to-markdown-converter' ? (
+              <PdfToMarkdownConverterTool />
+            ) : tool.slug === 'legal-policy-generator' ? (
+              <div className="rounded-lg bg-zinc-50 p-4 text-sm dark:bg-zinc-900">Use the Legal Policy Generator API route after wiring its UI component next.</div>
+            ) : tool.slug === 'smart-unit-currency-converter' ? (
+              <SmartUnitCurrencyConverterTool />
+            ) : tool.slug === 'global-time-sync-tool' ? (
+              <GlobalTimeSyncTool />
+            ) : tool.slug === 'giveaway-winner-selector' ? (
+              <GiveawayWinnerSelectorTool />
             ) : tool.slug === 'lead-magnet-creator-engine' ? (
               <LeadMagnetCreatorTool />
             ) : tool.slug === 'social-thread-growth-engine' ? (
