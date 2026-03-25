@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation'
 import { getToolBySlug } from '@/lib/toolsCatalog'
 import { ToolGatePlaceholder } from '@/components/ToolGatePlaceholder'
 import { ColdOutreachPersonalizationTool } from '@/components/tools/ColdOutreachPersonalizationTool'
+import { AdCopyConversionTool } from '@/components/tools/AdCopyConversionTool'
+import { EcommerceConversionBoosterTool } from '@/components/tools/EcommerceConversionBoosterTool'
 import { SeoAuthorityBuilderTool } from '@/components/tools/SeoAuthorityBuilderTool'
 import { ViralShortCreatorTool } from '@/components/tools/ViralShortCreatorTool'
 
@@ -45,6 +47,10 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <ColdOutreachPersonalizationTool />
             ) : tool.slug === 'seo-authority-builder-engine' ? (
               <SeoAuthorityBuilderTool />
+            ) : tool.slug === 'ad-copy-conversion-engine' ? (
+              <AdCopyConversionTool />
+            ) : tool.slug === 'ecommerce-conversion-booster' ? (
+              <EcommerceConversionBoosterTool />
             ) : (
               <>
                 <div className="text-sm font-medium">Tool interface</div>
