@@ -23,8 +23,12 @@ import { GlobalTimeSyncTool } from '@/components/tools/GlobalTimeSyncTool'
 import { KeywordClusterEngineTool } from '@/components/tools/KeywordClusterEngineTool'
 import { LandingPageConversionWriterTool } from '@/components/tools/LandingPageConversionWriterTool'
 import { LeadMagnetCreatorTool } from '@/components/tools/LeadMagnetCreatorTool'
+import { LegalPolicyGeneratorTool } from '@/components/tools/LegalPolicyGeneratorTool'
 import { MultiPlatformImageResizerTool } from '@/components/tools/MultiPlatformImageResizerTool'
 import { PdfToMarkdownConverterTool } from '@/components/tools/PdfToMarkdownConverterTool'
+import { SchemaMarkupGeneratorTool } from '@/components/tools/SchemaMarkupGeneratorTool'
+import { BulkMetaOptimizerTool } from '@/components/tools/BulkMetaOptimizerTool'
+import { InternalLinkingEngineTool } from '@/components/tools/InternalLinkingEngineTool'
 import { SecurityVulnerabilityScannerTool } from '@/components/tools/SecurityVulnerabilityScannerTool'
 import { SeoAuthorityBuilderTool } from '@/components/tools/SeoAuthorityBuilderTool'
 import { SqlPerformanceOptimizerTool } from '@/components/tools/SqlPerformanceOptimizerTool'
@@ -89,9 +93,15 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
             ) : tool.slug === 'pdf-to-markdown-converter' ? (
               <PdfToMarkdownConverterTool />
             ) : tool.slug === 'legal-policy-generator' ? (
-              <div className="rounded-lg bg-zinc-50 p-4 text-sm dark:bg-zinc-900">Use the Legal Policy Generator API route after wiring its UI component next.</div>
+              <LegalPolicyGeneratorTool />
             ) : tool.slug === 'smart-unit-currency-converter' ? (
               <SmartUnitCurrencyConverterTool />
+            ) : tool.slug === 'schema-markup-generator' ? (
+              <SchemaMarkupGeneratorTool />
+            ) : tool.slug === 'bulk-meta-optimizer' ? (
+              <BulkMetaOptimizerTool />
+            ) : tool.slug === 'internal-linking-engine' ? (
+              <InternalLinkingEngineTool />
             ) : tool.slug === 'global-time-sync-tool' ? (
               <GlobalTimeSyncTool />
             ) : tool.slug === 'giveaway-winner-selector' ? (
