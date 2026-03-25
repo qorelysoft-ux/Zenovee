@@ -5,9 +5,12 @@ import { getToolBySlug } from '@/lib/toolsCatalog'
 import { ToolGatePlaceholder } from '@/components/ToolGatePlaceholder'
 import { ColdOutreachPersonalizationTool } from '@/components/tools/ColdOutreachPersonalizationTool'
 import { AdCopyConversionTool } from '@/components/tools/AdCopyConversionTool'
+import { AiAltTextGeneratorTool } from '@/components/tools/AiAltTextGeneratorTool'
 import { ApiRequestConverterTool } from '@/components/tools/ApiRequestConverterTool'
 import { ApiSchemaConverterTool } from '@/components/tools/ApiSchemaConverterTool'
 import { BrandVoiceReplicationTool } from '@/components/tools/BrandVoiceReplicationTool'
+import { BrandColorKitGeneratorTool } from '@/components/tools/BrandColorKitGeneratorTool'
+import { BulkWatermarkProtectionTool } from '@/components/tools/BulkWatermarkProtectionTool'
 import { CodeDocumentationGeneratorTool } from '@/components/tools/CodeDocumentationGeneratorTool'
 import { CronScheduleTranslatorTool } from '@/components/tools/CronScheduleTranslatorTool'
 import { CustomerPersonaIntelligenceTool } from '@/components/tools/CustomerPersonaIntelligenceTool'
@@ -15,13 +18,16 @@ import { DatabaseVisualMapperTool } from '@/components/tools/DatabaseVisualMappe
 import { EcommerceConversionBoosterTool } from '@/components/tools/EcommerceConversionBoosterTool'
 import { EnvironmentConfigGeneratorTool } from '@/components/tools/EnvironmentConfigGeneratorTool'
 import { GitErrorFixAssistantTool } from '@/components/tools/GitErrorFixAssistantTool'
+import { KeywordClusterEngineTool } from '@/components/tools/KeywordClusterEngineTool'
 import { LandingPageConversionWriterTool } from '@/components/tools/LandingPageConversionWriterTool'
 import { LeadMagnetCreatorTool } from '@/components/tools/LeadMagnetCreatorTool'
+import { MultiPlatformImageResizerTool } from '@/components/tools/MultiPlatformImageResizerTool'
 import { SecurityVulnerabilityScannerTool } from '@/components/tools/SecurityVulnerabilityScannerTool'
 import { SeoAuthorityBuilderTool } from '@/components/tools/SeoAuthorityBuilderTool'
 import { SqlPerformanceOptimizerTool } from '@/components/tools/SqlPerformanceOptimizerTool'
 import { SmartRegexBuilderTool } from '@/components/tools/SmartRegexBuilderTool'
 import { SocialThreadGrowthTool } from '@/components/tools/SocialThreadGrowthTool'
+import { SvgConversionEngineTool } from '@/components/tools/SvgConversionEngineTool'
 import { ViralShortCreatorTool } from '@/components/tools/ViralShortCreatorTool'
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
@@ -66,6 +72,16 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <AdCopyConversionTool />
             ) : tool.slug === 'ecommerce-conversion-booster' ? (
               <EcommerceConversionBoosterTool />
+            ) : tool.slug === 'multi-platform-image-resizer' ? (
+              <MultiPlatformImageResizerTool />
+            ) : tool.slug === 'bulk-watermark-protection-tool' ? (
+              <BulkWatermarkProtectionTool />
+            ) : tool.slug === 'svg-conversion-engine' ? (
+              <SvgConversionEngineTool />
+            ) : tool.slug === 'ai-alt-text-generator' ? (
+              <AiAltTextGeneratorTool />
+            ) : tool.slug === 'brand-color-kit-generator' ? (
+              <BrandColorKitGeneratorTool />
             ) : tool.slug === 'lead-magnet-creator-engine' ? (
               <LeadMagnetCreatorTool />
             ) : tool.slug === 'social-thread-growth-engine' ? (
@@ -86,6 +102,8 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <SecurityVulnerabilityScannerTool />
             ) : tool.slug === 'database-visual-mapper' ? (
               <DatabaseVisualMapperTool />
+            ) : tool.slug === 'keyword-cluster-engine' ? (
+              <KeywordClusterEngineTool />
             ) : tool.slug === 'smart-regex-builder' ? (
               <SmartRegexBuilderTool />
             ) : tool.slug === 'cron-schedule-translator' ? (
