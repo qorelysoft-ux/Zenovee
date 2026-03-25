@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { getToolBySlug } from '@/lib/toolsCatalog'
 import { ToolGatePlaceholder } from '@/components/ToolGatePlaceholder'
 import { ColdOutreachPersonalizationTool } from '@/components/tools/ColdOutreachPersonalizationTool'
+import { SeoAuthorityBuilderTool } from '@/components/tools/SeoAuthorityBuilderTool'
 import { ViralShortCreatorTool } from '@/components/tools/ViralShortCreatorTool'
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
@@ -42,6 +43,8 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <ViralShortCreatorTool />
             ) : tool.slug === 'cold-outreach-personalization-engine' ? (
               <ColdOutreachPersonalizationTool />
+            ) : tool.slug === 'seo-authority-builder-engine' ? (
+              <SeoAuthorityBuilderTool />
             ) : (
               <>
                 <div className="text-sm font-medium">Tool interface</div>
