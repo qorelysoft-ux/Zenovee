@@ -5,8 +5,13 @@ import { getToolBySlug } from '@/lib/toolsCatalog'
 import { ToolGatePlaceholder } from '@/components/ToolGatePlaceholder'
 import { ColdOutreachPersonalizationTool } from '@/components/tools/ColdOutreachPersonalizationTool'
 import { AdCopyConversionTool } from '@/components/tools/AdCopyConversionTool'
+import { BrandVoiceReplicationTool } from '@/components/tools/BrandVoiceReplicationTool'
+import { CustomerPersonaIntelligenceTool } from '@/components/tools/CustomerPersonaIntelligenceTool'
 import { EcommerceConversionBoosterTool } from '@/components/tools/EcommerceConversionBoosterTool'
+import { LandingPageConversionWriterTool } from '@/components/tools/LandingPageConversionWriterTool'
+import { LeadMagnetCreatorTool } from '@/components/tools/LeadMagnetCreatorTool'
 import { SeoAuthorityBuilderTool } from '@/components/tools/SeoAuthorityBuilderTool'
+import { SocialThreadGrowthTool } from '@/components/tools/SocialThreadGrowthTool'
 import { ViralShortCreatorTool } from '@/components/tools/ViralShortCreatorTool'
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
@@ -51,6 +56,16 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <AdCopyConversionTool />
             ) : tool.slug === 'ecommerce-conversion-booster' ? (
               <EcommerceConversionBoosterTool />
+            ) : tool.slug === 'lead-magnet-creator-engine' ? (
+              <LeadMagnetCreatorTool />
+            ) : tool.slug === 'social-thread-growth-engine' ? (
+              <SocialThreadGrowthTool />
+            ) : tool.slug === 'customer-persona-intelligence-engine' ? (
+              <CustomerPersonaIntelligenceTool />
+            ) : tool.slug === 'landing-page-conversion-writer' ? (
+              <LandingPageConversionWriterTool />
+            ) : tool.slug === 'brand-voice-replication-engine' ? (
+              <BrandVoiceReplicationTool />
             ) : (
               <>
                 <div className="text-sm font-medium">Tool interface</div>
