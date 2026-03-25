@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { getToolBySlug } from '@/lib/toolsCatalog'
 import { ToolGatePlaceholder } from '@/components/ToolGatePlaceholder'
+import { ColdOutreachPersonalizationTool } from '@/components/tools/ColdOutreachPersonalizationTool'
 import { ViralShortCreatorTool } from '@/components/tools/ViralShortCreatorTool'
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
@@ -39,6 +40,8 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
           <div className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
             {tool.slug === 'viral-short-creator-engine' ? (
               <ViralShortCreatorTool />
+            ) : tool.slug === 'cold-outreach-personalization-engine' ? (
+              <ColdOutreachPersonalizationTool />
             ) : (
               <>
                 <div className="text-sm font-medium">Tool interface</div>
