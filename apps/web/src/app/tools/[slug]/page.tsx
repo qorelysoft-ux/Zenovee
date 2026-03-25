@@ -26,7 +26,9 @@ import { LeadMagnetCreatorTool } from '@/components/tools/LeadMagnetCreatorTool'
 import { LegalPolicyGeneratorTool } from '@/components/tools/LegalPolicyGeneratorTool'
 import { MultiPlatformImageResizerTool } from '@/components/tools/MultiPlatformImageResizerTool'
 import { PdfToMarkdownConverterTool } from '@/components/tools/PdfToMarkdownConverterTool'
+import { ProductPhotoEnhancerTool } from '@/components/tools/ProductPhotoEnhancerTool'
 import { SchemaMarkupGeneratorTool } from '@/components/tools/SchemaMarkupGeneratorTool'
+import { ScreenshotCleanerProTool } from '@/components/tools/ScreenshotCleanerProTool'
 import { BulkMetaOptimizerTool } from '@/components/tools/BulkMetaOptimizerTool'
 import { InternalLinkingEngineTool } from '@/components/tools/InternalLinkingEngineTool'
 import { SecurityVulnerabilityScannerTool } from '@/components/tools/SecurityVulnerabilityScannerTool'
@@ -90,6 +92,10 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <AiAltTextGeneratorTool />
             ) : tool.slug === 'brand-color-kit-generator' ? (
               <BrandColorKitGeneratorTool />
+            ) : tool.slug === 'product-photo-enhancer' ? (
+              <ProductPhotoEnhancerTool />
+            ) : tool.slug === 'screenshot-cleaner-pro' ? (
+              <ScreenshotCleanerProTool />
             ) : tool.slug === 'pdf-to-markdown-converter' ? (
               <PdfToMarkdownConverterTool />
             ) : tool.slug === 'legal-policy-generator' ? (
@@ -102,6 +108,10 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <BulkMetaOptimizerTool />
             ) : tool.slug === 'internal-linking-engine' ? (
               <InternalLinkingEngineTool />
+            ) : tool.slug === 'website-error-scanner' ? (
+              <div className="rounded-lg bg-zinc-50 p-4 text-sm dark:bg-zinc-900">Use the Website Error Scanner API route with a UI card next.</div>
+            ) : tool.slug === 'core-web-vitals-auditor' ? (
+              <div className="rounded-lg bg-zinc-50 p-4 text-sm dark:bg-zinc-900">Use the Core Web Vitals Auditor API route with pasted metrics next.</div>
             ) : tool.slug === 'global-time-sync-tool' ? (
               <GlobalTimeSyncTool />
             ) : tool.slug === 'giveaway-winner-selector' ? (
