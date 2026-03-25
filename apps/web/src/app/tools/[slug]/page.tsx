@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { getToolBySlug } from '@/lib/toolsCatalog'
 import { ToolGatePlaceholder } from '@/components/ToolGatePlaceholder'
+import { ViralShortCreatorTool } from '@/components/tools/ViralShortCreatorTool'
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const tool = getToolBySlug(params.slug)
@@ -36,10 +37,16 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
           }}
         >
           <div className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
-            <div className="text-sm font-medium">Tool interface</div>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-              This is a placeholder page. The actual tool UI/logic will be implemented next.
-            </p>
+            {tool.slug === 'viral-short-creator-engine' ? (
+              <ViralShortCreatorTool />
+            ) : (
+              <>
+                <div className="text-sm font-medium">Tool interface</div>
+                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                  This premium tool page is wired into the paid-access system. Its full tool-specific workflow will be implemented next.
+                </p>
+              </>
+            )}
           </div>
         </ToolGatePlaceholder>
       </div>

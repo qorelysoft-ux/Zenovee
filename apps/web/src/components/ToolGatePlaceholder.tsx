@@ -54,12 +54,11 @@ export function ToolGatePlaceholder({
 
   if (!canUse) {
     const label: Record<ToolCategory, string> = {
-      AI: 'AI Productivity Tools',
-      DEVELOPER: 'Developer Tools',
-      IMAGE: 'Image Tools',
-      SEO: 'SEO Tools',
-      TEXT: 'Text Tools',
-      UTILITY: 'Utility Tools',
+      MARKETING: 'AI Marketing Engine',
+      DEV_ASSISTANT: 'AI Developer Assistant',
+      ECOM_IMAGE: 'E-commerce Image Engine',
+      SEO_GROWTH: 'SEO Growth Engine',
+      BUSINESS_AUTOMATION: 'Business Automation Toolkit',
     }
     return <ToolLocked category={label[requiredCategory]} />
   }

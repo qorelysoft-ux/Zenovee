@@ -33,14 +33,14 @@ export async function POST(req: Request) {
       create: {
         slug: body.toolSlug,
         name: fromCatalog?.name ?? body.toolSlug,
-        category: fromCatalog?.category ?? 'DEVELOPER',
+        category: (fromCatalog?.category ?? 'MARKETING') as any,
         description: fromCatalog?.description ?? null,
       },
       update: {
         ...(fromCatalog
           ? {
               name: fromCatalog.name,
-              category: fromCatalog.category,
+              category: fromCatalog.category as any,
               description: fromCatalog.description,
             }
           : {}),

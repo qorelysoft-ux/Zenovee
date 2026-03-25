@@ -33,7 +33,7 @@ export async function GET(req: Request) {
     const toolById = new Map(tools.map((t) => [t.id, t]))
 
     const rows = topTools.map((r) => ({
-      tool: toolById.get(r.toolId) ?? { id: r.toolId, slug: 'unknown', name: 'Unknown', category: 'DEVELOPER' },
+      tool: toolById.get(r.toolId) ?? { id: r.toolId, slug: 'unknown', name: 'Unknown', category: 'MARKETING' },
       runCount: r._count.toolId,
     }))
 

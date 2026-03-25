@@ -1,12 +1,11 @@
 import Link from 'next/link'
 
 const plans = [
-  { key: 'AI', name: 'AI Productivity Tools', price: 99, desc: '10 AI writing + productivity tools' },
-  { key: 'DEVELOPER', name: 'Developer Tools', price: 59, desc: 'Formatters, converters, encoders' },
-  { key: 'IMAGE', name: 'Image Tools', price: 49, desc: 'Compress, resize, convert, OCR' },
-  { key: 'SEO', name: 'SEO Tools', price: 29, desc: 'Meta tags, sitemap, analyzers' },
-  { key: 'TEXT', name: 'Text Tools', price: 18, desc: 'Counters, converters, speech tools' },
-  { key: 'UTILITY', name: 'Utility Tools', price: 9, desc: 'UUID, QR, password, converters' },
+  { key: 'MARKETING', slug: 'marketing', name: 'AI Marketing Engine', price: 97, desc: 'Replace a marketing team with AI-powered growth workflows' },
+  { key: 'DEV_ASSISTANT', slug: 'dev-assistant', name: 'AI Developer Assistant', price: 47, desc: 'Save hours on debugging, docs, SQL, regex, and developer workflows' },
+  { key: 'ECOM_IMAGE', slug: 'ecom-image', name: 'E-commerce Image Engine', price: 37, desc: 'Create conversion-ready product image assets and image workflows' },
+  { key: 'SEO_GROWTH', slug: 'seo-growth', name: 'SEO Growth Engine', price: 27, desc: 'Scale SEO research, optimization, audits, and ranking workflows' },
+  { key: 'BUSINESS_AUTOMATION', slug: 'business-automation', name: 'Business Automation Toolkit', price: 17, desc: 'Automate repetitive back-office and operations tasks' },
 ] as const
 
 export default function PricingPage() {
@@ -40,7 +39,7 @@ export default function PricingPage() {
                 Subscribe
               </Link>
               <Link
-                href={`/tools/${p.key.toLowerCase()}`}
+                href={`/tools/${p.slug}`}
                 className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
               >
                 View tools

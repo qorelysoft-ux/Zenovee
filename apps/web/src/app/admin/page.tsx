@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 import { apiFetch } from '@/lib/api'
 
-type Category = 'AI' | 'DEVELOPER' | 'IMAGE' | 'SEO' | 'TEXT' | 'UTILITY'
+type Category = 'MARKETING' | 'DEV_ASSISTANT' | 'ECOM_IMAGE' | 'SEO_GROWTH' | 'BUSINESS_AUTOMATION'
 
 type AdminUserRow = {
   id: string
@@ -36,7 +36,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [meEmail, setMeEmail] = useState<string | null>(null)
   const [targetEmail, setTargetEmail] = useState('')
-  const [category, setCategory] = useState<Category>('DEVELOPER')
+  const [category, setCategory] = useState<Category>('DEV_ASSISTANT')
   const [status, setStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -51,9 +51,17 @@ export default function AdminPage() {
   const [toolRunsLoading, setToolRunsLoading] = useState(false)
 
   const categories = useMemo(
-    () => ['AI', 'DEVELOPER', 'IMAGE', 'SEO', 'TEXT', 'UTILITY'] as Category[],
+    () => ['MARKETING', 'DEV_ASSISTANT', 'ECOM_IMAGE', 'SEO_GROWTH', 'BUSINESS_AUTOMATION'] as Category[],
     [],
   )
+
+  const categoryLabels: Record<Category, string> = {
+    MARKETING: 'AI Marketing Engine',
+    DEV_ASSISTANT: 'AI Developer Assistant',
+    ECOM_IMAGE: 'E-commerce Image Engine',
+    SEO_GROWTH: 'SEO Growth Engine',
+    BUSINESS_AUTOMATION: 'Business Automation Toolkit',
+  }
 
   useEffect(() => {
     let mounted = true
@@ -132,7 +140,7 @@ export default function AdminPage() {
         method: 'POST',
         body: JSON.stringify({ email: targetEmail.trim(), category }),
       })
-      if (resp.ok) setStatus(`Granted ${category} to ${targetEmail}`)
+      if (resp.ok) setStatus(`Granted ${categoryLabels[category]} to ${targetEmail}`)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'failed')
     }
@@ -146,7 +154,7 @@ export default function AdminPage() {
         method: 'POST',
         body: JSON.stringify({ email: targetEmail.trim(), category }),
       })
-      if (resp.ok) setStatus(`Revoked ${category} from ${targetEmail}`)
+      if (resp.ok) setStatus(`Revoked ${categoryLabels[category]} from ${targetEmail}`)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'failed')
     }
@@ -192,7 +200,7 @@ export default function AdminPage() {
             >
               {categories.map((c) => (
                 <option key={c} value={c}>
-                  {c}
+                  {categoryLabels[c]}
                 </option>
               ))}
             </select>

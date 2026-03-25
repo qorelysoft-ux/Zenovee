@@ -7,7 +7,7 @@ import { rateLimitOrThrow } from '../../../_lib/rateLimit'
 
 const bodySchema = z.object({
   email: z.string().email(),
-  category: z.enum(['AI', 'DEVELOPER', 'IMAGE', 'SEO', 'TEXT', 'UTILITY']),
+  category: z.enum(['MARKETING', 'DEV_ASSISTANT', 'ECOM_IMAGE', 'SEO_GROWTH', 'BUSINESS_AUTOMATION']),
 })
 
 export async function POST(req: Request) {
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const user = await prisma.user.findUnique({ where: { email: body.email }, select: { id: true } })
     if (!user) return NextResponse.json({ ok: false, error: 'user_not_found' }, { status: 404 })
 
-    const entitlement = await prisma.categoryEntitlement.upsert({
+    const entitlement = await (prisma.categoryEntitlement as any).upsert({
       where: { userId_category: { userId: user.id, category: body.category } },
       create: {
         userId: user.id,
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     })
 
     // Best-effort audit log. If the table isn't migrated yet, we do not fail the request.
-    prisma.adminAuditLog
+    ;(prisma.adminAuditLog as any)
       .create({
         data: {
           actorUserId: requester.id,

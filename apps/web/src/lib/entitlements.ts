@@ -1,6 +1,11 @@
 import { apiFetch } from './api'
 
-export type ToolCategory = 'AI' | 'DEVELOPER' | 'IMAGE' | 'SEO' | 'TEXT' | 'UTILITY'
+export type ToolCategory =
+  | 'MARKETING'
+  | 'DEV_ASSISTANT'
+  | 'ECOM_IMAGE'
+  | 'SEO_GROWTH'
+  | 'BUSINESS_AUTOMATION'
 
 export type Entitlement = {
   id: string

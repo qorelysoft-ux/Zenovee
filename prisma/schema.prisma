@@ -172,12 +172,11 @@ enum UserRole {
 }
 
 enum ToolCategory {
-  AI
-  DEVELOPER
-  IMAGE
-  SEO
-  TEXT
-  UTILITY
+  MARKETING
+  DEV_ASSISTANT
+  ECOM_IMAGE
+  SEO_GROWTH
+  BUSINESS_AUTOMATION
 }
 
 enum SubscriptionStatus {
