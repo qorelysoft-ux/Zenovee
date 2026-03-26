@@ -1,0 +1,37 @@
+"use client"
+
+import { useState } from 'react'
+
+import { apiFetch } from '@/lib/api'
+
+export function WebsiteErrorScannerTool() {
+  const [url, setUrl] = useState('https://example.com')
+  const [result, setResult] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function scan() {
+    setLoading(true)
+    setError(null)
+    try {
+      const resp = await apiFetch<{ ok: true; result: unknown }>('/tools/website-error-scanner', {
+        method: 'POST',
+        body: JSON.stringify({ url }),
+      })
+      setResult(JSON.stringify(resp.result, null, 2))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'scan_failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <input value={url} onChange={(e) => setUrl(e.target.value)} className="w-full rounded-lg border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700" placeholder="https://example.com" />
+      <button onClick={scan} disabled={loading} className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-zinc-900">{loading ? 'Scanning…' : 'Scan website'}</button>
+      {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}
+      <pre className="overflow-x-auto whitespace-pre-wrap rounded-lg bg-zinc-50 p-4 text-sm dark:bg-zinc-900">{result || 'Website scan results will appear here.'}</pre>
+    </div>
+  )
+}

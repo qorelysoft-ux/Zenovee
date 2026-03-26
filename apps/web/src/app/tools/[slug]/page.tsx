@@ -13,8 +13,10 @@ import { BrandColorKitGeneratorTool } from '@/components/tools/BrandColorKitGene
 import { BulkWatermarkProtectionTool } from '@/components/tools/BulkWatermarkProtectionTool'
 import { CodeDocumentationGeneratorTool } from '@/components/tools/CodeDocumentationGeneratorTool'
 import { CronScheduleTranslatorTool } from '@/components/tools/CronScheduleTranslatorTool'
+import { CoreWebVitalsAuditorTool } from '@/components/tools/CoreWebVitalsAuditorTool'
 import { CustomerPersonaIntelligenceTool } from '@/components/tools/CustomerPersonaIntelligenceTool'
 import { DatabaseVisualMapperTool } from '@/components/tools/DatabaseVisualMapperTool'
+import { DynamicQrCodeSystemTool } from '@/components/tools/DynamicQrCodeSystemTool'
 import { EcommerceConversionBoosterTool } from '@/components/tools/EcommerceConversionBoosterTool'
 import { EnvironmentConfigGeneratorTool } from '@/components/tools/EnvironmentConfigGeneratorTool'
 import { GitErrorFixAssistantTool } from '@/components/tools/GitErrorFixAssistantTool'
@@ -39,6 +41,7 @@ import { SmartUnitCurrencyConverterTool } from '@/components/tools/SmartUnitCurr
 import { SocialThreadGrowthTool } from '@/components/tools/SocialThreadGrowthTool'
 import { SvgConversionEngineTool } from '@/components/tools/SvgConversionEngineTool'
 import { ViralShortCreatorTool } from '@/components/tools/ViralShortCreatorTool'
+import { WebsiteErrorScannerTool } from '@/components/tools/WebsiteErrorScannerTool'
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const tool = getToolBySlug(params.slug)
@@ -109,9 +112,11 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
             ) : tool.slug === 'internal-linking-engine' ? (
               <InternalLinkingEngineTool />
             ) : tool.slug === 'website-error-scanner' ? (
-              <div className="rounded-lg bg-zinc-50 p-4 text-sm dark:bg-zinc-900">Use the Website Error Scanner API route with a UI card next.</div>
+              <WebsiteErrorScannerTool />
             ) : tool.slug === 'core-web-vitals-auditor' ? (
-              <div className="rounded-lg bg-zinc-50 p-4 text-sm dark:bg-zinc-900">Use the Core Web Vitals Auditor API route with pasted metrics next.</div>
+              <CoreWebVitalsAuditorTool />
+            ) : tool.slug === 'dynamic-qr-code-system' ? (
+              <DynamicQrCodeSystemTool />
             ) : tool.slug === 'global-time-sync-tool' ? (
               <GlobalTimeSyncTool />
             ) : tool.slug === 'giveaway-winner-selector' ? (
