@@ -28,12 +28,15 @@ import { KeywordClusterEngineTool } from '@/components/tools/KeywordClusterEngin
 import { LandingPageConversionWriterTool } from '@/components/tools/LandingPageConversionWriterTool'
 import { LeadMagnetCreatorTool } from '@/components/tools/LeadMagnetCreatorTool'
 import { LegalPolicyGeneratorTool } from '@/components/tools/LegalPolicyGeneratorTool'
+import { MeetingNotesToEmailConverterTool } from '@/components/tools/MeetingNotesToEmailConverterTool'
 import { MultiPlatformImageResizerTool } from '@/components/tools/MultiPlatformImageResizerTool'
 import { PdfToMarkdownConverterTool } from '@/components/tools/PdfToMarkdownConverterTool'
 import { ProductPhotoEnhancerTool } from '@/components/tools/ProductPhotoEnhancerTool'
+import { ReceiptDataExtractorTool } from '@/components/tools/ReceiptDataExtractorTool'
 import { SchemaMarkupGeneratorTool } from '@/components/tools/SchemaMarkupGeneratorTool'
 import { SearchConsoleInsightsSimplifierTool } from '@/components/tools/SearchConsoleInsightsSimplifierTool'
 import { ScreenshotCleanerProTool } from '@/components/tools/ScreenshotCleanerProTool'
+import { EmployeeOnboardingBuilderTool } from '@/components/tools/EmployeeOnboardingBuilderTool'
 import { BulkMetaOptimizerTool } from '@/components/tools/BulkMetaOptimizerTool'
 import { SitemapHealthAnalyzerTool } from '@/components/tools/SitemapHealthAnalyzerTool'
 import { InternalLinkingEngineTool } from '@/components/tools/InternalLinkingEngineTool'
@@ -129,6 +132,12 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <SearchConsoleInsightsSimplifierTool />
             ) : tool.slug === 'dynamic-qr-code-system' ? (
               <DynamicQrCodeSystemTool />
+            ) : tool.slug === 'meeting-notes-to-email-converter' ? (
+              <MeetingNotesToEmailConverterTool />
+            ) : tool.slug === 'receipt-data-extractor' ? (
+              <ReceiptDataExtractorTool />
+            ) : tool.slug === 'employee-onboarding-builder' ? (
+              <EmployeeOnboardingBuilderTool />
             ) : tool.slug === 'global-time-sync-tool' ? (
               <GlobalTimeSyncTool />
             ) : tool.slug === 'giveaway-winner-selector' ? (
