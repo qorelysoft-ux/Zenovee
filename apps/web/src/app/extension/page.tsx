@@ -69,6 +69,18 @@ export default function ExtensionHelpPage() {
           </li>
         </ol>
 
+        <h2>Current extension features</h2>
+        <ul>
+          <li>Login with your Zenovee account</li>
+          <li>See whether you are logged in</li>
+          <li>Fetch and display your active entitlements</li>
+          <li>Use it as a quick-access companion to the website tools</li>
+        </ul>
+
+        <p>
+          More direct tool actions will be added after premium subscription and entitlement flows are fully finalized.
+        </p>
+
         <h2>Troubleshooting</h2>
         <h3>“Could not load manifest”</h3>
         <ul>

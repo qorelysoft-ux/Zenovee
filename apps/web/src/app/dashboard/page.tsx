@@ -13,10 +13,18 @@ type UserInfo = {
 
 type Entitlement = {
   id: string
-  category: 'AI' | 'DEVELOPER' | 'IMAGE' | 'SEO' | 'TEXT' | 'UTILITY'
+  category: 'MARKETING' | 'DEV_ASSISTANT' | 'ECOM_IMAGE' | 'SEO_GROWTH' | 'BUSINESS_AUTOMATION'
   status: string
   currentPeriodStart: string | null
   currentPeriodEnd: string | null
+}
+
+const categoryLabels: Record<Entitlement['category'], string> = {
+  MARKETING: 'AI Marketing Engine',
+  DEV_ASSISTANT: 'AI Developer Assistant',
+  ECOM_IMAGE: 'E-commerce Image Engine',
+  SEO_GROWTH: 'SEO Growth Engine',
+  BUSINESS_AUTOMATION: 'Business Automation Toolkit',
 }
 
 export default function DashboardPage() {
@@ -26,6 +34,9 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const activeEntitlements = entitlements.filter((e) => e.status === 'ACTIVE')
+  const upcomingRenewals = activeEntitlements
+    .filter((e) => e.currentPeriodEnd)
+    .sort((a, b) => new Date(a.currentPeriodEnd!).getTime() - new Date(b.currentPeriodEnd!).getTime())
 
   useEffect(() => {
     let mounted = true
@@ -84,6 +95,26 @@ export default function DashboardPage() {
       </div>
 
       <div className="mt-10 grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+            <div className="text-sm text-zinc-500">Active plans</div>
+            <div className="mt-2 text-3xl font-semibold">{activeEntitlements.length}</div>
+            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Categories currently unlocked for your account.</p>
+          </div>
+          <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+            <div className="text-sm text-zinc-500">Tool access mode</div>
+            <div className="mt-2 text-3xl font-semibold">Paid-only</div>
+            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Every tool category requires an active paid entitlement.</p>
+          </div>
+          <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+            <div className="text-sm text-zinc-500">Next renewal</div>
+            <div className="mt-2 text-lg font-semibold">
+              {upcomingRenewals[0]?.currentPeriodEnd ? new Date(upcomingRenewals[0].currentPeriodEnd).toLocaleDateString() : 'Not available'}
+            </div>
+            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Renewal history will appear here once billing is enabled.</p>
+          </div>
+        </div>
+
         <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
           <h2 className="text-lg font-medium">Profile</h2>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Basic account details.</p>
@@ -117,11 +148,38 @@ export default function DashboardPage() {
                   key={e.id}
                   className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-200"
                 >
-                  {e.category}
+                  {categoryLabels[e.category]}
                 </span>
               ))
             )}
           </div>
+
+          {activeEntitlements.length > 0 ? (
+            <div className="mt-6 overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="text-zinc-500">
+                    <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Category</th>
+                    <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Status</th>
+                    <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Current period</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activeEntitlements.map((e) => (
+                    <tr key={e.id}>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{categoryLabels[e.category]}</td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{e.status}</td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">
+                        {e.currentPeriodStart ? new Date(e.currentPeriodStart).toLocaleDateString() : '—'}
+                        {' → '}
+                        {e.currentPeriodEnd ? new Date(e.currentPeriodEnd).toLocaleDateString() : '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : null}
 
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
@@ -146,6 +204,23 @@ export default function DashboardPage() {
           </p>
           <div className="mt-4 rounded-md border border-dashed border-zinc-300 p-4 text-sm text-zinc-500 dark:border-zinc-700">
             No API keys yet.
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+          <h2 className="text-lg font-medium">Recommended next actions</h2>
+          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-300">
+            <li>Browse tools in categories you already have access to.</li>
+            <li>Upgrade your category access from the pricing page to unlock more tools.</li>
+            <li>Install the Chrome extension for faster access from your browser.</li>
+          </ul>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/extension" className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700">
+              Install extension
+            </Link>
+            <Link href="/admin" className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700">
+              Admin panel
+            </Link>
           </div>
         </div>
 

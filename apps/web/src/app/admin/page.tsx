@@ -63,6 +63,13 @@ export default function AdminPage() {
     BUSINESS_AUTOMATION: 'Business Automation Toolkit',
   }
 
+  const totalUsers = users.length
+  const totalActiveEntitlements = users.reduce(
+    (acc, u) => acc + u.entitlements.filter((e) => e.status === 'ACTIVE').length,
+    0,
+  )
+  const totalToolRuns = toolRuns.reduce((acc, row) => acc + row.runCount, 0)
+
   useEffect(() => {
     let mounted = true
     ;(async () => {
@@ -174,6 +181,21 @@ export default function AdminPage() {
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
         Signed in as <span className="font-medium">{meEmail ?? 'unknown'}</span>
       </p>
+
+      <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+          <div className="text-sm text-zinc-500">Visible users</div>
+          <div className="mt-2 text-3xl font-semibold">{totalUsers}</div>
+        </div>
+        <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+          <div className="text-sm text-zinc-500">Active entitlements</div>
+          <div className="mt-2 text-3xl font-semibold">{totalActiveEntitlements}</div>
+        </div>
+        <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+          <div className="text-sm text-zinc-500">Recorded tool runs</div>
+          <div className="mt-2 text-3xl font-semibold">{totalToolRuns}</div>
+        </div>
+      </div>
 
       <div className="mt-8 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
         <h2 className="text-lg font-medium">Grant / Revoke category access</h2>
