@@ -46,9 +46,13 @@ import { SqlPerformanceOptimizerTool } from '@/components/tools/SqlPerformanceOp
 import { SmartRegexBuilderTool } from '@/components/tools/SmartRegexBuilderTool'
 import { SmartUnitCurrencyConverterTool } from '@/components/tools/SmartUnitCurrencyConverterTool'
 import { SocialThreadGrowthTool } from '@/components/tools/SocialThreadGrowthTool'
+import { SecureVaultManagerTool } from '@/components/tools/SecureVaultManagerTool'
 import { SvgConversionEngineTool } from '@/components/tools/SvgConversionEngineTool'
 import { ViralShortCreatorTool } from '@/components/tools/ViralShortCreatorTool'
 import { WebsiteErrorScannerTool } from '@/components/tools/WebsiteErrorScannerTool'
+import { BulkBackgroundRemovalEngineTool } from '@/components/tools/BulkBackgroundRemovalEngineTool'
+import { AiImageUpscalerProTool } from '@/components/tools/AiImageUpscalerProTool'
+import { ProductMockupGeneratorTool } from '@/components/tools/ProductMockupGeneratorTool'
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const tool = getToolBySlug(params.slug)
@@ -92,8 +96,14 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <AdCopyConversionTool />
             ) : tool.slug === 'ecommerce-conversion-booster' ? (
               <EcommerceConversionBoosterTool />
+            ) : tool.slug === 'bulk-background-removal-engine' ? (
+              <BulkBackgroundRemovalEngineTool />
+            ) : tool.slug === 'ai-image-upscaler-pro' ? (
+              <AiImageUpscalerProTool />
             ) : tool.slug === 'multi-platform-image-resizer' ? (
               <MultiPlatformImageResizerTool />
+            ) : tool.slug === 'product-mockup-generator' ? (
+              <ProductMockupGeneratorTool />
             ) : tool.slug === 'bulk-watermark-protection-tool' ? (
               <BulkWatermarkProtectionTool />
             ) : tool.slug === 'svg-conversion-engine' ? (
@@ -138,6 +148,8 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <ReceiptDataExtractorTool />
             ) : tool.slug === 'employee-onboarding-builder' ? (
               <EmployeeOnboardingBuilderTool />
+            ) : tool.slug === 'secure-vault-manager' ? (
+              <SecureVaultManagerTool />
             ) : tool.slug === 'global-time-sync-tool' ? (
               <GlobalTimeSyncTool />
             ) : tool.slug === 'giveaway-winner-selector' ? (
