@@ -11,7 +11,9 @@ import { ApiSchemaConverterTool } from '@/components/tools/ApiSchemaConverterToo
 import { BrandVoiceReplicationTool } from '@/components/tools/BrandVoiceReplicationTool'
 import { BrandColorKitGeneratorTool } from '@/components/tools/BrandColorKitGeneratorTool'
 import { BulkWatermarkProtectionTool } from '@/components/tools/BulkWatermarkProtectionTool'
+import { BacklinkQualityCheckerTool } from '@/components/tools/BacklinkQualityCheckerTool'
 import { CodeDocumentationGeneratorTool } from '@/components/tools/CodeDocumentationGeneratorTool'
+import { CompetitorGapAnalyzerTool } from '@/components/tools/CompetitorGapAnalyzerTool'
 import { CronScheduleTranslatorTool } from '@/components/tools/CronScheduleTranslatorTool'
 import { CoreWebVitalsAuditorTool } from '@/components/tools/CoreWebVitalsAuditorTool'
 import { CustomerPersonaIntelligenceTool } from '@/components/tools/CustomerPersonaIntelligenceTool'
@@ -30,8 +32,10 @@ import { MultiPlatformImageResizerTool } from '@/components/tools/MultiPlatformI
 import { PdfToMarkdownConverterTool } from '@/components/tools/PdfToMarkdownConverterTool'
 import { ProductPhotoEnhancerTool } from '@/components/tools/ProductPhotoEnhancerTool'
 import { SchemaMarkupGeneratorTool } from '@/components/tools/SchemaMarkupGeneratorTool'
+import { SearchConsoleInsightsSimplifierTool } from '@/components/tools/SearchConsoleInsightsSimplifierTool'
 import { ScreenshotCleanerProTool } from '@/components/tools/ScreenshotCleanerProTool'
 import { BulkMetaOptimizerTool } from '@/components/tools/BulkMetaOptimizerTool'
+import { SitemapHealthAnalyzerTool } from '@/components/tools/SitemapHealthAnalyzerTool'
 import { InternalLinkingEngineTool } from '@/components/tools/InternalLinkingEngineTool'
 import { SecurityVulnerabilityScannerTool } from '@/components/tools/SecurityVulnerabilityScannerTool'
 import { SeoAuthorityBuilderTool } from '@/components/tools/SeoAuthorityBuilderTool'
@@ -113,8 +117,16 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <InternalLinkingEngineTool />
             ) : tool.slug === 'website-error-scanner' ? (
               <WebsiteErrorScannerTool />
+            ) : tool.slug === 'competitor-gap-analyzer' ? (
+              <CompetitorGapAnalyzerTool />
             ) : tool.slug === 'core-web-vitals-auditor' ? (
               <CoreWebVitalsAuditorTool />
+            ) : tool.slug === 'sitemap-health-analyzer' ? (
+              <SitemapHealthAnalyzerTool />
+            ) : tool.slug === 'backlink-quality-checker' ? (
+              <BacklinkQualityCheckerTool />
+            ) : tool.slug === 'search-console-insights-simplifier' ? (
+              <SearchConsoleInsightsSimplifierTool />
             ) : tool.slug === 'dynamic-qr-code-system' ? (
               <DynamicQrCodeSystemTool />
             ) : tool.slug === 'global-time-sync-tool' ? (
