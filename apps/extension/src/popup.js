@@ -12,9 +12,36 @@ const emailEl = document.getElementById('email')
 const passEl = document.getElementById('password')
 const loginBtn = document.getElementById('login')
 const logoutBtn = document.getElementById('logout')
+const quickToolsEl = document.getElementById('quickTools')
+const openSelectionToolBtn = document.getElementById('openSelectionTool')
+const openDashboardBtn = document.getElementById('openDashboard')
+
+const categoryToUrls = {
+  MARKETING: ['viral-short-creator-engine'],
+  DEV_ASSISTANT: ['code-documentation-generator'],
+  ECOM_IMAGE: ['multi-platform-image-resizer'],
+  SEO_GROWTH: ['keyword-cluster-engine'],
+  BUSINESS_AUTOMATION: ['meeting-notes-to-email-converter', 'dynamic-qr-code-system'],
+}
 
 function setStatus(text) {
   statusEl.textContent = text
+}
+
+function setQuickToolAccess(entitlements = []) {
+  const activeCategories = new Set(entitlements.filter((e) => e.status === 'ACTIVE').map((e) => e.category))
+  const buttons = [...document.querySelectorAll('.tool-btn')]
+  buttons.forEach((btn) => {
+    const url = btn.dataset.url || ''
+    const slug = url.split('/tools/')[1] || ''
+    const allowed = Object.entries(categoryToUrls).some(([category, slugs]) => activeCategories.has(category) && slugs.includes(slug))
+    btn.classList.toggle('locked', !allowed)
+    btn.title = allowed ? 'Open tool' : 'Locked: requires matching category access'
+  })
+}
+
+function openUrl(url) {
+  chrome.tabs.create({ url })
 }
 
 async function fetchEntitlements(accessToken) {
@@ -42,10 +69,31 @@ async function refresh() {
   try {
     const ents = await fetchEntitlements(session.access_token)
     entsEl.textContent = ents.length ? ents.map((e) => e.category).join(', ') : 'No entitlements'
+    setQuickToolAccess(ents)
   } catch (e) {
     entsEl.textContent = 'Failed to load entitlements'
+    setQuickToolAccess([])
   }
 }
+
+quickToolsEl?.addEventListener('click', (e) => {
+  const btn = e.target.closest('.tool-btn')
+  if (!btn) return
+  openUrl(btn.dataset.url)
+})
+
+openSelectionToolBtn?.addEventListener('click', async () => {
+  const [{ selectionText = '' } = {}] = await chrome.scripting.executeScript({
+    target: { tabId: (await chrome.tabs.query({ active: true, currentWindow: true }))[0].id },
+    func: () => ({ selectionText: window.getSelection()?.toString() || '' }),
+  }).catch(() => [{}])
+
+  const base = 'https://www.zenovee.in/tools'
+  const url = selectionText ? `${base}?q=${encodeURIComponent(selectionText.slice(0, 200))}` : base
+  openUrl(url)
+})
+
+openDashboardBtn?.addEventListener('click', () => openUrl('https://www.zenovee.in/dashboard'))
 
 loginBtn.addEventListener('click', async () => {
   try {
