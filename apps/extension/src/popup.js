@@ -14,7 +14,11 @@ const loginBtn = document.getElementById('login')
 const logoutBtn = document.getElementById('logout')
 const quickToolsEl = document.getElementById('quickTools')
 const openSelectionToolBtn = document.getElementById('openSelectionTool')
+const searchSelectionToolBtn = document.getElementById('searchSelectionTool')
 const openDashboardBtn = document.getElementById('openDashboard')
+const toolSearchEl = document.getElementById('toolSearch')
+const openSearchResultsBtn = document.getElementById('openSearchResults')
+const openMarketingToolBtn = document.getElementById('openMarketingTool')
 
 const categoryToUrls = {
   MARKETING: ['viral-short-creator-engine'],
@@ -42,6 +46,15 @@ function setQuickToolAccess(entitlements = []) {
 
 function openUrl(url) {
   chrome.tabs.create({ url })
+}
+
+function buildToolsSearchUrl(query, extra = '') {
+  const q = (query || '').trim().slice(0, 200)
+  const params = new URLSearchParams()
+  if (q) params.set('q', q)
+  if (extra) params.set('hint', extra)
+  const next = params.toString()
+  return next ? `https://www.zenovee.in/tools?${next}` : 'https://www.zenovee.in/tools'
 }
 
 async function fetchEntitlements(accessToken) {
@@ -91,6 +104,27 @@ openSelectionToolBtn?.addEventListener('click', async () => {
   const base = 'https://www.zenovee.in/tools'
   const url = selectionText ? `${base}?q=${encodeURIComponent(selectionText.slice(0, 200))}` : base
   openUrl(url)
+})
+
+searchSelectionToolBtn?.addEventListener('click', async () => {
+  const [{ selectionText = '' } = {}] = await chrome.scripting
+    .executeScript({
+      target: { tabId: (await chrome.tabs.query({ active: true, currentWindow: true }))[0].id },
+      func: () => ({ selectionText: window.getSelection()?.toString() || '' }),
+    })
+    .catch(() => [{}])
+
+  openUrl(buildToolsSearchUrl(selectionText, 'selection'))
+})
+
+openSearchResultsBtn?.addEventListener('click', () => {
+  openUrl(buildToolsSearchUrl(toolSearchEl?.value || '', 'popup'))
+})
+
+openMarketingToolBtn?.addEventListener('click', () => {
+  const q = toolSearchEl?.value || ''
+  const next = q ? `https://www.zenovee.in/tools/marketing?q=${encodeURIComponent(q.slice(0, 200))}` : 'https://www.zenovee.in/tools/marketing'
+  openUrl(next)
 })
 
 openDashboardBtn?.addEventListener('click', () => openUrl('https://www.zenovee.in/dashboard'))
