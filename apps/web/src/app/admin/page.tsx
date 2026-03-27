@@ -1,10 +1,12 @@
 "use client"
 
+import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { supabase } from '@/lib/supabaseClient'
 import { apiFetch } from '@/lib/api'
+import { categoryPages, toolsCatalog } from '@/lib/toolsCatalog'
 
 type Category = 'MARKETING' | 'DEV_ASSISTANT' | 'ECOM_IMAGE' | 'SEO_GROWTH' | 'BUSINESS_AUTOMATION'
 
@@ -69,6 +71,10 @@ export default function AdminPage() {
     0,
   )
   const totalToolRuns = toolRuns.reduce((acc, row) => acc + row.runCount, 0)
+  const toolCoverage = categoryPages.map((page) => ({
+    ...page,
+    count: toolsCatalog.filter((tool) => tool.category === page.category).length,
+  }))
 
   useEffect(() => {
     let mounted = true
@@ -194,6 +200,37 @@ export default function AdminPage() {
         <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
           <div className="text-sm text-zinc-500">Recorded tool runs</div>
           <div className="mt-2 text-3xl font-semibold">{totalToolRuns}</div>
+        </div>
+      </div>
+
+      <div className="mt-8 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-medium">Tool catalog coverage</h2>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Snapshot of currently registered premium tool pages by category.
+            </p>
+          </div>
+          <Link
+            href="/tools"
+            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
+          >
+            Open tools directory
+          </Link>
+        </div>
+
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {toolCoverage.map((item) => (
+            <div key={item.slug} className="rounded-lg border border-zinc-100 p-4 dark:border-zinc-900">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="font-medium">{item.name}</div>
+                  <div className="mt-1 text-xs text-zinc-500">/tools/{item.slug}</div>
+                </div>
+                <div className="text-2xl font-semibold">{item.count}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -449,6 +486,16 @@ export default function AdminPage() {
             </table>
           </div>
         )}
+      </div>
+
+      <div className="mt-8 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+        <h2 className="text-lg font-medium">Operational notes</h2>
+        <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-300">
+          <li>Entitlement grant/revoke is currently the temporary premium access control flow.</li>
+          <li>Tool runs are tracked when entitled users unlock premium tool pages.</li>
+          <li>Payment history and automated subscription lifecycle remain pending until billing is enabled.</li>
+          <li>Chrome extension quick access is available from the Extension page and packaged ZIP download.</li>
+        </ul>
       </div>
     </div>
   )
