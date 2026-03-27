@@ -16,6 +16,10 @@ export default function PricingPage() {
         No free tier. You must subscribe to a category to use the tools inside it.
       </p>
 
+      <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-100">
+        Billing automation is the main remaining platform milestone. Until then, premium access can be managed manually through admin entitlements.
+      </div>
+
       <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
         {plans.map((p) => (
           <div

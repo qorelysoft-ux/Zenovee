@@ -1,36 +1,16 @@
 export default function Home() {
   return (
     <div className="min-h-screen bg-white text-zinc-950 dark:bg-black dark:text-zinc-50">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-6">
-        <a href="/" className="text-lg font-semibold tracking-tight">
-          Zenovee
-        </a>
-        <nav className="flex items-center gap-4 text-sm">
-          <a className="hover:underline" href="/tools">
-            Tools
-          </a>
-          <a className="hover:underline" href="/pricing">
-            Pricing
-          </a>
-          <a
-            className="rounded-md bg-black px-3 py-2 text-white dark:bg-white dark:text-black"
-            href="/login"
-          >
-            Login
-          </a>
-        </nav>
-      </header>
-
       <main className="mx-auto max-w-6xl px-4 pb-20 pt-10">
         <section className="grid gap-8 md:grid-cols-2 md:items-center">
           <div>
             <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-              Paid-only halal productivity toolkit — 50 tools, built for real work.
+              Paid-only halal productivity toolkit for real business, developer, image, SEO, and automation workflows.
             </h1>
             <p className="mt-4 text-base leading-7 text-zinc-600 dark:text-zinc-300">
-              Zenovee is a subscription platform with practical tools across AI,
-              Developer, Image, SEO, Text and Utilities. No free tier: access is
-              unlocked by category subscriptions.
+              Zenovee is a premium subscription platform built around category-based access.
+              The current product includes AI Marketing, Developer Assistant, E-commerce Image,
+              SEO Growth, and Business Automation tool suites. No free tier.
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -46,6 +26,12 @@ export default function Home() {
               >
                 Browse tools
               </a>
+              <a
+                href="/documentation"
+                className="rounded-md border border-zinc-300 px-5 py-3 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
+              >
+                Documentation
+              </a>
             </div>
 
             <p className="mt-4 text-xs text-zinc-500">
@@ -58,28 +44,24 @@ export default function Home() {
             <div className="text-sm font-medium">Category plans</div>
             <ul className="mt-4 space-y-3 text-sm text-zinc-700 dark:text-zinc-200">
               <li className="flex items-center justify-between">
-                <span>AI Productivity Tools</span>
-                <span className="font-semibold">$99/mo</span>
+                <span>AI Marketing Engine</span>
+                <span className="font-semibold">$97/mo</span>
               </li>
               <li className="flex items-center justify-between">
-                <span>Developer Tools</span>
-                <span className="font-semibold">$59/mo</span>
+                <span>AI Developer Assistant</span>
+                <span className="font-semibold">$47/mo</span>
               </li>
               <li className="flex items-center justify-between">
-                <span>Image Tools</span>
-                <span className="font-semibold">$49/mo</span>
+                <span>E-commerce Image Engine</span>
+                <span className="font-semibold">$37/mo</span>
               </li>
               <li className="flex items-center justify-between">
-                <span>SEO Tools</span>
-                <span className="font-semibold">$29/mo</span>
+                <span>SEO Growth Engine</span>
+                <span className="font-semibold">$27/mo</span>
               </li>
               <li className="flex items-center justify-between">
-                <span>Text Tools</span>
-                <span className="font-semibold">$18/mo</span>
-              </li>
-              <li className="flex items-center justify-between">
-                <span>Utility Tools</span>
-                <span className="font-semibold">$9/mo</span>
+                <span>Business Automation Toolkit</span>
+                <span className="font-semibold">$17/mo</span>
               </li>
             </ul>
 
@@ -94,12 +76,12 @@ export default function Home() {
           <h2 className="text-xl font-semibold">Popular tool categories</h2>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
-              { title: 'AI Productivity', href: '/tools/ai', desc: 'Resume, email, summaries, titles' },
-              { title: 'Developer', href: '/tools/developer', desc: 'JSON, JWT, regex, SQL, minify' },
-              { title: 'Image', href: '/tools/image', desc: 'Compress, resize, OCR, metadata' },
-              { title: 'SEO', href: '/tools/seo', desc: 'Meta tags, sitemap, analyzers' },
-              { title: 'Text', href: '/tools/text', desc: 'Count, case, slug, speech' },
-              { title: 'Utilities', href: '/tools/utilities', desc: 'UUID, QR, password, converters' },
+              { title: 'AI Marketing Engine', href: '/tools/marketing', desc: 'Outreach, copy, content, and conversion tools' },
+              { title: 'Developer Assistant', href: '/tools/dev-assistant', desc: 'Docs, SQL, regex, API, security, and debugging' },
+              { title: 'E-commerce Image Engine', href: '/tools/ecom-image', desc: 'Resizing, cleanup, mockups, and image workflows' },
+              { title: 'SEO Growth Engine', href: '/tools/seo-growth', desc: 'Keyword, metadata, audits, and SEO research tools' },
+              { title: 'Business Automation Toolkit', href: '/tools/business-automation', desc: 'Operations, extraction, summaries, and QR workflows' },
+              { title: 'Documentation', href: '/documentation', desc: 'Deployment, environment, extension, and platform docs' },
             ].map((c) => (
               <a
                 key={c.href}
