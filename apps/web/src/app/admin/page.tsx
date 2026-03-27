@@ -48,6 +48,15 @@ type PaymentAdminRow = {
   }
 }
 
+type AdminToolRow = {
+  slug: string
+  name: string
+  description: string | null
+  category: string
+  isActive: boolean
+  updatedAt: string | null
+}
+
 export default function AdminPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -69,6 +78,8 @@ export default function AdminPage() {
   const [toolQuery, setToolQuery] = useState('')
   const [payments, setPayments] = useState<PaymentAdminRow[]>([])
   const [paymentsLoading, setPaymentsLoading] = useState(false)
+  const [adminTools, setAdminTools] = useState<AdminToolRow[]>([])
+  const [adminToolsLoading, setAdminToolsLoading] = useState(false)
 
   const categories = useMemo(
     () => ['MARKETING', 'DEV_ASSISTANT', 'ECOM_IMAGE', 'SEO_GROWTH', 'BUSINESS_AUTOMATION'] as Category[],
@@ -123,6 +134,7 @@ export default function AdminPage() {
         await refreshLogs()
         await refreshToolRuns()
         await refreshPayments()
+        await refreshAdminTools()
       } finally {
         setLoading(false)
       }
@@ -184,6 +196,32 @@ export default function AdminPage() {
       setError(e instanceof Error ? e.message : 'failed_to_load_payments')
     } finally {
       setPaymentsLoading(false)
+    }
+  }
+
+  async function refreshAdminTools() {
+    setAdminToolsLoading(true)
+    setError(null)
+    try {
+      const resp = await apiFetch<{ ok: true; tools: AdminToolRow[] }>(`/admin/tools`)
+      setAdminTools(resp.tools)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'failed_to_load_admin_tools')
+    } finally {
+      setAdminToolsLoading(false)
+    }
+  }
+
+  async function toggleToolActive(tool: AdminToolRow) {
+    setError(null)
+    try {
+      const resp = await apiFetch<{ ok: true; tool: AdminToolRow }>(`/admin/tools`, {
+        method: 'PATCH',
+        body: JSON.stringify({ slug: tool.slug, isActive: !tool.isActive }),
+      })
+      setAdminTools((prev) => prev.map((row) => (row.slug === tool.slug ? resp.tool : row)))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'failed_to_toggle_tool')
     }
   }
 
@@ -342,6 +380,62 @@ export default function AdminPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div className="mt-8 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-medium">Tool management</h2>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Enable or disable published tool pages using persisted tool records.
+            </p>
+          </div>
+          <button
+            onClick={refreshAdminTools}
+            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
+          >
+            Refresh
+          </button>
+        </div>
+
+        {adminToolsLoading ? (
+          <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-300">Loading tools…</p>
+        ) : (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full border-separate border-spacing-0 text-left text-sm">
+              <thead>
+                <tr className="text-xs text-zinc-500">
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Tool</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Category</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Status</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {adminTools.map((tool) => (
+                  <tr key={tool.slug}>
+                    <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">
+                      <div className="font-medium">{tool.name}</div>
+                      <div className="mt-1 text-xs text-zinc-500">{tool.slug}</div>
+                    </td>
+                    <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{tool.category}</td>
+                    <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">
+                      {tool.isActive ? 'Active' : 'Disabled'}
+                    </td>
+                    <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">
+                      <button
+                        onClick={() => toggleToolActive(tool)}
+                        className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium dark:border-zinc-700"
+                      >
+                        {tool.isActive ? 'Disable' : 'Enable'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <div className="mt-8 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
