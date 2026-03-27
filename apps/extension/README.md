@@ -29,6 +29,9 @@ Chrome Web Store requires a **zip** file of the built extension.
 - premium quick-launch buttons
 - open dashboard/tools/pricing quickly
 - context-menu action for highlighted text
+- search selected text directly into the Zenovee tools directory
+- manual popup search box for matching tools
+- marketing-specific search shortcut from the popup
 
 ## Required assets for the store
 You must provide images:

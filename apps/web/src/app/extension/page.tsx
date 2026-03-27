@@ -75,6 +75,9 @@ export default function ExtensionHelpPage() {
           <li>See whether you are logged in</li>
           <li>Fetch and display your active entitlements</li>
           <li>Use it as a quick-access companion to the website tools</li>
+          <li>Open selected text directly in the searchable tools directory</li>
+          <li>Paste your own keyword/text into the popup and open matching tools</li>
+          <li>Use quick-launch actions for premium tools and category-specific searches</li>
         </ul>
 
         <p>

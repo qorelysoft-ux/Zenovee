@@ -13,6 +13,8 @@ Zenovee Tools is the official Chrome extension for Zenovee (zenovee.in).
 - Lets you sign in with your Zenovee account
 - Shows your purchased tool-category access (entitlements)
 - Provides quick links to Dashboard and Tools
+- Lets you send highlighted text into the Zenovee tools directory
+- Supports quick popup searches for matching tools
 
 ### Paid-only access
 Zenovee is a paid-only tool platform. Installing the extension does not grant free access.
