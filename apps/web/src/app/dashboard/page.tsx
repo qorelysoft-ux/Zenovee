@@ -19,6 +19,15 @@ type Entitlement = {
   currentPeriodEnd: string | null
 }
 
+type ApiKeyRow = {
+  id: string
+  name: string
+  keyPrefix: string
+  createdAt: string
+  lastUsedAt: string | null
+  revokedAt: string | null
+}
+
 const categoryLabels: Record<Entitlement['category'], string> = {
   MARKETING: 'AI Marketing Engine',
   DEV_ASSISTANT: 'AI Developer Assistant',
@@ -33,6 +42,10 @@ export default function DashboardPage() {
   const [entitlements, setEntitlements] = useState<Entitlement[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [apiKeys, setApiKeys] = useState<ApiKeyRow[]>([])
+  const [newKeyName, setNewKeyName] = useState('Primary integration')
+  const [apiKeySecret, setApiKeySecret] = useState<string | null>(null)
+  const [apiKeyBusy, setApiKeyBusy] = useState(false)
   const activeEntitlements = entitlements.filter((e) => e.status === 'ACTIVE')
   const upcomingRenewals = activeEntitlements
     .filter((e) => e.currentPeriodEnd)
@@ -52,6 +65,9 @@ export default function DashboardPage() {
         const resp = await apiFetch<{ ok: true; entitlements: Entitlement[] }>('/me/entitlements')
         if (!mounted) return
         setEntitlements(resp.entitlements)
+        const keyResp = await apiFetch<{ ok: true; apiKeys: ApiKeyRow[] }>('/me/api-keys')
+        if (!mounted) return
+        setApiKeys(keyResp.apiKeys)
       } catch (e) {
         if (!mounted) return
         setError(e instanceof Error ? e.message : 'failed_to_load_entitlements')
@@ -67,6 +83,37 @@ export default function DashboardPage() {
     await supabase.auth.signOut()
     router.replace('/login')
     router.refresh()
+  }
+
+  async function createApiKey() {
+    setApiKeyBusy(true)
+    setError(null)
+    setApiKeySecret(null)
+    try {
+      const resp = await apiFetch<{ ok: true; apiKey: ApiKeyRow; secret: string }>('/me/api-keys', {
+        method: 'POST',
+        body: JSON.stringify({ name: newKeyName }),
+      })
+      setApiKeys((prev) => [resp.apiKey, ...prev])
+      setApiKeySecret(resp.secret)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'failed_to_create_api_key')
+    } finally {
+      setApiKeyBusy(false)
+    }
+  }
+
+  async function revokeApiKey(id: string) {
+    setApiKeyBusy(true)
+    setError(null)
+    try {
+      await apiFetch<{ ok: true }>(`/me/api-keys/${id}`, { method: 'DELETE' })
+      setApiKeys((prev) => prev.map((key) => (key.id === id ? { ...key, revokedAt: new Date().toISOString() } : key)))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'failed_to_revoke_api_key')
+    } finally {
+      setApiKeyBusy(false)
+    }
   }
 
   if (loading) {
@@ -200,10 +247,71 @@ export default function DashboardPage() {
         <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
           <h2 className="text-lg font-medium">API Keys</h2>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-            Coming soon. You’ll be able to create API keys to access tools programmatically.
+            Create API keys for future programmatic access to premium tools and integrations.
           </p>
-          <div className="mt-4 rounded-md border border-dashed border-zinc-300 p-4 text-sm text-zinc-500 dark:border-zinc-700">
-            No API keys yet.
+          <div className="mt-4 flex flex-wrap gap-3">
+            <input
+              value={newKeyName}
+              onChange={(e) => setNewKeyName(e.target.value)}
+              className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm outline-none dark:border-zinc-700 md:w-[280px]"
+              placeholder="API key name"
+            />
+            <button
+              onClick={createApiKey}
+              disabled={apiKeyBusy || !newKeyName.trim()}
+              className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-zinc-900"
+            >
+              {apiKeyBusy ? 'Processing…' : 'Create API key'}
+            </button>
+          </div>
+
+          {apiKeySecret ? (
+            <div className="mt-4 rounded-md border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-200">
+              <div className="font-medium">Copy your API key now</div>
+              <div className="mt-2 break-all font-mono text-xs">{apiKeySecret}</div>
+              <div className="mt-2 text-xs">This secret is shown only once.</div>
+            </div>
+          ) : null}
+
+          <div className="mt-4 overflow-x-auto rounded-md border border-dashed border-zinc-300 p-4 text-sm dark:border-zinc-700">
+            {apiKeys.length === 0 ? (
+              <div className="text-zinc-500">No API keys yet.</div>
+            ) : (
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="text-zinc-500">
+                    <th className="pb-2 pr-4">Name</th>
+                    <th className="pb-2 pr-4">Prefix</th>
+                    <th className="pb-2 pr-4">Created</th>
+                    <th className="pb-2 pr-4">Status</th>
+                    <th className="pb-2 pr-4">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {apiKeys.map((key) => (
+                    <tr key={key.id}>
+                      <td className="py-2 pr-4">{key.name}</td>
+                      <td className="py-2 pr-4 font-mono text-xs">{key.keyPrefix}…</td>
+                      <td className="py-2 pr-4">{new Date(key.createdAt).toLocaleDateString()}</td>
+                      <td className="py-2 pr-4">{key.revokedAt ? 'Revoked' : 'Active'}</td>
+                      <td className="py-2 pr-4">
+                        {!key.revokedAt ? (
+                          <button
+                            onClick={() => revokeApiKey(key.id)}
+                            disabled={apiKeyBusy}
+                            className="rounded-md border border-zinc-300 px-3 py-1 text-xs font-medium dark:border-zinc-700"
+                          >
+                            Revoke
+                          </button>
+                        ) : (
+                          <span className="text-xs text-zinc-500">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
 

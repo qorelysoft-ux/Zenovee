@@ -24,9 +24,25 @@ model User {
   oauthAccounts      OAuthAccount[]
   passwordCredential PasswordCredential?
   payments           Payment[]
+  apiKeys            ApiKey[]
   refreshTokens      RefreshToken[]
   toolRuns           ToolRun[]
   adminAuditLogs     AdminAuditLog[]
+}
+
+model ApiKey {
+  id           String   @id @default(cuid())
+  userId       String
+  name         String
+  keyPrefix    String
+  keyHash      String   @unique
+  lastUsedAt   DateTime?
+  revokedAt    DateTime?
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([keyPrefix])
 }
 
 model PasswordCredential {
