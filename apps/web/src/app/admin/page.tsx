@@ -33,6 +33,21 @@ type ToolRunRow = {
   runCount: number
 }
 
+type PaymentAdminRow = {
+  id: string
+  provider: string
+  status: string
+  amount: number
+  currency: string
+  category: string | null
+  createdAt: string
+  razorpayPaymentId: string | null
+  razorpayOrderId: string | null
+  user: {
+    email: string
+  }
+}
+
 export default function AdminPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -52,6 +67,8 @@ export default function AdminPage() {
   const [toolRuns, setToolRuns] = useState<ToolRunRow[]>([])
   const [toolRunsLoading, setToolRunsLoading] = useState(false)
   const [toolQuery, setToolQuery] = useState('')
+  const [payments, setPayments] = useState<PaymentAdminRow[]>([])
+  const [paymentsLoading, setPaymentsLoading] = useState(false)
 
   const categories = useMemo(
     () => ['MARKETING', 'DEV_ASSISTANT', 'ECOM_IMAGE', 'SEO_GROWTH', 'BUSINESS_AUTOMATION'] as Category[],
@@ -105,6 +122,7 @@ export default function AdminPage() {
         await refreshUsers('')
         await refreshLogs()
         await refreshToolRuns()
+        await refreshPayments()
       } finally {
         setLoading(false)
       }
@@ -153,6 +171,19 @@ export default function AdminPage() {
       setError(e instanceof Error ? e.message : 'failed_to_load_tool_runs')
     } finally {
       setToolRunsLoading(false)
+    }
+  }
+
+  async function refreshPayments() {
+    setPaymentsLoading(true)
+    setError(null)
+    try {
+      const resp = await apiFetch<{ ok: true; rows: PaymentAdminRow[] }>(`/admin/payments`)
+      setPayments(resp.rows)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'failed_to_load_payments')
+    } finally {
+      setPaymentsLoading(false)
     }
   }
 
@@ -416,6 +447,69 @@ export default function AdminPage() {
                       <td className="border-b border-zinc-100 py-3 pr-4 text-right dark:border-zinc-900">
                         {r.runCount}
                       </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-8 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-medium">Payment logs</h2>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              View payment records currently stored in the platform database.
+            </p>
+          </div>
+          <button
+            onClick={refreshPayments}
+            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
+          >
+            Refresh
+          </button>
+        </div>
+
+        {paymentsLoading ? (
+          <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-300">Loading payments…</p>
+        ) : (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full border-separate border-spacing-0 text-left text-sm">
+              <thead>
+                <tr className="text-xs text-zinc-500">
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">When</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">User</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Category</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Status</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Amount</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Provider</th>
+                </tr>
+              </thead>
+              <tbody>
+                {payments.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-4 text-zinc-600 dark:text-zinc-300">
+                      No payment logs yet.
+                    </td>
+                  </tr>
+                ) : (
+                  payments.map((payment) => (
+                    <tr key={payment.id}>
+                      <td className="border-b border-zinc-100 py-3 pr-4 text-xs text-zinc-500 dark:border-zinc-900">
+                        {new Date(payment.createdAt).toLocaleString()}
+                      </td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{payment.user.email}</td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{payment.category ?? '—'}</td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{payment.status}</td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">
+                        {(payment.amount / 100).toLocaleString(undefined, {
+                          style: 'currency',
+                          currency: payment.currency,
+                        })}
+                      </td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{payment.provider}</td>
                     </tr>
                   ))
                 )}

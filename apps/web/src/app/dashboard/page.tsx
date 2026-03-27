@@ -28,6 +28,18 @@ type ApiKeyRow = {
   revokedAt: string | null
 }
 
+type PaymentRow = {
+  id: string
+  provider: string
+  status: string
+  amount: number
+  currency: string
+  category: string | null
+  createdAt: string
+  razorpayPaymentId: string | null
+  razorpayOrderId: string | null
+}
+
 const categoryLabels: Record<Entitlement['category'], string> = {
   MARKETING: 'AI Marketing Engine',
   DEV_ASSISTANT: 'AI Developer Assistant',
@@ -43,6 +55,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [apiKeys, setApiKeys] = useState<ApiKeyRow[]>([])
+  const [payments, setPayments] = useState<PaymentRow[]>([])
   const [newKeyName, setNewKeyName] = useState('Primary integration')
   const [apiKeySecret, setApiKeySecret] = useState<string | null>(null)
   const [apiKeyBusy, setApiKeyBusy] = useState(false)
@@ -68,6 +81,9 @@ export default function DashboardPage() {
         const keyResp = await apiFetch<{ ok: true; apiKeys: ApiKeyRow[] }>('/me/api-keys')
         if (!mounted) return
         setApiKeys(keyResp.apiKeys)
+        const paymentResp = await apiFetch<{ ok: true; payments: PaymentRow[] }>('/me/payments')
+        if (!mounted) return
+        setPayments(paymentResp.payments)
       } catch (e) {
         if (!mounted) return
         setError(e instanceof Error ? e.message : 'failed_to_load_entitlements')
@@ -335,10 +351,40 @@ export default function DashboardPage() {
         <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
           <h2 className="text-lg font-medium">Payment history</h2>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-            Coming soon. Once Razorpay is enabled, you’ll see invoices and past payments here.
+            Payment records associated with your account will appear here.
           </p>
-          <div className="mt-4 rounded-md border border-dashed border-zinc-300 p-4 text-sm text-zinc-500 dark:border-zinc-700">
-            No payments recorded.
+          <div className="mt-4 overflow-x-auto rounded-md border border-dashed border-zinc-300 p-4 text-sm dark:border-zinc-700">
+            {payments.length === 0 ? (
+              <div className="text-zinc-500">No payments recorded.</div>
+            ) : (
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="text-zinc-500">
+                    <th className="pb-2 pr-4">Date</th>
+                    <th className="pb-2 pr-4">Category</th>
+                    <th className="pb-2 pr-4">Status</th>
+                    <th className="pb-2 pr-4">Amount</th>
+                    <th className="pb-2 pr-4">Provider</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payments.map((payment) => (
+                    <tr key={payment.id}>
+                      <td className="py-2 pr-4">{new Date(payment.createdAt).toLocaleDateString()}</td>
+                      <td className="py-2 pr-4">{payment.category ?? '—'}</td>
+                      <td className="py-2 pr-4">{payment.status}</td>
+                      <td className="py-2 pr-4">
+                        {(payment.amount / 100).toLocaleString(undefined, {
+                          style: 'currency',
+                          currency: payment.currency,
+                        })}
+                      </td>
+                      <td className="py-2 pr-4">{payment.provider}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       </div>
