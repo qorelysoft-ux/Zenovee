@@ -16,6 +16,6 @@
     "service_worker": "background.js",
     "type": "module"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "tabs", "scripting", "activeTab", "contextMenus"],
   "host_permissions": ["https://www.zenovee.in/*"]
 }

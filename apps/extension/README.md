@@ -5,6 +5,8 @@ This is the Zenovee Chrome Extension (Manifest v3).
 ## What it does
 - Lets users login with their Zenovee account
 - Shows their category entitlements (access) from the Zenovee API
+- Provides quick-access links to premium tools
+- Adds a right-click context menu to open selected text in Zenovee Tools
 
 ## Build (developer)
 ```bash
@@ -19,6 +21,14 @@ Chrome Web Store requires a **zip** file of the built extension.
 
 1) Build
 2) Zip the contents of `apps/extension/dist`
+
+## Current browser helper features
+
+- popup login/logout
+- entitlement visibility
+- premium quick-launch buttons
+- open dashboard/tools/pricing quickly
+- context-menu action for highlighted text
 
 ## Required assets for the store
 You must provide images:
