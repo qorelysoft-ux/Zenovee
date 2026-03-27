@@ -51,6 +51,7 @@ export default function AdminPage() {
 
   const [toolRuns, setToolRuns] = useState<ToolRunRow[]>([])
   const [toolRunsLoading, setToolRunsLoading] = useState(false)
+  const [toolQuery, setToolQuery] = useState('')
 
   const categories = useMemo(
     () => ['MARKETING', 'DEV_ASSISTANT', 'ECOM_IMAGE', 'SEO_GROWTH', 'BUSINESS_AUTOMATION'] as Category[],
@@ -75,6 +76,16 @@ export default function AdminPage() {
     ...page,
     count: toolsCatalog.filter((tool) => tool.category === page.category).length,
   }))
+  const filteredTools = toolsCatalog.filter((tool) => {
+    const q = toolQuery.trim().toLowerCase()
+    if (!q) return true
+    return (
+      tool.name.toLowerCase().includes(q) ||
+      tool.slug.toLowerCase().includes(q) ||
+      tool.description.toLowerCase().includes(q) ||
+      tool.category.toLowerCase().includes(q)
+    )
+  })
 
   useEffect(() => {
     let mounted = true
@@ -231,6 +242,74 @@ export default function AdminPage() {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="mt-8 rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-medium">Tool registry</h2>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Search the currently published premium tools, inspect their slugs, and jump to live pages.
+            </p>
+          </div>
+          <div className="text-sm text-zinc-500">{filteredTools.length} results</div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-3">
+          <input
+            value={toolQuery}
+            onChange={(e) => setToolQuery(e.target.value)}
+            placeholder="Search by tool name, slug, description, or category"
+            className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm outline-none dark:border-zinc-700 md:w-[480px]"
+          />
+          <button
+            onClick={() => setToolQuery('')}
+            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
+          >
+            Clear
+          </button>
+        </div>
+
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full border-separate border-spacing-0 text-left text-sm">
+            <thead>
+              <tr className="text-xs text-zinc-500">
+                <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Tool</th>
+                <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Slug</th>
+                <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Category</th>
+                <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTools.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="py-4 text-zinc-600 dark:text-zinc-300">
+                    No tools match your search.
+                  </td>
+                </tr>
+              ) : (
+                filteredTools.map((tool) => (
+                  <tr key={tool.slug}>
+                    <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">
+                      <div className="font-medium">{tool.name}</div>
+                      <div className="mt-1 text-xs text-zinc-500">{tool.description}</div>
+                    </td>
+                    <td className="border-b border-zinc-100 py-3 pr-4 text-xs dark:border-zinc-900">{tool.slug}</td>
+                    <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{tool.category}</td>
+                    <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">
+                      <Link
+                        href={`/tools/${tool.slug}`}
+                        className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-medium dark:border-zinc-700"
+                      >
+                        Open tool
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 
