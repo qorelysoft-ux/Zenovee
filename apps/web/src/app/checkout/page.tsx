@@ -27,6 +27,11 @@ export default function CheckoutPage() {
         testing and internal rollout.
       </div>
 
+      <div className="mt-4 rounded-xl border border-zinc-200 p-4 text-sm text-zinc-600 dark:border-zinc-800 dark:text-zinc-300">
+        Billing scaffold endpoints now exist for subscription creation and Razorpay webhook verification. Final live usage
+        depends on production keys, plan IDs, and deployment configuration.
+      </div>
+
       <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
         {plans.map((plan) => (
           <div key={plan.slug} className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">

@@ -20,6 +20,10 @@ export default function PricingPage() {
         Billing automation is the main remaining platform milestone. Until then, premium access can be managed manually through admin entitlements.
       </div>
 
+      <p className="mt-4 text-sm text-zinc-500">
+        When configured, checkout uses Razorpay subscriptions with category-specific plan IDs and verified webhooks.
+      </p>
+
       <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
         {plans.map((p) => (
           <div

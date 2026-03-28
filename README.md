@@ -2,29 +2,55 @@
 
 ## Current status (important)
 
-This repository is **in progress** toward the full “Paid Halal Multi-Tools SaaS” master prompt.
+This repository is **in progress** toward the current Zenovee premium multi-tools SaaS direction.
 
 ✅ Implemented so far:
 - Monorepo structure: `apps/web` (Next.js + Tailwind) and `apps/api` (Express + TypeScript)
 - Supabase client wiring for backend + frontend
 - Basic auth pages on the web app (login/register/callback/dashboard)
-- Tools routing skeleton:
+- Current premium tool platform structure:
   - `/tools` directory
-  - Category pages: `/tools/ai`, `/tools/developer`, `/tools/image`, `/tools/seo`, `/tools/text`, `/tools/utilities`
-  - Individual tool SEO pages: `/tools/<tool-slug>` (placeholder UI + entitlement gate)
+  - Category pages:
+    - `/tools/marketing`
+    - `/tools/dev-assistant`
+    - `/tools/ecom-image`
+    - `/tools/seo-growth`
+    - `/tools/business-automation`
+  - Individual premium tool pages: `/tools/<tool-slug>`
+- Searchable tools directory with query handoff support (`/tools?q=...`)
+- User dashboard improvements:
+  - entitlement visibility
+  - API key management
+  - payment history view
+- Admin dashboard improvements:
+  - users and entitlements
+  - audit logs
+  - tool analytics
+  - payment logs
+  - tool enable/disable controls
 - Build stability: `npm run build` works end-to-end
 - Chrome Extension install/distribution pages:
   - `/extension` (guide + download button)
   - `/install` (redirect)
   - `/downloads/zenovee-tools-v0.1.0.zip` (hosted ZIP)
+- Chrome extension capabilities:
+  - login/logout
+  - entitlement visibility
+  - premium quick-launch buttons
+  - selected-text handoff into `/tools?q=...`
+  - popup search handoff into matching tools
+- Safe billing scaffolding:
+  - `/api/billing/checkout`
+  - `/api/billing/webhooks/razorpay`
+- In-app documentation page: `/documentation`
+- Checkout placeholder page: `/checkout`
 
 ⏳ Still to implement (major items):
 - Razorpay subscriptions + webhook verification + subscription lifecycle
-- Paid-only category entitlements + tool gating (no free tier)
-- 50 functional tools + SEO tool pages (`/tools/tool-name`) and category listings
-- User dashboard (subscriptions/payment history) + Admin dashboard
-- Chrome extension
-- Security hardening + analytics + caching + full deployment docs
+- automated billing-linked entitlement activation/cancel/renew flows
+- deeper extension direct-to-specific-tool workflows
+- final production verification and hardening
+- final release cleanup / final docs polish
 
 ---
 
@@ -224,8 +250,8 @@ npm run start
 
 ## Next milestone
 
-The next big milestone is **Razorpay subscriptions + paid-only category gating**.
-Once that is in place, we can begin adding the tools (SEO pages + related tools + FAQs) category-by-category.
+The next major milestone is **Razorpay subscriptions + automated billing lifecycle**.
+Once that is in place, Zenovee will move from admin-granted premium access into full production billing automation.
 
 ## API Database Connectivity (Supabase)
 
