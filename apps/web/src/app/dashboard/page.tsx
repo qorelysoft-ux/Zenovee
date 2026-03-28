@@ -17,6 +17,8 @@ type Entitlement = {
   status: string
   currentPeriodStart: string | null
   currentPeriodEnd: string | null
+  canceledAt?: string | null
+  razorpaySubscriptionId?: string | null
 }
 
 type ApiKeyRow = {
@@ -59,6 +61,7 @@ export default function DashboardPage() {
   const [newKeyName, setNewKeyName] = useState('Primary integration')
   const [apiKeySecret, setApiKeySecret] = useState<string | null>(null)
   const [apiKeyBusy, setApiKeyBusy] = useState(false)
+  const [subscriptionBusyId, setSubscriptionBusyId] = useState<string | null>(null)
   const activeEntitlements = entitlements.filter((e) => e.status === 'ACTIVE')
   const upcomingRenewals = activeEntitlements
     .filter((e) => e.currentPeriodEnd)
@@ -129,6 +132,22 @@ export default function DashboardPage() {
       setError(e instanceof Error ? e.message : 'failed_to_revoke_api_key')
     } finally {
       setApiKeyBusy(false)
+    }
+  }
+
+  async function cancelSubscription(entitlementId: string) {
+    setSubscriptionBusyId(entitlementId)
+    setError(null)
+    try {
+      const resp = await apiFetch<{ ok: true; entitlement: Entitlement }>('/me/subscriptions/cancel', {
+        method: 'POST',
+        body: JSON.stringify({ entitlementId }),
+      })
+      setEntitlements((prev) => prev.map((item) => (item.id === entitlementId ? resp.entitlement : item)))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'failed_to_cancel_subscription')
+    } finally {
+      setSubscriptionBusyId(null)
     }
   }
 
@@ -217,7 +236,7 @@ export default function DashboardPage() {
             )}
           </div>
 
-          {activeEntitlements.length > 0 ? (
+          {entitlements.length > 0 ? (
             <div className="mt-6 overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
@@ -225,10 +244,11 @@ export default function DashboardPage() {
                     <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Category</th>
                     <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Status</th>
                     <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Current period</th>
+                    <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {activeEntitlements.map((e) => (
+                  {entitlements.map((e) => (
                     <tr key={e.id}>
                       <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{categoryLabels[e.category]}</td>
                       <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{e.status}</td>
@@ -236,6 +256,19 @@ export default function DashboardPage() {
                         {e.currentPeriodStart ? new Date(e.currentPeriodStart).toLocaleDateString() : '—'}
                         {' → '}
                         {e.currentPeriodEnd ? new Date(e.currentPeriodEnd).toLocaleDateString() : '—'}
+                      </td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">
+                        {e.status === 'ACTIVE' ? (
+                          <button
+                            onClick={() => cancelSubscription(e.id)}
+                            disabled={subscriptionBusyId === e.id}
+                            className="rounded-md border border-zinc-300 px-3 py-1 text-xs font-medium dark:border-zinc-700"
+                          >
+                            {subscriptionBusyId === e.id ? 'Canceling…' : 'Cancel'}
+                          </button>
+                        ) : (
+                          <span className="text-xs text-zinc-500">{e.canceledAt ? `Canceled ${new Date(e.canceledAt).toLocaleDateString()}` : '—'}</span>
+                        )}
                       </td>
                     </tr>
                   ))}

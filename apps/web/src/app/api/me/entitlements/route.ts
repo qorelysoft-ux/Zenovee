@@ -16,15 +16,17 @@ export async function GET(req: Request) {
     })
 
     const entitlements = await prisma.categoryEntitlement.findMany({
-      where: { userId: user.id, status: 'ACTIVE' },
+      where: { userId: user.id },
       select: {
         id: true,
         category: true,
         status: true,
         currentPeriodStart: true,
         currentPeriodEnd: true,
+        canceledAt: true,
+        razorpaySubscriptionId: true,
       },
-      orderBy: { category: 'asc' },
+      orderBy: [{ status: 'asc' }, { category: 'asc' }],
     })
 
     return NextResponse.json({ ok: true, entitlements })
