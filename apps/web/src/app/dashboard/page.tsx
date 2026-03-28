@@ -153,82 +153,106 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-16">
-        <p className="text-sm text-zinc-600 dark:text-zinc-300">Loading…</p>
+      <div className="mx-auto max-w-7xl px-4 py-16">
+        <div className="zen-card rounded-[1.5rem] p-6 text-sm text-slate-300">Loading your workspace…</div>
       </div>
     )
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16">
+    <div className="mx-auto max-w-7xl px-4 py-16">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold">Dashboard</h1>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+          <h1 className="text-4xl font-semibold text-white">Dashboard</h1>
+          <p className="mt-2 text-sm text-slate-300">
             Signed in as <span className="font-medium">{user?.email}</span>
           </p>
         </div>
         <button
           onClick={logout}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700"
+          className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white"
         >
           Logout
         </button>
       </div>
 
       <div className="mt-10 grid grid-cols-1 gap-6">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
-            <div className="text-sm text-zinc-500">Active plans</div>
-            <div className="mt-2 text-3xl font-semibold">{activeEntitlements.length}</div>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Categories currently unlocked for your account.</p>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
+          <div className="zen-card rounded-[1.5rem] p-6">
+            <div className="text-sm text-slate-400">Active plans</div>
+            <div className="mt-2 text-3xl font-semibold text-white">{activeEntitlements.length}</div>
+            <p className="mt-2 text-sm text-slate-300">Categories currently unlocked for your account.</p>
           </div>
-          <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
-            <div className="text-sm text-zinc-500">Tool access mode</div>
-            <div className="mt-2 text-3xl font-semibold">Paid-only</div>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Every tool category requires an active paid entitlement.</p>
+          <div className="zen-card rounded-[1.5rem] p-6">
+            <div className="text-sm text-slate-400">Tool access mode</div>
+            <div className="mt-2 text-3xl font-semibold text-white">Paid-only</div>
+            <p className="mt-2 text-sm text-slate-300">Every tool category requires an active paid entitlement.</p>
           </div>
-          <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
-            <div className="text-sm text-zinc-500">Next renewal</div>
-            <div className="mt-2 text-lg font-semibold">
+          <div className="zen-card rounded-[1.5rem] p-6">
+            <div className="text-sm text-slate-400">Next renewal</div>
+            <div className="mt-2 text-lg font-semibold text-white">
               {upcomingRenewals[0]?.currentPeriodEnd ? new Date(upcomingRenewals[0].currentPeriodEnd).toLocaleDateString() : 'Not available'}
             </div>
-            <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Renewal history will appear here once billing is enabled.</p>
+            <p className="mt-2 text-sm text-slate-300">Renewal history will appear here once billing is enabled.</p>
+          </div>
+          <div className="zen-card rounded-[1.5rem] p-6">
+            <div className="text-sm text-slate-400">Quick action</div>
+            <div className="mt-2 text-lg font-semibold text-white">Unlock another suite</div>
+            <Link href="/pricing" className="mt-4 inline-flex rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white">
+              View pricing
+            </Link>
           </div>
         </div>
 
-        <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
-          <h2 className="text-lg font-medium">Profile</h2>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Basic account details.</p>
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+          <div className="zen-card rounded-[1.5rem] p-6">
+            <h2 className="text-lg font-medium text-white">Profile</h2>
+            <p className="mt-2 text-sm text-slate-300">Basic account details and premium workspace access.</p>
 
-          <dl className="mt-4 grid grid-cols-1 gap-3 text-sm">
-            <div className="flex items-center justify-between gap-4">
-              <dt className="text-zinc-500">Email</dt>
-              <dd className="font-medium">{user?.email ?? '—'}</dd>
+            <dl className="mt-4 grid grid-cols-1 gap-3 text-sm">
+              <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <dt className="text-slate-400">Email</dt>
+                <dd className="font-medium text-white">{user?.email ?? '—'}</dd>
+              </div>
+              <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                <dt className="text-slate-400">Account status</dt>
+                <dd className="font-medium text-white">Active</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div className="zen-card rounded-[1.5rem] p-6">
+            <h2 className="text-lg font-medium text-white">Quick actions</h2>
+            <div className="mt-4 grid gap-3">
+              <Link href="/tools" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white">
+                Browse tools
+              </Link>
+              <Link href="/extension" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white">
+                Install extension
+              </Link>
+              <Link href="/documentation" className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white">
+                Read documentation
+              </Link>
             </div>
-            <div className="flex items-center justify-between gap-4">
-              <dt className="text-zinc-500">Account status</dt>
-              <dd className="font-medium">Active</dd>
-            </div>
-          </dl>
+          </div>
         </div>
 
-        <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
-          <h2 className="text-lg font-medium">Your access</h2>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+        <div className="zen-card rounded-[1.5rem] p-6">
+          <h2 className="text-lg font-medium text-white">Your access</h2>
+          <p className="mt-2 text-sm text-slate-300">
             Tools are paid-only. You can only use tools in categories you’ve purchased.
           </p>
 
-          {error ? <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p> : null}
+          {error ? <p className="mt-3 text-sm text-red-300">{error}</p> : null}
 
           <div className="mt-4 flex flex-wrap gap-2">
             {activeEntitlements.length === 0 ? (
-              <span className="text-sm text-zinc-600 dark:text-zinc-300">No active subscriptions yet.</span>
+              <span className="text-sm text-slate-300">No active subscriptions yet.</span>
             ) : (
               activeEntitlements.map((e) => (
                 <span
                   key={e.id}
-                  className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-200"
+                  className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300"
                 >
                   {categoryLabels[e.category]}
                 </span>
@@ -240,34 +264,34 @@ export default function DashboardPage() {
             <div className="mt-6 overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="text-zinc-500">
-                    <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Category</th>
-                    <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Status</th>
-                    <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Current period</th>
-                    <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Actions</th>
+                  <tr className="text-slate-400">
+                    <th className="border-b border-white/10 py-2 pr-4">Category</th>
+                    <th className="border-b border-white/10 py-2 pr-4">Status</th>
+                    <th className="border-b border-white/10 py-2 pr-4">Current period</th>
+                    <th className="border-b border-white/10 py-2 pr-4">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {entitlements.map((e) => (
                     <tr key={e.id}>
-                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{categoryLabels[e.category]}</td>
-                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">{e.status}</td>
-                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">
+                      <td className="border-b border-white/5 py-3 pr-4 text-white">{categoryLabels[e.category]}</td>
+                      <td className="border-b border-white/5 py-3 pr-4 text-slate-300">{e.status}</td>
+                      <td className="border-b border-white/5 py-3 pr-4 text-slate-300">
                         {e.currentPeriodStart ? new Date(e.currentPeriodStart).toLocaleDateString() : '—'}
                         {' → '}
                         {e.currentPeriodEnd ? new Date(e.currentPeriodEnd).toLocaleDateString() : '—'}
                       </td>
-                      <td className="border-b border-zinc-100 py-3 pr-4 dark:border-zinc-900">
+                      <td className="border-b border-white/5 py-3 pr-4">
                         {e.status === 'ACTIVE' ? (
                           <button
                             onClick={() => cancelSubscription(e.id)}
                             disabled={subscriptionBusyId === e.id}
-                            className="rounded-md border border-zinc-300 px-3 py-1 text-xs font-medium dark:border-zinc-700"
+                            className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white"
                           >
                             {subscriptionBusyId === e.id ? 'Canceling…' : 'Cancel'}
                           </button>
                         ) : (
-                          <span className="text-xs text-zinc-500">{e.canceledAt ? `Canceled ${new Date(e.canceledAt).toLocaleDateString()}` : '—'}</span>
+                          <span className="text-xs text-slate-400">{e.canceledAt ? `Canceled ${new Date(e.canceledAt).toLocaleDateString()}` : '—'}</span>
                         )}
                       </td>
                     </tr>
@@ -280,13 +304,13 @@ export default function DashboardPage() {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href="/pricing"
-              className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-zinc-900"
+              className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white"
             >
               View pricing
             </Link>
             <Link
               href="/tools"
-              className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium dark:border-zinc-700"
+              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white"
             >
               Browse tools
             </Link>
