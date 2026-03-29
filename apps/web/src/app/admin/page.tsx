@@ -255,31 +255,38 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-16">
-        <p className="text-sm text-zinc-600 dark:text-zinc-300">Loading…</p>
+      <div className="mx-auto max-w-7xl px-4 py-16">
+        <div className="zen-card rounded-[1.5rem] p-6 text-sm text-slate-300">Loading admin command center…</div>
       </div>
     )
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16">
-      <h1 className="text-3xl font-semibold">Admin</h1>
-      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+    <div className="mx-auto max-w-7xl px-4 py-16">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <div className="inline-flex rounded-full border border-violet-400/20 bg-violet-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-violet-300">
+            Admin command center
+          </div>
+          <h1 className="mt-4 text-4xl font-semibold text-white">Operate the premium platform from one control surface.</h1>
+        </div>
+      </div>
+      <p className="mt-3 text-sm text-slate-300">
         Signed in as <span className="font-medium">{meEmail ?? 'unknown'}</span>
       </p>
 
       <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
-          <div className="text-sm text-zinc-500">Visible users</div>
-          <div className="mt-2 text-3xl font-semibold">{totalUsers}</div>
+        <div className="zen-card rounded-[1.5rem] p-6">
+          <div className="text-sm text-slate-400">Visible users</div>
+          <div className="mt-2 text-3xl font-semibold text-white">{totalUsers}</div>
         </div>
-        <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
-          <div className="text-sm text-zinc-500">Active entitlements</div>
-          <div className="mt-2 text-3xl font-semibold">{totalActiveEntitlements}</div>
+        <div className="zen-card rounded-[1.5rem] p-6">
+          <div className="text-sm text-slate-400">Active entitlements</div>
+          <div className="mt-2 text-3xl font-semibold text-white">{totalActiveEntitlements}</div>
         </div>
-        <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
-          <div className="text-sm text-zinc-500">Recorded tool runs</div>
-          <div className="mt-2 text-3xl font-semibold">{totalToolRuns}</div>
+        <div className="zen-card rounded-[1.5rem] p-6">
+          <div className="text-sm text-slate-400">Recorded tool runs</div>
+          <div className="mt-2 text-3xl font-semibold text-white">{totalToolRuns}</div>
         </div>
       </div>
 

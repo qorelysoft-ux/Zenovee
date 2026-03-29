@@ -69,9 +69,22 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
   if (!tool) return notFound()
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-16">
-      <h1 className="text-4xl font-semibold">{tool.name}</h1>
-      <p className="mt-3 max-w-2xl text-sm text-zinc-600 dark:text-zinc-300">{tool.description}</p>
+    <div className="mx-auto max-w-7xl px-4 py-16">
+      <section className="zen-card-strong rounded-[2rem] px-8 py-10">
+        <div className="inline-flex rounded-full border border-blue-400/20 bg-blue-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-300">
+          Premium tool workspace
+        </div>
+        <div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h1 className="text-5xl font-semibold text-white">{tool.name}</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">{tool.description}</p>
+          </div>
+          <div className="rounded-[1.5rem] border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-300">
+            <div className="text-xs uppercase tracking-[0.2em] text-slate-400">Suite</div>
+            <div className="mt-2 font-semibold text-white">{tool.category}</div>
+          </div>
+        </div>
+      </section>
 
       <div className="mt-10">
         <ToolGatePlaceholder
@@ -85,7 +98,7 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
             }).catch(() => null)
           }}
         >
-          <div className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
+          <div className="zen-card rounded-[1.75rem] p-6">
             {tool.slug === 'viral-short-creator-engine' ? (
               <ViralShortCreatorTool />
             ) : tool.slug === 'cold-outreach-personalization-engine' ? (
@@ -188,8 +201,8 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
               <ApiRequestConverterTool />
             ) : (
               <>
-                <div className="text-sm font-medium">Tool interface</div>
-                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+                <div className="text-sm font-medium text-white">Tool interface</div>
+                <p className="mt-2 text-sm leading-7 text-slate-300">
                   This premium tool page is wired into the paid-access system. Its full tool-specific workflow will be implemented next.
                 </p>
               </>
@@ -199,15 +212,15 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
       </div>
 
       <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
-        <section>
-          <h2 className="text-xl font-semibold">How it works</h2>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+        <section className="zen-card rounded-[1.5rem] p-6">
+          <h2 className="text-xl font-semibold text-white">How it works</h2>
+          <p className="mt-2 text-sm leading-7 text-slate-300">
             {tool.name} is part of the {tool.category} category and requires an active subscription for access.
           </p>
         </section>
-        <section>
-          <h2 className="text-xl font-semibold">Use cases</h2>
-          <ul className="mt-2 list-disc pl-5 text-sm text-zinc-600 dark:text-zinc-300">
+        <section className="zen-card rounded-[1.5rem] p-6">
+          <h2 className="text-xl font-semibold text-white">Use cases</h2>
+          <ul className="mt-2 list-disc space-y-2 pl-5 text-sm leading-7 text-slate-300">
             <li>Save time on repetitive tasks</li>
             <li>Improve accuracy and consistency</li>
             <li>Work faster from any device</li>
@@ -215,15 +228,15 @@ export default function ToolSeoPage({ params }: { params: { slug: string } }) {
         </section>
       </div>
 
-      <section className="mt-12">
-        <h2 className="text-xl font-semibold">FAQ</h2>
-        <div className="mt-3 space-y-3 text-sm text-zinc-600 dark:text-zinc-300">
+      <section className="zen-card mt-12 rounded-[1.5rem] p-6">
+        <h2 className="text-xl font-semibold text-white">FAQ</h2>
+        <div className="mt-3 space-y-3 text-sm leading-7 text-slate-300">
           <p>
-            <span className="font-medium text-zinc-900 dark:text-zinc-100">Why is it locked?</span> This tool is part of
+            <span className="font-medium text-white">Why is it locked?</span> This tool is part of
             a paid category.
           </p>
           <p>
-            <span className="font-medium text-zinc-900 dark:text-zinc-100">How do I get access?</span> Subscribe to the
+            <span className="font-medium text-white">How do I get access?</span> Subscribe to the
             category on the Pricing page.
           </p>
         </div>

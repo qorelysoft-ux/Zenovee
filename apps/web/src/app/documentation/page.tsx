@@ -55,17 +55,22 @@ const sections = [
 
 export default function DocumentationPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-16">
-      <h1 className="text-4xl font-semibold">Documentation</h1>
-      <p className="mt-3 max-w-3xl text-sm text-zinc-600 dark:text-zinc-300">
-        Central reference for deployment, environment setup, extension packaging, and the current implementation status of Zenovee.
-      </p>
+    <div className="mx-auto max-w-7xl px-4 py-16">
+      <section className="zen-card-strong rounded-[2rem] px-8 py-10">
+        <div className="inline-flex rounded-full border border-sky-400/20 bg-sky-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-sky-300">
+          Documentation hub
+        </div>
+        <h1 className="mt-5 text-5xl font-semibold text-white">Everything needed to deploy, operate, and extend Zenovee.</h1>
+        <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
+          Central reference for deployment, environment setup, extension packaging, billing readiness, and the current implementation status of the platform.
+        </p>
+      </section>
 
       <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
         {sections.map((section) => (
-          <section key={section.title} className="rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
-            <h2 className="text-xl font-semibold">{section.title}</h2>
-            <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-300">
+          <section key={section.title} className="zen-card rounded-[1.5rem] p-6">
+            <h2 className="text-xl font-semibold text-white">{section.title}</h2>
+            <ul className="mt-4 list-disc space-y-3 pl-5 text-sm leading-7 text-slate-300">
               {section.points.map((point) => (
                 <li key={point}>{point}</li>
               ))}
