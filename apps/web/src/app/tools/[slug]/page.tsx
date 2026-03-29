@@ -54,8 +54,9 @@ import { BulkBackgroundRemovalEngineTool } from '@/components/tools/BulkBackgrou
 import { AiImageUpscalerProTool } from '@/components/tools/AiImageUpscalerProTool'
 import { ProductMockupGeneratorTool } from '@/components/tools/ProductMockupGeneratorTool'
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const tool = getToolBySlug(params.slug)
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const tool = getToolBySlug(slug)
   if (!tool) return { title: 'Tool not found — Zenovee' }
   return {
     title: `${tool.name} — Zenovee`,
@@ -63,8 +64,9 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   }
 }
 
-export default function ToolSeoPage({ params }: { params: { slug: string } }) {
-  const tool = getToolBySlug(params.slug)
+export default async function ToolSeoPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const tool = getToolBySlug(slug)
 
   if (!tool) return notFound()
 

@@ -43,24 +43,6 @@ const benefits = [
   'Move from idea to production-ready result faster',
 ]
 
-const testimonials = [
-  {
-    quote: 'Zenovee made our marketing workflow feel like we hired a high-performance execution team overnight.',
-    author: 'Amina R.',
-    role: 'Growth Lead',
-  },
-  {
-    quote: 'The Developer Assistant alone removed hours of debugging and documentation overhead every week.',
-    author: 'Bilal H.',
-    role: 'Product Engineer',
-  },
-  {
-    quote: 'We stopped jumping between random tools and finally got one focused system for actual business output.',
-    author: 'Mariam S.',
-    role: 'Operations Manager',
-  },
-] as const
-
 export default function Home() {
   return (
     <main className="mx-auto max-w-7xl px-4 pb-24 pt-10">
@@ -169,28 +151,6 @@ export default function Home() {
               </li>
             ))}
           </ul>
-        </div>
-      </section>
-
-      <section className="mt-20">
-        <div className="zen-card rounded-[1.75rem] p-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <div className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-300">Social proof</div>
-              <h2 className="mt-3 text-4xl font-semibold text-white">Built for teams that value speed, clarity, and trust.</h2>
-            </div>
-            <div className="text-sm text-slate-300">Trusted by ambitious founders, operators, growth teams, and engineers.</div>
-          </div>
-
-          <div className="mt-8 grid gap-5 md:grid-cols-3">
-            {testimonials.map((item) => (
-              <div key={item.author} className="rounded-[1.5rem] border border-white/10 bg-white/5 p-6">
-                <p className="text-sm leading-7 text-slate-200">“{item.quote}”</p>
-                <div className="mt-5 text-sm font-semibold text-white">{item.author}</div>
-                <div className="text-xs text-slate-400">{item.role}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
