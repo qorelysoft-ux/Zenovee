@@ -30,42 +30,45 @@ export default async function ToolsDirectoryPage({
       })
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-16">
-      <h1 className="text-4xl font-semibold">Tools</h1>
-      <p className="mt-3 max-w-2xl text-sm text-zinc-600 dark:text-zinc-300">
+    <div className="mx-auto max-w-7xl px-4 py-16">
+      <div className="inline-flex rounded-full border border-blue-400/20 bg-blue-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-300">
+        Tools directory
+      </div>
+      <h1 className="mt-5 text-5xl font-semibold text-white">Browse premium workflows by suite.</h1>
+      <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
         Browse tools by category. Access requires an active subscription for the category.
       </p>
 
-      <form className="mt-8 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800" action="/tools">
-        <label className="text-sm font-medium">Search tools</label>
+      <form className="zen-card mt-8 rounded-[1.5rem] p-5" action="/tools">
+        <label className="text-sm font-medium text-white">Search tools</label>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row">
           <input
             name="q"
             defaultValue={params.q ?? ''}
             placeholder="Search by tool name, description, slug, or category"
-            className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm outline-none dark:border-zinc-700"
+            className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500"
           />
-          <button className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-zinc-900">
+          <button className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-5 py-3 text-sm font-semibold text-white">
             Search
           </button>
         </div>
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-slate-400">
           The extension can send selected text here using the <span className="font-mono">?q=</span> query helper.
         </p>
       </form>
 
       <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
-          <div className="text-sm text-zinc-500">Premium categories</div>
-          <div className="mt-2 text-3xl font-semibold">{categoryPages.length}</div>
+        <div className="zen-card rounded-[1.5rem] p-5">
+          <div className="text-sm text-slate-400">Premium categories</div>
+          <div className="mt-2 text-3xl font-semibold text-white">{categoryPages.length}</div>
         </div>
-        <div className="rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
-          <div className="text-sm text-zinc-500">Published tools</div>
-          <div className="mt-2 text-3xl font-semibold">{toolsCatalog.length}</div>
+        <div className="zen-card rounded-[1.5rem] p-5">
+          <div className="text-sm text-slate-400">Published tools</div>
+          <div className="mt-2 text-3xl font-semibold text-white">{toolsCatalog.length}</div>
         </div>
-        <div className="rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
-          <div className="text-sm text-zinc-500">Matched tools</div>
-          <div className="mt-2 text-3xl font-semibold">{filteredTools.length}</div>
+        <div className="zen-card rounded-[1.5rem] p-5">
+          <div className="text-sm text-slate-400">Matched tools</div>
+          <div className="mt-2 text-3xl font-semibold text-white">{filteredTools.length}</div>
         </div>
       </div>
 
@@ -77,31 +80,31 @@ export default async function ToolsDirectoryPage({
             <Link
               key={c.slug}
               href={`/tools/${c.slug}`}
-              className="rounded-xl border border-zinc-200 p-6 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
+              className="zen-card rounded-[1.5rem] p-6 hover:-translate-y-1 hover:border-blue-400/30"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="text-lg font-medium">{c.name}</div>
-                  <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+                  <div className="text-lg font-medium text-white">{c.name}</div>
+                  <div className="mt-1 text-sm leading-7 text-slate-300">
                     {categoryDescriptions[c.slug] ?? 'View premium category'}
                   </div>
                 </div>
-                <div className="rounded-full border border-zinc-200 px-3 py-1 text-xs font-medium dark:border-zinc-700">
+                <div className="rounded-full border border-white/10 px-3 py-1 text-xs font-medium text-slate-300">
                   {count} tools
                 </div>
               </div>
 
-              <div className="mt-4 text-sm font-medium text-zinc-900 dark:text-zinc-100">View category →</div>
+              <div className="mt-4 text-sm font-semibold text-blue-300">View category →</div>
             </Link>
           )
         })}
       </div>
 
       <div className="mt-12">
-        <h2 className="text-2xl font-semibold">All matching tools</h2>
+        <h2 className="text-2xl font-semibold text-white">All matching tools</h2>
         <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
           {filteredTools.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-zinc-300 p-6 text-sm text-zinc-500 dark:border-zinc-700">
+            <div className="zen-card rounded-[1.5rem] border-dashed p-6 text-sm text-slate-400">
               No tools matched your search.
             </div>
           ) : (
@@ -109,14 +112,14 @@ export default async function ToolsDirectoryPage({
               <Link
                 key={tool.slug}
                 href={`/tools/${tool.slug}`}
-                className="rounded-xl border border-zinc-200 p-6 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
+                className="zen-card rounded-[1.5rem] p-6 hover:-translate-y-1 hover:border-blue-400/30"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <div className="text-lg font-medium">{tool.name}</div>
-                    <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{tool.description}</div>
+                    <div className="text-lg font-medium text-white">{tool.name}</div>
+                    <div className="mt-1 text-sm leading-7 text-slate-300">{tool.description}</div>
                   </div>
-                  <div className="rounded-full border border-zinc-200 px-3 py-1 text-[11px] font-medium dark:border-zinc-700">
+                  <div className="rounded-full border border-white/10 px-3 py-1 text-[11px] font-medium text-slate-300">
                     {tool.category}
                   </div>
                 </div>
