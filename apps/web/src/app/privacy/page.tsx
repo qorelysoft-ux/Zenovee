@@ -5,11 +5,16 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16">
-      <h1 className="text-3xl font-semibold">Privacy Policy</h1>
-      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Last updated: {new Date().toLocaleDateString()}</p>
+    <div className="mx-auto max-w-5xl px-4 py-16">
+      <section className="zen-card-strong rounded-[2rem] px-8 py-10">
+        <div className="inline-flex rounded-full border border-sky-400/20 bg-sky-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-sky-300">
+          Legal
+        </div>
+        <h1 className="mt-5 text-4xl font-semibold text-white">Privacy Policy</h1>
+        <p className="mt-3 text-sm text-slate-300">Last updated: {new Date().toLocaleDateString()}</p>
+      </section>
 
-      <div className="prose prose-zinc mt-8 max-w-none dark:prose-invert">
+      <div className="zen-card prose prose-invert mt-8 max-w-none rounded-[1.5rem] p-8 prose-headings:text-white prose-p:text-slate-300 prose-li:text-slate-300 prose-strong:text-white prose-a:text-sky-300">
         <p>
           This Privacy Policy describes how <strong>Qorelysoft</strong> ("we", "us") collects, uses, and shares
           information when you use the Zenovee website (<strong>zenovee.in</strong>) and the <strong>Zenovee Tools</strong>{' '}

@@ -5,28 +5,33 @@ export const metadata = {
 
 export default function ExtensionHelpPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16">
-      <h1 className="text-3xl font-semibold">Zenovee Chrome Extension</h1>
-      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+    <div className="mx-auto max-w-5xl px-4 py-16">
+      <section className="zen-card-strong rounded-[2rem] px-8 py-10">
+        <div className="inline-flex rounded-full border border-blue-400/20 bg-blue-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-300">
+          Browser extension
+        </div>
+        <h1 className="mt-5 text-4xl font-semibold text-white">Zenovee Chrome Extension</h1>
+        <p className="mt-3 text-sm leading-7 text-slate-300">
         Install the extension to access Zenovee tools faster from your browser.
-      </p>
+        </p>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
         <a
-          className="inline-flex items-center justify-center rounded-md bg-black px-5 py-3 text-sm font-medium text-white hover:bg-zinc-900 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+          className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-5 py-3 text-sm font-semibold text-white"
           href="/downloads/zenovee-tools-v0.1.0.zip"
         >
           Download Extension ZIP
         </a>
         <a
-          className="inline-flex items-center justify-center rounded-md border border-zinc-300 px-5 py-3 text-sm font-medium hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
+          className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white"
           href="https://www.zenovee.in/login"
         >
           Login to Zenovee
         </a>
       </div>
+      </section>
 
-      <div className="prose prose-zinc mt-10 max-w-none dark:prose-invert">
+      <div className="zen-card prose prose-invert mt-10 max-w-none rounded-[1.5rem] p-8 prose-headings:text-white prose-p:text-slate-300 prose-li:text-slate-300 prose-strong:text-white prose-a:text-sky-300">
         <h2>Download</h2>
         <p>
           Your admin will share you a ZIP file like: <code>zenovee-tools-v0.1.0.zip</code>.
