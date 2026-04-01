@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import { getToolBySlug, isToolUpcoming } from '@/lib/toolsCatalog'
+import { getToolBySlug, isToolFree, isToolUpcoming } from '@/lib/toolsCatalog'
 import { ToolGatePlaceholder } from '@/components/ToolGatePlaceholder'
 import { ColdOutreachPersonalizationTool } from '@/components/tools/ColdOutreachPersonalizationTool'
 import { AdCopyConversionTool } from '@/components/tools/AdCopyConversionTool'
@@ -71,6 +71,7 @@ export default async function ToolSeoPage({ params }: { params: Promise<{ slug: 
   if (!tool) return notFound()
 
   const upcoming = isToolUpcoming(tool)
+  const freeNow = isToolFree(tool)
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16">
@@ -112,18 +113,8 @@ export default async function ToolSeoPage({ params }: { params: Promise<{ slug: 
               </Link>
             </div>
           </div>
-        ) : (
-          <ToolGatePlaceholder
-            requiredCategory={tool.category}
-            onUnlock={() => {
-              fetch('/api/tool-runs', {
-                method: 'POST',
-                headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({ toolSlug: tool.slug }),
-              }).catch(() => null)
-            }}
-          >
-            <div className="zen-card rounded-[1.75rem] p-6">
+        ) : freeNow ? (
+          <div className="zen-card rounded-[1.75rem] p-6">
             {tool.slug === 'viral-short-creator-engine' ? (
               <ViralShortCreatorTool />
             ) : tool.slug === 'cold-outreach-personalization-engine' ? (
@@ -228,11 +219,23 @@ export default async function ToolSeoPage({ params }: { params: Promise<{ slug: 
               <>
                 <div className="text-sm font-medium text-white">Tool interface</div>
                 <p className="mt-2 text-sm leading-7 text-slate-300">
-                  This premium tool page is wired into the paid-access system. Its full tool-specific workflow will be implemented next.
+                  This tool is free during the launch period until Razorpay is fully enabled.
                 </p>
               </>
             )}
-            </div>
+          </div>
+        ) : (
+          <ToolGatePlaceholder
+            requiredCategory={tool.category}
+            onUnlock={() => {
+              fetch('/api/tool-runs', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ toolSlug: tool.slug }),
+              }).catch(() => null)
+            }}
+          >
+            <div className="zen-card rounded-[1.75rem] p-6" />
           </ToolGatePlaceholder>
         )}
       </div>
@@ -243,7 +246,9 @@ export default async function ToolSeoPage({ params }: { params: Promise<{ slug: 
           <p className="mt-2 text-sm leading-7 text-slate-300">
             {upcoming
               ? `${tool.name} is temporarily marked as upcoming until paid billing goes live.`
-              : `${tool.name} is available through the shared credit wallet and consumes credits when used.`}
+              : freeNow
+                ? `${tool.name} is free to use right now during the launch period.`
+                : `${tool.name} is available through the shared credit wallet and consumes credits when used.`}
           </p>
         </section>
         <section className="zen-card rounded-[1.5rem] p-6">
@@ -261,11 +266,11 @@ export default async function ToolSeoPage({ params }: { params: Promise<{ slug: 
         <div className="mt-3 space-y-3 text-sm leading-7 text-slate-300">
           <p>
             <span className="font-medium text-white">Why is it locked?</span>{' '}
-            {upcoming ? 'This tool has direct operating cost and is delayed until billing is live.' : 'This tool requires paid credits to use.'}
+            {upcoming ? 'This tool has direct operating cost and is delayed until billing is live.' : freeNow ? 'This tool is not locked right now. It is free during the launch period.' : 'This tool requires paid credits to use.'}
           </p>
           <p>
             <span className="font-medium text-white">How do I get access?</span>{' '}
-            {upcoming ? 'Come back when Razorpay goes live in 20–30 days.' : 'Buy credits from the pricing or checkout page.'}
+            {upcoming ? 'Come back when Razorpay goes live in 20–30 days.' : freeNow ? 'Open the tool and start using it for free now.' : 'Buy credits from the pricing or checkout page.'}
           </p>
         </div>
       </section>

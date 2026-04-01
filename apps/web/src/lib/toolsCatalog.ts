@@ -87,3 +87,16 @@ export function getToolBySlug(slug: string): ToolDef | undefined {
 export function isToolUpcoming(tool: ToolDef) {
   return tool.availability === 'upcoming'
 }
+
+export function isToolFree(tool: ToolDef) {
+  return !isToolUpcoming(tool)
+}
+
+export function sortToolsForLaunch<T extends ToolDef>(tools: T[]) {
+  return [...tools].sort((a, b) => {
+    const aUpcoming = isToolUpcoming(a) ? 1 : 0
+    const bUpcoming = isToolUpcoming(b) ? 1 : 0
+    if (aUpcoming !== bUpcoming) return aUpcoming - bUpcoming
+    return a.name.localeCompare(b.name)
+  })
+}
