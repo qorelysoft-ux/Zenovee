@@ -30,6 +30,8 @@ export async function GET(req: Request) {
         amount: true,
         currency: true,
         category: true,
+        creditPackId: true,
+        creditsGranted: true,
         createdAt: true,
         razorpayPaymentId: true,
         razorpayOrderId: true,

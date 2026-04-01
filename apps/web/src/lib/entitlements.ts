@@ -1,25 +1,22 @@
 import { apiFetch } from './api'
 
-export type ToolCategory =
-  | 'MARKETING'
-  | 'DEV_ASSISTANT'
-  | 'ECOM_IMAGE'
-  | 'SEO_GROWTH'
-  | 'BUSINESS_AUTOMATION'
+export type ToolCategory = 'MARKETING' | 'DEV_ASSISTANT' | 'ECOM_IMAGE' | 'SEO_GROWTH' | 'BUSINESS_AUTOMATION'
 
-export type Entitlement = {
+export type CreditLedgerEntry = {
   id: string
-  category: ToolCategory
-  status: string
-  currentPeriodStart: string | null
-  currentPeriodEnd: string | null
+  delta: number
+  balanceAfter: number
+  reason: string
+  toolSlug: string | null
+  createdAt: string
 }
 
-export async function getActiveEntitlements(): Promise<Entitlement[]> {
-  const resp = await apiFetch<{ ok: true; entitlements: Entitlement[] }>('/me/entitlements')
-  return resp.entitlements
+export type CreditState = {
+  balance: number
+  ledger: CreditLedgerEntry[]
 }
 
-export function hasCategory(entitlements: Entitlement[], category: ToolCategory): boolean {
-  return entitlements.some((e) => e.category === category && e.status === 'ACTIVE')
+export async function getCreditState(): Promise<CreditState> {
+  const resp = await apiFetch<{ ok: true; balance: number; ledger: CreditLedgerEntry[] }>('/me/entitlements')
+  return { balance: resp.balance, ledger: resp.ledger }
 }

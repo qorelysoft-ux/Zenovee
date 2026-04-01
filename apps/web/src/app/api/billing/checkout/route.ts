@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import type { ToolCategory } from '@prisma/client'
 
 import { requireSupabaseUserFromRequest } from '../../_lib/auth'
 import { prisma } from '../../_lib/prisma'
 import { rateLimitOrThrow } from '../../_lib/rateLimit'
-import { createRazorpayBasicAuthHeader, getRazorpayPlanId, getRazorpayConfig } from '@/lib/billing'
+import { createRazorpayBasicAuthHeader, getRazorpayConfig } from '@/lib/billing'
+import { getCreditPacks } from '@/lib/credits'
 
 const bodySchema = z.object({
-  category: z.enum(['MARKETING', 'DEV_ASSISTANT', 'ECOM_IMAGE', 'SEO_GROWTH', 'BUSINESS_AUTOMATION']),
+  packId: z.string().min(1).max(100),
 })
 
 export async function POST(req: Request) {
@@ -27,34 +27,36 @@ export async function POST(req: Request) {
     })
 
     const config = getRazorpayConfig()
-    const planId = getRazorpayPlanId(body.category)
-    if (!config.isConfigured || !planId) {
+    const packs = await getCreditPacks()
+    const pack = packs.find((item) => item.id === body.packId)
+    if (!config.isConfigured || !pack) {
       return NextResponse.json(
         {
           ok: false,
           error: 'billing_not_configured',
-          message: 'Razorpay keys or category plan IDs are missing.',
+          message: 'Razorpay keys or credit packs are missing.',
         },
         { status: 503 },
       )
     }
 
     const authHeader = createRazorpayBasicAuthHeader(config.keyId!, config.keySecret!)
-    const category = body.category as ToolCategory
-    const response = await fetch('https://api.razorpay.com/v1/subscriptions', {
+    const receipt = `credits_${user.id}_${pack.id}_${Date.now()}`
+    const response = await fetch('https://api.razorpay.com/v1/orders', {
       method: 'POST',
       headers: {
         authorization: authHeader,
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        plan_id: planId,
-        total_count: 120,
-        customer_notify: 1,
+        amount: pack.amountInr,
+        currency: 'INR',
+        receipt,
         notes: {
           prismaUserId: user.id,
           email: user.email,
-          category,
+          packId: pack.id,
+          credits: String(pack.credits),
         },
       }),
       cache: 'no-store',
@@ -65,7 +67,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           ok: false,
-          error: 'razorpay_subscription_create_failed',
+          error: 'razorpay_order_create_failed',
           details: json,
         },
         { status: 502 },
@@ -74,7 +76,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       ok: true,
-      subscription: json,
+      order: json,
+      pack,
       keyId: config.keyId,
     })
   } catch (e) {

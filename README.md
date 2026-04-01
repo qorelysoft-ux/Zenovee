@@ -35,19 +35,20 @@ This repository is **in progress** toward the current Zenovee premium multi-tool
   - `/downloads/zenovee-tools-v0.1.0.zip` (hosted ZIP)
 - Chrome extension capabilities:
   - login/logout
-  - entitlement visibility
+  - credit balance visibility
   - premium quick-launch buttons
   - selected-text handoff into `/tools?q=...`
   - popup search handoff into matching tools
-- Safe billing scaffolding:
+- Razorpay credit billing flow:
   - `/api/billing/checkout`
   - `/api/billing/webhooks/razorpay`
+  - shared credit wallet, ledger, and pay-as-you-go tool deductions
 - In-app documentation page: `/documentation`
-- Checkout placeholder page: `/checkout`
+- Credit checkout page: `/checkout`
 
 ⏳ Still to implement (major items):
-- Razorpay subscriptions + webhook verification + subscription lifecycle
-- automated billing-linked entitlement activation/cancel/renew flows
+- live Razorpay key rollout and real payment verification in production
+- final migration cleanup for databases that already contain manually created tables
 - deeper extension direct-to-specific-tool workflows
 - final production verification and hardening
 - final release cleanup / final docs polish
@@ -149,6 +150,9 @@ Deploy the **Next.js app inside `apps/web`**.
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `DATABASE_URL`
    - `GEMINI_API_KEY`
+   - `RAZORPAY_KEY_ID`
+   - `RAZORPAY_KEY_SECRET`
+   - `RAZORPAY_WEBHOOK_SECRET`
 5. Redeploy after saving env vars
 
 #### Important note about this app
@@ -158,9 +162,11 @@ That means your Vercel deployment also needs server-side environment variables f
 
 - Prisma database access (`DATABASE_URL`)
 - Gemini tool generation (`GEMINI_API_KEY`)
+- Razorpay order creation + webhook verification (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`)
 
 If `DATABASE_URL` is missing, admin/data-backed API routes will fail.
 If `GEMINI_API_KEY` is missing, AI-powered tools will fail.
+If Razorpay keys are missing, credit checkout and automatic top-ups will fail.
 
 #### Recommended Vercel environment variables
 
@@ -171,6 +177,9 @@ NEXT_PUBLIC_SUPABASE_URL=https://<your-project-ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
 DATABASE_URL=<your-postgres-or-supabase-prisma-url>
 GEMINI_API_KEY=<your-gemini-api-key>
+RAZORPAY_KEY_ID=<your-razorpay-key-id>
+RAZORPAY_KEY_SECRET=<your-razorpay-key-secret>
+RAZORPAY_WEBHOOK_SECRET=<your-razorpay-webhook-secret>
 NODE_ENV=production
 ```
 
@@ -181,7 +190,7 @@ Before clicking Deploy in Vercel, confirm:
 - Repo is connected to GitHub
 - Root Directory is `apps/web`
 - Build command is `npm run build`
-- All 4 required environment variables are added
+- All required environment variables are added
 - Prisma schema exists at `prisma/schema.prisma` in the repo root
 
 #### If Vercel build fails
@@ -197,10 +206,13 @@ Most likely causes:
 3. **Missing `GEMINI_API_KEY`**
    - required for AI generation endpoints
 
-4. **Invalid Supabase public keys**
+4. **Missing Razorpay keys / webhook secret**
+   - checkout and automatic credit top-ups will fail
+
+5. **Invalid Supabase public keys**
    - login/register/dashboard will fail
 
-5. **Database not migrated**
+6. **Database not migrated**
    - Prisma-backed routes may error until schema is applied
 
 #### Domain mapping
@@ -248,10 +260,27 @@ npm run start
 
 ---
 
-## Next milestone
+## Monetization model
 
-The next major milestone is **Razorpay subscriptions + automated billing lifecycle**.
-Once that is in place, Zenovee will move from admin-granted premium access into full production billing automation.
+Zenovee now targets a **Razorpay credit wallet** model instead of subscriptions:
+
+- users buy one-time credit packs
+- Razorpay webhook credits the wallet automatically after successful payment
+- every tool run deducts credits atomically
+- one shared balance works across all categories
+
+## Current migration note
+
+If `prisma migrate deploy` fails with something like `relation "AdminAuditLog" already exists`, your database likely already contains tables that an old migration is trying to create.
+
+That means you need to reconcile migration history before applying new migrations. Typical fix:
+
+```bash
+npx prisma migrate resolve --applied 20260322192500_add_admin_audit_log --schema prisma/schema.prisma
+npx prisma migrate deploy --schema prisma/schema.prisma
+```
+
+Only do this if that table really already exists and matches the intended migration state.
 
 ## API Database Connectivity (Supabase)
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 
-import { getActiveEntitlements, hasCategory, type Entitlement, type ToolCategory } from '@/lib/entitlements'
+import { getCreditState, type CreditState, type ToolCategory } from '@/lib/entitlements'
 import { ToolLocked } from './ToolLocked'
 
 export function ToolGatePlaceholder({
@@ -15,20 +15,17 @@ export function ToolGatePlaceholder({
   children: React.ReactNode
 }) {
   const [loading, setLoading] = useState(true)
-  const [entitlements, setEntitlements] = useState<Entitlement[]>([])
+  const [creditState, setCreditState] = useState<CreditState>({ balance: 0, ledger: [] })
 
-  const canUse = useMemo(
-    () => hasCategory(entitlements, requiredCategory),
-    [entitlements, requiredCategory],
-  )
+  const canUse = useMemo(() => creditState.balance > 0, [creditState.balance])
 
   useEffect(() => {
     let mounted = true
     ;(async () => {
       try {
-        const ents = await getActiveEntitlements()
+        const state = await getCreditState()
         if (!mounted) return
-        setEntitlements(ents)
+        setCreditState(state)
       } catch {
         // Not logged in => locked
       } finally {
@@ -60,7 +57,7 @@ export function ToolGatePlaceholder({
       SEO_GROWTH: 'SEO Growth Engine',
       BUSINESS_AUTOMATION: 'Business Automation Toolkit',
     }
-    return <ToolLocked category={label[requiredCategory]} />
+    return <ToolLocked category={label[requiredCategory]} credits={creditState.balance} />
   }
 
   return <>{children}</>

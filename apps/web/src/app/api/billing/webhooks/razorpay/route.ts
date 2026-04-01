@@ -1,23 +1,8 @@
 import { NextResponse } from 'next/server'
-import type { ToolCategory } from '@prisma/client'
+import { CreditLedgerReason } from '@prisma/client'
 
 import { prisma } from '../../../_lib/prisma'
 import { verifyRazorpayWebhookSignature } from '@/lib/billing'
-
-type BillingCategory = 'MARKETING' | 'DEV_ASSISTANT' | 'ECOM_IMAGE' | 'SEO_GROWTH' | 'BUSINESS_AUTOMATION'
-
-function toToolCategory(category?: string | null): ToolCategory | null {
-  if (
-    category === 'MARKETING' ||
-    category === 'DEV_ASSISTANT' ||
-    category === 'ECOM_IMAGE' ||
-    category === 'SEO_GROWTH' ||
-    category === 'BUSINESS_AUTOMATION'
-  ) {
-    return category as unknown as ToolCategory
-  }
-  return null
-}
 
 export async function POST(req: Request) {
   const payload = await req.text()
@@ -81,69 +66,58 @@ export async function POST(req: Request) {
       amount?: number
       currency?: string
       status?: string
-      notes?: { prismaUserId?: string; category?: string }
+      notes?: { prismaUserId?: string; packId?: string; credits?: string }
     }
 
-    const category = toToolCategory(entity.notes?.category)
-    if (entity.notes?.prismaUserId && entity.amount && entity.currency) {
-      await prisma.payment.upsert({
-        where: { razorpayPaymentId: entity.id ?? '' },
-        create: {
-          userId: entity.notes.prismaUserId,
-          provider: 'RAZORPAY',
-          status: entity.status === 'captured' ? 'CAPTURED' : entity.status === 'authorized' ? 'AUTHORIZED' : 'CREATED',
-          amount: entity.amount,
-          currency: entity.currency,
-          category,
-          razorpayPaymentId: entity.id,
-          razorpayOrderId: entity.order_id ?? null,
-          rawPayload: json as never,
-        },
-        update: {
-          status: entity.status === 'captured' ? 'CAPTURED' : entity.status === 'authorized' ? 'AUTHORIZED' : 'CREATED',
-          rawPayload: json as never,
-        },
-      })
-    }
-  }
+    if (entity.notes?.prismaUserId && entity.amount && entity.currency && entity.id) {
+      const creditsGranted = Number(entity.notes?.credits ?? 0)
+      const paymentStatus = entity.status === 'captured' ? 'CAPTURED' : entity.status === 'authorized' ? 'AUTHORIZED' : 'CREATED'
 
-  if (subscriptionEntity) {
-    const entity = subscriptionEntity as {
-      id?: string
-      status?: string
-      plan_id?: string
-      notes?: { prismaUserId?: string; category?: string }
-      current_start?: number
-      current_end?: number
-    }
-
-    const category = toToolCategory(entity.notes?.category)
-
-    if (entity.notes?.prismaUserId && category) {
-      await prisma.categoryEntitlement.upsert({
-        where: {
-          userId_category: {
-            userId: entity.notes.prismaUserId,
-            category,
+      await prisma.$transaction(async (tx) => {
+        const payment = await tx.payment.upsert({
+          where: { razorpayPaymentId: entity.id! },
+          create: {
+            userId: entity.notes!.prismaUserId!,
+            provider: 'RAZORPAY',
+            status: paymentStatus,
+            amount: entity.amount!,
+            currency: entity.currency!,
+            creditPackId: entity.notes?.packId ?? null,
+            creditsGranted: creditsGranted || null,
+            razorpayPaymentId: entity.id,
+            razorpayOrderId: entity.order_id ?? null,
+            rawPayload: json as never,
           },
-        },
-        create: {
-          userId: entity.notes.prismaUserId,
-          category,
-          status: entity.status === 'active' ? 'ACTIVE' : entity.status === 'cancelled' ? 'CANCELED' : 'INCOMPLETE',
-          currentPeriodStart: entity.current_start ? new Date(entity.current_start * 1000) : null,
-          currentPeriodEnd: entity.current_end ? new Date(entity.current_end * 1000) : null,
-          razorpaySubscriptionId: entity.id ?? null,
-          razorpayPlanId: entity.plan_id ?? null,
-        },
-        update: {
-          status: entity.status === 'active' ? 'ACTIVE' : entity.status === 'cancelled' ? 'CANCELED' : 'INCOMPLETE',
-          currentPeriodStart: entity.current_start ? new Date(entity.current_start * 1000) : null,
-          currentPeriodEnd: entity.current_end ? new Date(entity.current_end * 1000) : null,
-          razorpaySubscriptionId: entity.id ?? null,
-          razorpayPlanId: entity.plan_id ?? null,
-          canceledAt: entity.status === 'cancelled' ? new Date() : null,
-        },
+          update: {
+            status: paymentStatus,
+            creditPackId: entity.notes?.packId ?? null,
+            creditsGranted: creditsGranted || null,
+            rawPayload: json as never,
+          },
+        })
+
+        if (paymentStatus === 'CAPTURED' && creditsGranted > 0) {
+          const existingLedger = await tx.creditLedger.findUnique({ where: { referenceId: `payment:${payment.id}` } })
+          if (!existingLedger) {
+            const balance = await tx.creditBalance.upsert({
+              where: { userId: entity.notes!.prismaUserId! },
+              create: { userId: entity.notes!.prismaUserId!, balance: creditsGranted },
+              update: { balance: { increment: creditsGranted } },
+            })
+
+            await tx.creditLedger.create({
+              data: {
+                userId: entity.notes!.prismaUserId!,
+                delta: creditsGranted,
+                balanceAfter: balance.balance,
+                reason: CreditLedgerReason.TOP_UP,
+                referenceId: `payment:${payment.id}`,
+                paymentId: payment.id,
+                metadata: json as never,
+              },
+            })
+          }
+        }
       })
     }
   }

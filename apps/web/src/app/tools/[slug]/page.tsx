@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import { getToolBySlug } from '@/lib/toolsCatalog'
+import { getToolBySlug, isToolUpcoming } from '@/lib/toolsCatalog'
 import { ToolGatePlaceholder } from '@/components/ToolGatePlaceholder'
 import { ColdOutreachPersonalizationTool } from '@/components/tools/ColdOutreachPersonalizationTool'
 import { AdCopyConversionTool } from '@/components/tools/AdCopyConversionTool'
@@ -70,6 +70,8 @@ export default async function ToolSeoPage({ params }: { params: Promise<{ slug: 
 
   if (!tool) return notFound()
 
+  const upcoming = isToolUpcoming(tool)
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-16">
       <section className="zen-card-strong rounded-[2rem] px-8 py-10">
@@ -84,23 +86,44 @@ export default async function ToolSeoPage({ params }: { params: Promise<{ slug: 
           <div className="rounded-[1.5rem] border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-300">
             <div className="text-xs uppercase tracking-[0.2em] text-slate-400">Suite</div>
             <div className="mt-2 font-semibold text-white">{tool.category}</div>
+            {upcoming ? (
+              <div className="mt-3 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs font-medium text-amber-200">
+                {tool.availabilityNote}
+              </div>
+            ) : null}
           </div>
         </div>
       </section>
 
       <div className="mt-10">
-        <ToolGatePlaceholder
-          requiredCategory={tool.category}
-          onUnlock={() => {
-            // best-effort analytics: record a run once the user has access
-            fetch('/api/tool-runs', {
-              method: 'POST',
-              headers: { 'content-type': 'application/json' },
-              body: JSON.stringify({ toolSlug: tool.slug }),
-            }).catch(() => null)
-          }}
-        >
-          <div className="zen-card rounded-[1.75rem] p-6">
+        {upcoming ? (
+          <div className="zen-card rounded-[1.75rem] border border-amber-400/20 bg-amber-400/10 p-6 text-amber-100">
+            <div className="text-lg font-semibold">Temporarily marked as upcoming</div>
+            <p className="mt-3 text-sm leading-7">
+              This tool has direct operating cost for us, so it will stay unavailable until paid billing is live.
+              Expected rollout: <span className="font-semibold">20–30 days</span>.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link href="/pricing" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-zinc-900">
+                View pricing
+              </Link>
+              <Link href="/tools" className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white">
+                Browse available tools
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <ToolGatePlaceholder
+            requiredCategory={tool.category}
+            onUnlock={() => {
+              fetch('/api/tool-runs', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ toolSlug: tool.slug }),
+              }).catch(() => null)
+            }}
+          >
+            <div className="zen-card rounded-[1.75rem] p-6">
             {tool.slug === 'viral-short-creator-engine' ? (
               <ViralShortCreatorTool />
             ) : tool.slug === 'cold-outreach-personalization-engine' ? (
@@ -209,15 +232,18 @@ export default async function ToolSeoPage({ params }: { params: Promise<{ slug: 
                 </p>
               </>
             )}
-          </div>
-        </ToolGatePlaceholder>
+            </div>
+          </ToolGatePlaceholder>
+        )}
       </div>
 
       <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
         <section className="zen-card rounded-[1.5rem] p-6">
           <h2 className="text-xl font-semibold text-white">How it works</h2>
           <p className="mt-2 text-sm leading-7 text-slate-300">
-            {tool.name} is part of the {tool.category} category and requires an active subscription for access.
+            {upcoming
+              ? `${tool.name} is temporarily marked as upcoming until paid billing goes live.`
+              : `${tool.name} is available through the shared credit wallet and consumes credits when used.`}
           </p>
         </section>
         <section className="zen-card rounded-[1.5rem] p-6">
@@ -234,12 +260,12 @@ export default async function ToolSeoPage({ params }: { params: Promise<{ slug: 
         <h2 className="text-xl font-semibold text-white">FAQ</h2>
         <div className="mt-3 space-y-3 text-sm leading-7 text-slate-300">
           <p>
-            <span className="font-medium text-white">Why is it locked?</span> This tool is part of
-            a paid category.
+            <span className="font-medium text-white">Why is it locked?</span>{' '}
+            {upcoming ? 'This tool has direct operating cost and is delayed until billing is live.' : 'This tool requires paid credits to use.'}
           </p>
           <p>
-            <span className="font-medium text-white">How do I get access?</span> Subscribe to the
-            category on the Pricing page.
+            <span className="font-medium text-white">How do I get access?</span>{' '}
+            {upcoming ? 'Come back when Razorpay goes live in 20–30 days.' : 'Buy credits from the pricing or checkout page.'}
           </p>
         </div>
       </section>

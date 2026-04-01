@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { requireSupabaseUserFromRequest } from '../../_lib/auth'
 import { prisma } from '../../_lib/prisma'
+import { getCreditBalance } from '@/lib/credits'
 
 export async function GET(req: Request) {
   try {
@@ -15,21 +16,22 @@ export async function GET(req: Request) {
       select: { id: true },
     })
 
-    const entitlements = await prisma.categoryEntitlement.findMany({
+    const balance = await getCreditBalance(user.id)
+    const recentLedger = await prisma.creditLedger.findMany({
       where: { userId: user.id },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
       select: {
         id: true,
-        category: true,
-        status: true,
-        currentPeriodStart: true,
-        currentPeriodEnd: true,
-        canceledAt: true,
-        razorpaySubscriptionId: true,
+        delta: true,
+        balanceAfter: true,
+        reason: true,
+        toolSlug: true,
+        createdAt: true,
       },
-      orderBy: [{ status: 'asc' }, { category: 'asc' }],
     })
 
-    return NextResponse.json({ ok: true, entitlements })
+    return NextResponse.json({ ok: true, balance, ledger: recentLedger })
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'unknown'
     const code = msg === 'missing_bearer_token' || msg === 'invalid_token' ? 401 : 500

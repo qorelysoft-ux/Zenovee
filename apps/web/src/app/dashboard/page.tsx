@@ -11,14 +11,13 @@ type UserInfo = {
   email?: string
 }
 
-type Entitlement = {
+type CreditLedgerRow = {
   id: string
-  category: 'MARKETING' | 'DEV_ASSISTANT' | 'ECOM_IMAGE' | 'SEO_GROWTH' | 'BUSINESS_AUTOMATION'
-  status: string
-  currentPeriodStart: string | null
-  currentPeriodEnd: string | null
-  canceledAt?: string | null
-  razorpaySubscriptionId?: string | null
+  delta: number
+  balanceAfter: number
+  reason: string
+  toolSlug: string | null
+  createdAt: string
 }
 
 type ApiKeyRow = {
@@ -37,23 +36,18 @@ type PaymentRow = {
   amount: number
   currency: string
   category: string | null
+  creditPackId?: string | null
+  creditsGranted?: number | null
   createdAt: string
   razorpayPaymentId: string | null
   razorpayOrderId: string | null
 }
 
-const categoryLabels: Record<Entitlement['category'], string> = {
-  MARKETING: 'AI Marketing Engine',
-  DEV_ASSISTANT: 'AI Developer Assistant',
-  ECOM_IMAGE: 'E-commerce Image Engine',
-  SEO_GROWTH: 'SEO Growth Engine',
-  BUSINESS_AUTOMATION: 'Business Automation Toolkit',
-}
-
 export default function DashboardPage() {
   const router = useRouter()
   const [user, setUser] = useState<UserInfo | null>(null)
-  const [entitlements, setEntitlements] = useState<Entitlement[]>([])
+  const [creditBalance, setCreditBalance] = useState(0)
+  const [ledger, setLedger] = useState<CreditLedgerRow[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [apiKeys, setApiKeys] = useState<ApiKeyRow[]>([])
@@ -61,11 +55,6 @@ export default function DashboardPage() {
   const [newKeyName, setNewKeyName] = useState('Primary integration')
   const [apiKeySecret, setApiKeySecret] = useState<string | null>(null)
   const [apiKeyBusy, setApiKeyBusy] = useState(false)
-  const [subscriptionBusyId, setSubscriptionBusyId] = useState<string | null>(null)
-  const activeEntitlements = entitlements.filter((e) => e.status === 'ACTIVE')
-  const upcomingRenewals = activeEntitlements
-    .filter((e) => e.currentPeriodEnd)
-    .sort((a, b) => new Date(a.currentPeriodEnd!).getTime() - new Date(b.currentPeriodEnd!).getTime())
 
   useEffect(() => {
     let mounted = true
@@ -78,9 +67,10 @@ export default function DashboardPage() {
       }
       setUser({ email: data.user.email ?? undefined })
       try {
-        const resp = await apiFetch<{ ok: true; entitlements: Entitlement[] }>('/me/entitlements')
+        const resp = await apiFetch<{ ok: true; balance: number; ledger: CreditLedgerRow[] }>('/me/entitlements')
         if (!mounted) return
-        setEntitlements(resp.entitlements)
+        setCreditBalance(resp.balance)
+        setLedger(resp.ledger)
         const keyResp = await apiFetch<{ ok: true; apiKeys: ApiKeyRow[] }>('/me/api-keys')
         if (!mounted) return
         setApiKeys(keyResp.apiKeys)
@@ -135,22 +125,6 @@ export default function DashboardPage() {
     }
   }
 
-  async function cancelSubscription(entitlementId: string) {
-    setSubscriptionBusyId(entitlementId)
-    setError(null)
-    try {
-      const resp = await apiFetch<{ ok: true; entitlement: Entitlement }>('/me/subscriptions/cancel', {
-        method: 'POST',
-        body: JSON.stringify({ entitlementId }),
-      })
-      setEntitlements((prev) => prev.map((item) => (item.id === entitlementId ? resp.entitlement : item)))
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'failed_to_cancel_subscription')
-    } finally {
-      setSubscriptionBusyId(null)
-    }
-  }
-
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16">
@@ -179,27 +153,27 @@ export default function DashboardPage() {
       <div className="mt-10 grid grid-cols-1 gap-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
           <div className="zen-card rounded-[1.5rem] p-6">
-            <div className="text-sm text-slate-400">Active plans</div>
-            <div className="mt-2 text-3xl font-semibold text-white">{activeEntitlements.length}</div>
-            <p className="mt-2 text-sm text-slate-300">Categories currently unlocked for your account.</p>
+            <div className="text-sm text-slate-400">Credit balance</div>
+            <div className="mt-2 text-3xl font-semibold text-white">{creditBalance}</div>
+            <p className="mt-2 text-sm text-slate-300">One credit powers one tool run anywhere in the workspace.</p>
           </div>
           <div className="zen-card rounded-[1.5rem] p-6">
             <div className="text-sm text-slate-400">Tool access mode</div>
-            <div className="mt-2 text-3xl font-semibold text-white">Paid-only</div>
-            <p className="mt-2 text-sm text-slate-300">Every tool category requires an active paid entitlement.</p>
+            <div className="mt-2 text-3xl font-semibold text-white">Credits</div>
+            <p className="mt-2 text-sm text-slate-300">Shared pay-as-you-go access across all categories.</p>
           </div>
           <div className="zen-card rounded-[1.5rem] p-6">
-            <div className="text-sm text-slate-400">Next renewal</div>
+            <div className="text-sm text-slate-400">Last activity</div>
             <div className="mt-2 text-lg font-semibold text-white">
-              {upcomingRenewals[0]?.currentPeriodEnd ? new Date(upcomingRenewals[0].currentPeriodEnd).toLocaleDateString() : 'Not available'}
+              {ledger[0]?.createdAt ? new Date(ledger[0].createdAt).toLocaleDateString() : 'Not available'}
             </div>
-            <p className="mt-2 text-sm text-slate-300">Renewal history will appear here once billing is enabled.</p>
+            <p className="mt-2 text-sm text-slate-300">Latest top-up or tool run recorded on your account.</p>
           </div>
           <div className="zen-card rounded-[1.5rem] p-6">
             <div className="text-sm text-slate-400">Quick action</div>
-            <div className="mt-2 text-lg font-semibold text-white">Unlock another suite</div>
-            <Link href="/pricing" className="mt-4 inline-flex rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white">
-              View pricing
+            <div className="mt-2 text-lg font-semibold text-white">Top up balance</div>
+            <Link href="/checkout" className="mt-4 inline-flex rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white">
+              Buy credits
             </Link>
           </div>
         </div>
@@ -238,61 +212,40 @@ export default function DashboardPage() {
         </div>
 
         <div className="zen-card rounded-[1.5rem] p-6">
-          <h2 className="text-lg font-medium text-white">Your access</h2>
+          <h2 className="text-lg font-medium text-white">Credits and usage</h2>
           <p className="mt-2 text-sm text-slate-300">
-            Tools are paid-only. You can only use tools in categories you’ve purchased.
+            Zenovee is paid-only. Buy credits once, then spend them across any tool when you run a workflow.
           </p>
 
           {error ? <p className="mt-3 text-sm text-red-300">{error}</p> : null}
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            {activeEntitlements.length === 0 ? (
-              <span className="text-sm text-slate-300">No active subscriptions yet.</span>
-            ) : (
-              activeEntitlements.map((e) => (
-                <span
-                  key={e.id}
-                  className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300"
-                >
-                  {categoryLabels[e.category]}
-                </span>
-              ))
-            )}
+          <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
+            Current balance: <span className="font-semibold text-white">{creditBalance}</span> credits
           </div>
 
-          {entitlements.length > 0 ? (
+          {ledger.length > 0 ? (
             <div className="mt-6 overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="text-slate-400">
-                    <th className="border-b border-white/10 py-2 pr-4">Category</th>
-                    <th className="border-b border-white/10 py-2 pr-4">Status</th>
-                    <th className="border-b border-white/10 py-2 pr-4">Current period</th>
-                    <th className="border-b border-white/10 py-2 pr-4">Actions</th>
+                    <th className="border-b border-white/10 py-2 pr-4">When</th>
+                    <th className="border-b border-white/10 py-2 pr-4">Type</th>
+                    <th className="border-b border-white/10 py-2 pr-4">Change</th>
+                    <th className="border-b border-white/10 py-2 pr-4">Balance after</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {entitlements.map((e) => (
-                    <tr key={e.id}>
-                      <td className="border-b border-white/5 py-3 pr-4 text-white">{categoryLabels[e.category]}</td>
-                      <td className="border-b border-white/5 py-3 pr-4 text-slate-300">{e.status}</td>
+                  {ledger.map((entry) => (
+                    <tr key={entry.id}>
+                      <td className="border-b border-white/5 py-3 pr-4 text-white">{new Date(entry.createdAt).toLocaleString()}</td>
                       <td className="border-b border-white/5 py-3 pr-4 text-slate-300">
-                        {e.currentPeriodStart ? new Date(e.currentPeriodStart).toLocaleDateString() : '—'}
-                        {' → '}
-                        {e.currentPeriodEnd ? new Date(e.currentPeriodEnd).toLocaleDateString() : '—'}
+                        {entry.reason === 'TOP_UP' ? 'Credit top-up' : entry.toolSlug ? `Tool run • ${entry.toolSlug}` : entry.reason}
                       </td>
-                      <td className="border-b border-white/5 py-3 pr-4">
-                        {e.status === 'ACTIVE' ? (
-                          <button
-                            onClick={() => cancelSubscription(e.id)}
-                            disabled={subscriptionBusyId === e.id}
-                            className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white"
-                          >
-                            {subscriptionBusyId === e.id ? 'Canceling…' : 'Cancel'}
-                          </button>
-                        ) : (
-                          <span className="text-xs text-slate-400">{e.canceledAt ? `Canceled ${new Date(e.canceledAt).toLocaleDateString()}` : '—'}</span>
-                        )}
+                      <td className="border-b border-white/5 py-3 pr-4 text-slate-300">
+                        {entry.delta > 0 ? `+${entry.delta}` : entry.delta}
+                      </td>
+                      <td className="border-b border-white/5 py-3 pr-4 text-slate-300">
+                        {entry.balanceAfter}
                       </td>
                     </tr>
                   ))}
@@ -303,10 +256,10 @@ export default function DashboardPage() {
 
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
-              href="/pricing"
+              href="/checkout"
               className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white"
             >
-              View pricing
+              Buy credits
             </Link>
             <Link
               href="/tools"
@@ -391,8 +344,8 @@ export default function DashboardPage() {
         <div className="rounded-lg border border-zinc-200 p-6 dark:border-zinc-800">
           <h2 className="text-lg font-medium">Recommended next actions</h2>
           <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-300">
-            <li>Browse tools in categories you already have access to.</li>
-            <li>Upgrade your category access from the pricing page to unlock more tools.</li>
+            <li>Top up credits if your balance is running low.</li>
+            <li>Browse tools and spend credits where they create the most value.</li>
             <li>Install the Chrome extension for faster access from your browser.</li>
           </ul>
           <div className="mt-6 flex flex-wrap gap-3">
@@ -418,9 +371,10 @@ export default function DashboardPage() {
                 <thead>
                   <tr className="text-zinc-500">
                     <th className="pb-2 pr-4">Date</th>
-                    <th className="pb-2 pr-4">Category</th>
+                    <th className="pb-2 pr-4">Pack</th>
                     <th className="pb-2 pr-4">Status</th>
                     <th className="pb-2 pr-4">Amount</th>
+                    <th className="pb-2 pr-4">Credits</th>
                     <th className="pb-2 pr-4">Provider</th>
                   </tr>
                 </thead>
@@ -428,7 +382,7 @@ export default function DashboardPage() {
                   {payments.map((payment) => (
                     <tr key={payment.id}>
                       <td className="py-2 pr-4">{new Date(payment.createdAt).toLocaleDateString()}</td>
-                      <td className="py-2 pr-4">{payment.category ?? '—'}</td>
+                      <td className="py-2 pr-4">{payment.creditPackId ?? '—'}</td>
                       <td className="py-2 pr-4">{payment.status}</td>
                       <td className="py-2 pr-4">
                         {(payment.amount / 100).toLocaleString(undefined, {
@@ -436,6 +390,7 @@ export default function DashboardPage() {
                           currency: payment.currency,
                         })}
                       </td>
+                      <td className="py-2 pr-4">{payment.creditsGranted ?? '—'}</td>
                       <td className="py-2 pr-4">{payment.provider}</td>
                     </tr>
                   ))}
