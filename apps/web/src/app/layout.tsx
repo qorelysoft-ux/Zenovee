@@ -3,9 +3,52 @@ import Link from 'next/link'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Zenovee — Premium AI Workflows for Growth, Dev, SEO, Image, and Ops',
+  metadataBase: new URL('https://www.zenovee.in'),
+  title: {
+    default: 'Zenovee — AI Tools, Developer Tools, SEO Tools, Image Tools & Utilities',
+    template: '%s | Zenovee',
+  },
   description:
-    'Zenovee turns high-value workflows into premium AI-powered suites for marketing, development, e-commerce image work, SEO growth, and business automation.',
+    'Zenovee is a SaaS tools platform for AI workflows, developer utilities, SEO tools, image tools, and business automation. Use free launch tools now and explore upcoming premium tools.',
+  applicationName: 'Zenovee',
+  keywords: [
+    'Zenovee',
+    'AI tools',
+    'developer tools',
+    'SEO tools',
+    'image tools',
+    'business automation tools',
+    'online productivity tools',
+    'SaaS tools platform',
+  ],
+  alternates: {
+    canonical: 'https://www.zenovee.in',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://www.zenovee.in',
+    siteName: 'Zenovee',
+    title: 'Zenovee — AI Tools, Developer Tools, SEO Tools, Image Tools & Utilities',
+    description:
+      'Zenovee is a SaaS tools platform for AI workflows, developer utilities, SEO tools, image tools, and business automation.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Zenovee — AI Tools, Developer Tools, SEO Tools, Image Tools & Utilities',
+    description:
+      'Use Zenovee for AI workflows, developer utilities, SEO tools, image tools, and business automation.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 }
 
 export default function RootLayout({

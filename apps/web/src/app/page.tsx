@@ -1,3 +1,14 @@
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Zenovee — AI Tools, Developer Tools, SEO Tools, Image Tools & Utilities',
+  description:
+    'Zenovee is a SaaS tools platform for AI workflows, developer tools, SEO tools, image tools, and business automation. Start with free launch tools and explore upcoming premium tools.',
+  alternates: {
+    canonical: 'https://www.zenovee.in',
+  },
+}
+
 const suites = [
   {
     title: 'AI Marketing Engine',
