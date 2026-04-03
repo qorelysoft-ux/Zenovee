@@ -31,6 +31,10 @@ type AuditLogRow = {
 type ToolRunRow = {
   tool: { id: string; slug: string; name: string; category: string }
   runCount: number
+  creditsUsed: number
+  inputTokens: number
+  outputTokens: number
+  costUsd: number
 }
 
 type PaymentAdminRow = {
@@ -100,6 +104,7 @@ export default function AdminPage() {
     0,
   )
   const totalToolRuns = toolRuns.reduce((acc, row) => acc + row.runCount, 0)
+  const totalCreditsBurned = toolRuns.reduce((acc, row) => acc + row.creditsUsed, 0)
   const toolCoverage = categoryPages.map((page) => ({
     ...page,
     count: toolsCatalog.filter((tool) => tool.category === page.category).length,
@@ -287,6 +292,10 @@ export default function AdminPage() {
         <div className="zen-card rounded-[1.5rem] p-6">
           <div className="text-sm text-slate-400">Recorded tool runs</div>
           <div className="mt-2 text-3xl font-semibold text-white">{totalToolRuns}</div>
+        </div>
+        <div className="zen-card rounded-[1.5rem] p-6">
+          <div className="text-sm text-slate-400">Credits burned</div>
+          <div className="mt-2 text-3xl font-semibold text-white">{totalCreditsBurned}</div>
         </div>
       </div>
 
@@ -506,9 +515,9 @@ export default function AdminPage() {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-lg font-medium">Tool analytics</h2>
-            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-              Shows top tools by number of runs. Runs are recorded when an entitled user unlocks a tool page.
-            </p>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+                Shows top tools by number of runs, credits burned, token usage, and estimated API cost.
+              </p>
           </div>
           <button
             onClick={refreshToolRuns}
@@ -528,12 +537,15 @@ export default function AdminPage() {
                   <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Tool</th>
                   <th className="border-b border-zinc-200 py-2 pr-4 dark:border-zinc-800">Category</th>
                   <th className="border-b border-zinc-200 py-2 pr-4 text-right dark:border-zinc-800">Runs</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 text-right dark:border-zinc-800">Credits</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 text-right dark:border-zinc-800">Tokens</th>
+                  <th className="border-b border-zinc-200 py-2 pr-4 text-right dark:border-zinc-800">Cost (USD)</th>
                 </tr>
               </thead>
               <tbody>
                 {toolRuns.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="py-4 text-zinc-600 dark:text-zinc-300">
+                    <td colSpan={6} className="py-4 text-zinc-600 dark:text-zinc-300">
                       No tool runs recorded yet.
                     </td>
                   </tr>
@@ -548,6 +560,9 @@ export default function AdminPage() {
                       <td className="border-b border-zinc-100 py-3 pr-4 text-right dark:border-zinc-900">
                         {r.runCount}
                       </td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 text-right dark:border-zinc-900">{r.creditsUsed}</td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 text-right dark:border-zinc-900">{r.inputTokens}/{r.outputTokens}</td>
+                      <td className="border-b border-zinc-100 py-3 pr-4 text-right dark:border-zinc-900">{r.costUsd.toFixed(4)}</td>
                     </tr>
                   ))
                 )}

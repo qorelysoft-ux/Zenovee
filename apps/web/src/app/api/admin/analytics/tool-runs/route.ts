@@ -21,6 +21,7 @@ export async function GET(req: Request) {
     const topTools = await prisma.toolRun.groupBy({
       by: ['toolId'],
       _count: { toolId: true },
+      _sum: { creditsUsed: true },
       orderBy: { _count: { toolId: 'desc' } },
       take,
     })
@@ -32,10 +33,24 @@ export async function GET(req: Request) {
     })
     const toolById = new Map(tools.map((t) => [t.id, t]))
 
-    const rows = topTools.map((r) => ({
-      tool: toolById.get(r.toolId) ?? { id: r.toolId, slug: 'unknown', name: 'Unknown', category: 'MARKETING' },
-      runCount: r._count.toolId,
-    }))
+    const usageAgg = await prisma.usageLog.groupBy({
+      by: ['toolId'],
+      where: { toolId: { in: toolIds }, estimated: false },
+      _sum: { creditsUsed: true, inputTokens: true, outputTokens: true, costUsd: true },
+    })
+    const usageByToolId = new Map(usageAgg.map((row) => [row.toolId, row]))
+
+    const rows = topTools.map((r) => {
+      const usage = usageByToolId.get(r.toolId)
+      return {
+        tool: toolById.get(r.toolId) ?? { id: r.toolId, slug: 'unknown', name: 'Unknown', category: 'MARKETING' },
+        runCount: r._count.toolId,
+        creditsUsed: Number(r._sum.creditsUsed ?? usage?._sum.creditsUsed ?? 0),
+        inputTokens: Number(usage?._sum.inputTokens ?? 0),
+        outputTokens: Number(usage?._sum.outputTokens ?? 0),
+        costUsd: Number(usage?._sum.costUsd ?? 0),
+      }
+    })
 
     return NextResponse.json({ ok: true, rows })
   } catch (e) {

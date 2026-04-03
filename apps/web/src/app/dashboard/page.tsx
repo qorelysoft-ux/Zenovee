@@ -43,6 +43,29 @@ type PaymentRow = {
   razorpayOrderId: string | null
 }
 
+type UsageRow = {
+  id: string
+  creditsUsed: number
+  inputTokens: number
+  outputTokens: number
+  createdAt: string
+  tool: {
+    slug: string
+    name: string
+    category: string
+  }
+}
+
+type UsageSummary = {
+  planType: string
+  dailyLimit: number
+  usedToday: number
+  requestsToday: number
+  inputTokensToday: number
+  outputTokensToday: number
+  recentUsage: UsageRow[]
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const [user, setUser] = useState<UserInfo | null>(null)
@@ -52,6 +75,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [apiKeys, setApiKeys] = useState<ApiKeyRow[]>([])
   const [payments, setPayments] = useState<PaymentRow[]>([])
+  const [usage, setUsage] = useState<UsageSummary | null>(null)
   const [newKeyName, setNewKeyName] = useState('Primary integration')
   const [apiKeySecret, setApiKeySecret] = useState<string | null>(null)
   const [apiKeyBusy, setApiKeyBusy] = useState(false)
@@ -67,10 +91,11 @@ export default function DashboardPage() {
       }
       setUser({ email: data.user.email ?? undefined })
       try {
-        const resp = await apiFetch<{ ok: true; balance: number; ledger: CreditLedgerRow[] }>('/me/entitlements')
+        const resp = await apiFetch<{ ok: true; balance: number; ledger: CreditLedgerRow[]; usage: UsageSummary }>('/me/entitlements')
         if (!mounted) return
         setCreditBalance(resp.balance)
         setLedger(resp.ledger)
+        setUsage(resp.usage)
         const keyResp = await apiFetch<{ ok: true; apiKeys: ApiKeyRow[] }>('/me/api-keys')
         if (!mounted) return
         setApiKeys(keyResp.apiKeys)
@@ -155,19 +180,19 @@ export default function DashboardPage() {
           <div className="zen-card rounded-[1.5rem] p-6">
             <div className="text-sm text-slate-400">Credit balance</div>
             <div className="mt-2 text-3xl font-semibold text-white">{creditBalance}</div>
-            <p className="mt-2 text-sm text-slate-300">One credit powers one tool run anywhere in the workspace.</p>
+            <p className="mt-2 text-sm text-slate-300">Dynamic credits are deducted based on tool complexity and actual usage.</p>
           </div>
           <div className="zen-card rounded-[1.5rem] p-6">
             <div className="text-sm text-slate-400">Tool access mode</div>
-            <div className="mt-2 text-3xl font-semibold text-white">Credits</div>
-            <p className="mt-2 text-sm text-slate-300">Shared pay-as-you-go access across all categories.</p>
+            <div className="mt-2 text-3xl font-semibold text-white">{usage?.planType ?? 'Credits'}</div>
+            <p className="mt-2 text-sm text-slate-300">Daily limit: {usage?.dailyLimit ?? 0} credits.</p>
           </div>
           <div className="zen-card rounded-[1.5rem] p-6">
             <div className="text-sm text-slate-400">Last activity</div>
             <div className="mt-2 text-lg font-semibold text-white">
               {ledger[0]?.createdAt ? new Date(ledger[0].createdAt).toLocaleDateString() : 'Not available'}
             </div>
-            <p className="mt-2 text-sm text-slate-300">Latest top-up or tool run recorded on your account.</p>
+            <p className="mt-2 text-sm text-slate-300">Latest top-up, dynamic tool run, or credit activity recorded on your account.</p>
           </div>
           <div className="zen-card rounded-[1.5rem] p-6">
             <div className="text-sm text-slate-400">Quick action</div>
@@ -223,6 +248,23 @@ export default function DashboardPage() {
             Current balance: <span className="font-semibold text-white">{creditBalance}</span> credits
           </div>
 
+          {usage ? (
+            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-4">
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
+                Used today: <span className="font-semibold text-white">{usage.usedToday}</span>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
+                Requests today: <span className="font-semibold text-white">{usage.requestsToday}</span>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
+                Input tokens: <span className="font-semibold text-white">{usage.inputTokensToday}</span>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
+                Output tokens: <span className="font-semibold text-white">{usage.outputTokensToday}</span>
+              </div>
+            </div>
+          ) : null}
+
           {ledger.length > 0 ? (
             <div className="mt-6 overflow-x-auto">
               <table className="w-full text-left text-sm">
@@ -247,6 +289,31 @@ export default function DashboardPage() {
                       <td className="border-b border-white/5 py-3 pr-4 text-slate-300">
                         {entry.balanceAfter}
                       </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : null}
+
+          {usage?.recentUsage?.length ? (
+            <div className="mt-6 overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="text-slate-400">
+                    <th className="border-b border-white/10 py-2 pr-4">Tool</th>
+                    <th className="border-b border-white/10 py-2 pr-4">Credits</th>
+                    <th className="border-b border-white/10 py-2 pr-4">Tokens</th>
+                    <th className="border-b border-white/10 py-2 pr-4">When</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {usage.recentUsage.map((entry) => (
+                    <tr key={entry.id}>
+                      <td className="border-b border-white/5 py-3 pr-4 text-white">{entry.tool.name}</td>
+                      <td className="border-b border-white/5 py-3 pr-4 text-slate-300">{entry.creditsUsed}</td>
+                      <td className="border-b border-white/5 py-3 pr-4 text-slate-300">{entry.inputTokens}/{entry.outputTokens}</td>
+                      <td className="border-b border-white/5 py-3 pr-4 text-slate-300">{new Date(entry.createdAt).toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
