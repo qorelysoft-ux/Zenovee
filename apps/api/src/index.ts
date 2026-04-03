@@ -9,6 +9,7 @@ loadEnv()
 import { getSupabaseAdminClient } from './lib/supabase'
 import { requireAdmin, requireUser, type AuthedRequest } from './lib/auth'
 import { prisma } from './lib/prisma'
+import { ToolCategory } from '@prisma/client'
 import { z } from 'zod'
 
 const app = express()
@@ -66,7 +67,7 @@ app.get('/me/entitlements', requireUser, async (req, res) => {
 
 const adminGrantSchema = z.object({
   email: z.string().email(),
-  category: z.enum(['AI', 'DEVELOPER', 'IMAGE', 'SEO', 'TEXT', 'UTILITY']),
+  category: z.nativeEnum(ToolCategory),
 })
 
 app.post('/admin/entitlements/grant', requireUser, requireAdmin, async (req, res) => {
@@ -93,7 +94,7 @@ app.post('/admin/entitlements/grant', requireUser, requireAdmin, async (req, res
 
 const adminRevokeSchema = z.object({
   email: z.string().email(),
-  category: z.enum(['AI', 'DEVELOPER', 'IMAGE', 'SEO', 'TEXT', 'UTILITY']),
+  category: z.nativeEnum(ToolCategory),
 })
 
 app.post('/admin/entitlements/revoke', requireUser, requireAdmin, async (req, res) => {
