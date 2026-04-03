@@ -6,6 +6,10 @@ dist
 
 /generated/prisma
 
+# Extension build artifacts
+apps/extension/assets/
+apps/extension/release/
+
 # Local certificates / experiments / accidental temp files
 certs/
 scripts/pg-test.js
