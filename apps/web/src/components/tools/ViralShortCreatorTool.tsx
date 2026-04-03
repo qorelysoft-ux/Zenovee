@@ -13,18 +13,59 @@ export function ViralShortCreatorTool() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [estimatedCredits, setEstimatedCredits] = useState<number | null>(null)
+  const [creditsUsed, setCreditsUsed] = useState<number | null>(null)
+  const [remainingBalance, setRemainingBalance] = useState<number | null>(null)
 
   const wordCount = useMemo(() => sourceText.trim().split(/\s+/).filter(Boolean).length, [sourceText])
+
+  const payload = {
+    sourceText,
+    targetPlatform,
+    audience,
+    goal,
+    tone,
+  }
+
+  async function estimate() {
+    if (sourceText.trim().length < 100) {
+      setEstimatedCredits(null)
+      return
+    }
+
+    try {
+      const resp = await apiFetch<{ ok: true; estimatedCredits: number }>('/tool/run', {
+        method: 'POST',
+        body: JSON.stringify({
+          toolId: 'viral-short-creator-engine',
+          payload,
+          estimateOnly: true,
+        }),
+      })
+      setEstimatedCredits(resp.estimatedCredits)
+    } catch {
+      setEstimatedCredits(null)
+    }
+  }
 
   async function generate() {
     setLoading(true)
     setError(null)
     try {
-      const resp = await apiFetch<{ ok: true; result: string }>('/tools/viral-short-creator-engine', {
+      const resp = await apiFetch<{
+        ok: true
+        result: string
+        estimatedCredits: number
+        creditsUsed: number
+        remainingBalance: number
+      }>('/tools/viral-short-creator-engine', {
         method: 'POST',
-        body: JSON.stringify({ sourceText, targetPlatform, audience, goal, tone }),
+        body: JSON.stringify(payload),
       })
       setResult(resp.result)
+      setEstimatedCredits(resp.estimatedCredits)
+      setCreditsUsed(resp.creditsUsed)
+      setRemainingBalance(resp.remainingBalance)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'generation_failed')
     } finally {
@@ -98,6 +139,21 @@ export function ViralShortCreatorTool() {
             >
               {loading ? 'Generating…' : 'Generate viral short scripts'}
             </button>
+            <button
+              onClick={estimate}
+              disabled={loading || sourceText.trim().length < 100}
+              className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium disabled:opacity-50 dark:border-zinc-700"
+            >
+              Estimate credits
+            </button>
+            {estimatedCredits !== null ? (
+              <p className="text-sm text-zinc-600 dark:text-zinc-300">Estimated credits: {estimatedCredits}</p>
+            ) : null}
+            {creditsUsed !== null ? (
+              <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                Last run used {creditsUsed} credits{remainingBalance !== null ? ` · Balance: ${remainingBalance}` : ''}
+              </p>
+            ) : null}
             {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}
           </div>
         </div>

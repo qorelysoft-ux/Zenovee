@@ -3,6 +3,15 @@ import { z } from 'zod'
 
 import { rateLimitOrThrow } from '../../_lib/rateLimit'
 import { requireSupabaseUserFromRequest } from '../../_lib/auth'
+import {
+  enforceDailyCreditLimit,
+  ensureToolRecord,
+  getOrCreateAppUser,
+  runDynamicCreditDeduction,
+  withCreditErrorStatus,
+} from '@/lib/creditRuntime'
+import { runGeminiTool } from '@/lib/gemini'
+import { getToolBySlug } from '@/lib/toolsCatalog'
 
 const bodySchema = z.object({
   sourceText: z.string().min(100).max(20000),
@@ -40,50 +49,48 @@ ${input.sourceText}`
 export async function POST(req: Request) {
   try {
     rateLimitOrThrow(req, { keyPrefix: 'tool:viral_short_creator', limit: 20, windowMs: 60_000 })
-    await requireSupabaseUserFromRequest(req)
+    const auth = await requireSupabaseUserFromRequest(req)
 
     const body = bodySchema.parse(await req.json())
-    const apiKey = process.env.GEMINI_API_KEY
-    if (!apiKey) {
-      return NextResponse.json({ ok: false, error: 'missing_gemini_api_key' }, { status: 500 })
-    }
+    const user = await getOrCreateAppUser(auth)
+    await enforceDailyCreditLimit(user.id, user.planType)
+
+    const fromCatalog = getToolBySlug('viral-short-creator-engine')
+    const tool = await ensureToolRecord('viral-short-creator-engine', {
+      name: fromCatalog?.name,
+      category: fromCatalog?.category,
+      description: fromCatalog?.description ?? null,
+    })
 
     const prompt = buildPrompt(body)
 
-    const resp = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
-      {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-goog-api-key': apiKey,
-        },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.8,
-            topP: 0.95,
-            maxOutputTokens: 1800,
-          },
-        }),
+    const result = await runDynamicCreditDeduction({
+      userId: user.id,
+      toolId: tool.id,
+      toolSlug: 'viral-short-creator-engine',
+      payload: body,
+      execute: async () => {
+        const gemini = await runGeminiTool({
+          prompt,
+          maxOutputTokens: 1800,
+          temperature: 0.8,
+        })
+
+        return {
+          result: gemini.result,
+          inputTokens: gemini.inputTokens,
+          outputTokens: gemini.outputTokens,
+        }
       },
-    )
+    })
 
-    const json = await resp.json().catch(() => null)
-    const text =
-      json?.candidates?.[0]?.content?.parts
-        ?.map((p: { text?: string }) => p.text ?? '')
-        .join('')
-        .trim() ?? ''
-
-    if (!resp.ok || !text) {
-      return NextResponse.json(
-        { ok: false, error: json?.error?.message ?? 'gemini_generation_failed' },
-        { status: 500 },
-      )
-    }
-
-    return NextResponse.json({ ok: true, result: text })
+    return NextResponse.json({
+      ok: true,
+      result: result.result,
+      estimatedCredits: result.estimatedCredits,
+      creditsUsed: result.creditsUsed,
+      remainingBalance: result.balance,
+    })
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'unknown'
     const status = (e as any)?.status
@@ -93,7 +100,7 @@ export async function POST(req: Request) {
         { status: 429 },
       )
     }
-    const code = msg === 'missing_bearer_token' || msg === 'invalid_token' ? 401 : 500
+    const code = msg === 'missing_bearer_token' || msg === 'invalid_token' ? 401 : withCreditErrorStatus(msg)
     return NextResponse.json({ ok: false, error: msg }, { status: code })
   }
 }
