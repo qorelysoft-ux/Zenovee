@@ -18,6 +18,7 @@ model User {
   name               String?
   imageUrl           String?
   role               UserRole              @default(USER)
+  planType           PlanType              @default(FREE)
   createdAt          DateTime              @default(now())
   updatedAt          DateTime              @updatedAt
   entitlements       CategoryEntitlement[]
@@ -29,6 +30,7 @@ model User {
   apiKeys            ApiKey[]
   refreshTokens      RefreshToken[]
   toolRuns           ToolRun[]
+  usageLogs          UsageLog[]
   adminAuditLogs     AdminAuditLog[]
 }
 
@@ -63,6 +65,8 @@ model CreditPack {
   name        String
   amountInr   Int
   credits     Int
+  monthlyPrice Int?
+  includedCredits Int?
   isActive    Boolean  @default(true)
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
@@ -211,6 +215,7 @@ model Tool {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   runs        ToolRun[]
+  usageLogs   UsageLog[]
 
   @@index([category])
 }
@@ -219,6 +224,7 @@ model ToolRun {
   id        String   @id @default(cuid())
   userId    String
   toolId    String
+  creditsUsed Int?
   createdAt DateTime @default(now())
   tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -227,9 +233,44 @@ model ToolRun {
   @@index([toolId])
 }
 
+model UsageLog {
+  id            String   @id @default(cuid())
+  userId        String
+  toolId        String
+  inputTokens   Int
+  outputTokens  Int
+  creditsUsed   Int
+  costUsd       Decimal  @db.Decimal(10, 6)
+  estimated     Boolean  @default(false)
+  cacheHit      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool          Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([toolId, createdAt])
+}
+
+model Plan {
+  id               String   @id
+  name             String
+  monthlyPriceUsd  Decimal  @db.Decimal(10, 2)
+  includedCredits  Int
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
 enum UserRole {
   USER
   ADMIN
+}
+
+enum PlanType {
+  FREE
+  STARTER_300
+  GROWTH_800
+  SCALE_2000
 }
 
 enum ToolCategory {
