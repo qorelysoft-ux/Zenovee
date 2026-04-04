@@ -66,6 +66,15 @@
           <button id="openMarketingTool" class="button secondary">Search marketing tools</button>
         </div>
       </div>
+
+      <div class="section">
+        <div class="label">Run a tool with API key</div>
+        <input id="apiKey" class="input" placeholder="zv_live_..." />
+        <input id="toolSlug" class="input" placeholder="Tool slug (e.g. ad-copy-conversion-engine)" />
+        <textarea id="toolPayload" class="input" rows="4" placeholder='JSON payload e.g. {"product":"AI SaaS","audience":"founders"}'></textarea>
+        <button id="runApiTool" class="button">Run tool</button>
+        <div id="apiToolResult" class="ents">—</div>
+      </div>
     </div>
 
     <script type="module" src="popup.js"></script>

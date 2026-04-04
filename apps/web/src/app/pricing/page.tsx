@@ -1,9 +1,15 @@
 import Link from 'next/link'
 
-const packs = [
-  { id: 'starter-100', name: 'Starter 100', price: '₹99', credits: 100, desc: 'Perfect for early users who want to test real workflows without a subscription.' },
-  { id: 'growth-250', name: 'Growth 250', price: '₹199', credits: 250, desc: 'Balanced credit bundle for regular usage across AI, SEO, developer, image, and utility tools.' },
-  { id: 'scale-800', name: 'Scale 800', price: '₹499', credits: 800, desc: 'Best-value bundle for power users running tools daily across the entire workspace.' },
+const plans = [
+  { id: 'starter', name: 'Starter', price: '$29', credits: 300, desc: 'For individual operators running premium tools weekly.' },
+  { id: 'growth', name: 'Growth', price: '$49', credits: 800, desc: 'For teams executing daily across multiple categories.' },
+  { id: 'scale', name: 'Scale', price: '$99', credits: 2000, desc: 'For power users and agencies with heavy monthly throughput.' },
+] as const
+
+const addons = [
+  { id: 'addon-120', name: 'Add-on 120', price: '$10', credits: 120 },
+  { id: 'addon-400', name: 'Add-on 400', price: '$25', credits: 400 },
+  { id: 'addon-1000', name: 'Add-on 1000', price: '$50', credits: 1000 },
 ] as const
 
 export default function PricingPage() {
@@ -18,7 +24,7 @@ export default function PricingPage() {
           No free tier. No category subscriptions. One shared credit wallet powers the full Zenovee toolkit, so you only pay for actual usage.
         </p>
         <div className="mt-6 inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300">
-          1 credit = 1 tool run • Shared across all categories • Paid-only access model
+          Hybrid pricing: monthly subscription + one-time add-ons
         </div>
       </section>
 
@@ -26,13 +32,14 @@ export default function PricingPage() {
         Razorpay powers automated credit top-ups. Once payment is captured, your credits are added automatically and can be used across every tool.
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {packs.map((p) => (
+      <h2 className="mt-10 text-2xl font-semibold text-white">Monthly subscription plans</h2>
+      <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {plans.map((p) => (
           <div
             key={p.id}
-            className={`zen-card rounded-[1.75rem] p-6 ${p.id === 'growth-250' ? 'ring-1 ring-violet-400/40' : ''}`}
+            className={`zen-card rounded-[1.75rem] p-6 ${p.id === 'growth' ? 'ring-1 ring-violet-400/40' : ''}`}
           >
-            {p.id === 'growth-250' ? (
+            {p.id === 'growth' ? (
               <div className="mb-4 inline-flex rounded-full bg-violet-500/20 px-3 py-1 text-xs font-semibold text-violet-200">
                 Most popular
               </div>
@@ -41,7 +48,7 @@ export default function PricingPage() {
               <h2 className="text-lg font-medium text-white">{p.name}</h2>
               <div className="text-right">
                 <div className="text-3xl font-semibold text-white">{p.price}</div>
-                <div className="text-xs text-slate-400">one-time top-up</div>
+                <div className="text-xs text-slate-400">/ month</div>
               </div>
             </div>
             <p className="mt-3 text-sm leading-7 text-slate-300">{p.desc}</p>
@@ -49,7 +56,7 @@ export default function PricingPage() {
             <ul className="mt-6 space-y-3 text-sm text-slate-300">
               <li className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">{p.credits} shared credits</li>
               <li className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">Works across all categories and tools</li>
-              <li className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">Usage tracked in your dashboard ledger</li>
+              <li className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">Resets monthly on active subscription</li>
             </ul>
 
             <div className="mt-6 flex gap-3">
@@ -57,13 +64,37 @@ export default function PricingPage() {
                 href="/checkout"
                 className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white"
               >
-                Buy credits
+                Start plan
               </Link>
               <Link
                 href="/tools"
                 className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white"
               >
                 View tools
+              </Link>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <h2 className="mt-14 text-2xl font-semibold text-white">One-time credit add-ons</h2>
+      <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+        {addons.map((a) => (
+          <div key={a.id} className="zen-card rounded-[1.75rem] p-6">
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 className="text-lg font-medium text-white">{a.name}</h2>
+              <div className="text-right">
+                <div className="text-3xl font-semibold text-white">{a.price}</div>
+                <div className="text-xs text-slate-400">one-time</div>
+              </div>
+            </div>
+            <p className="mt-3 text-sm leading-7 text-slate-300">Instant top-up for heavy usage windows.</p>
+            <ul className="mt-6 space-y-3 text-sm text-slate-300">
+              <li className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">{a.credits} additional credits</li>
+            </ul>
+            <div className="mt-6 flex gap-3">
+              <Link href="/checkout" className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-4 py-2 text-sm font-semibold text-white">
+                Buy add-on
               </Link>
             </div>
           </div>

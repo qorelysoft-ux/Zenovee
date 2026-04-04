@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import type { ZodType } from 'zod'
 
 import { requireSupabaseUserFromRequest } from '@/app/api/_lib/auth'
+import { requireApiKeyUser } from '@/app/api/_lib/apiKeyAuth'
 import { rateLimitOrThrow } from '@/app/api/_lib/rateLimit'
 import {
   enforceDailyCreditLimit,
@@ -22,18 +23,73 @@ type Config<T> = {
   buildPrompt: (input: T) => string
   maxOutputTokens?: number
   temperature?: number
+  allowApiKey?: boolean
+}
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __zenoveeToolCache: Map<string, { result: string; expiresAt: number; inputTokens: number; outputTokens: number }> | undefined
+  // eslint-disable-next-line no-var
+  var __zenoveeInFlightToolRuns: Map<string, Promise<{ result: string; inputTokens: number; outputTokens: number }>> | undefined
+}
+
+const cacheStore = globalThis.__zenoveeToolCache ?? new Map<string, { result: string; expiresAt: number; inputTokens: number; outputTokens: number }>()
+const inFlightStore = globalThis.__zenoveeInFlightToolRuns ?? new Map<string, Promise<{ result: string; inputTokens: number; outputTokens: number }>>()
+if (process.env.NODE_ENV !== 'production') {
+  globalThis.__zenoveeToolCache = cacheStore
+  globalThis.__zenoveeInFlightToolRuns = inFlightStore
+}
+
+function buildStructuredToolPrompt(toolSlug: string, prompt: string) {
+  return [
+    'You are a senior domain specialist producing production-grade output.',
+    `Tool ID: ${toolSlug}`,
+    '',
+    'Output requirements:',
+    '- Be concise, practical, and business-ready.',
+    '- Use markdown headings and bullets.',
+    '- Include an "Execution Plan" section.',
+    '- Include "Primary Output" and "Alternative Variations" sections.',
+    '- Include "Risks / Quality Checks" section where relevant.',
+    '- Do not include filler text.',
+    '',
+    'User request context:',
+    prompt,
+  ].join('\n')
+}
+
+async function resolveAuth(req: Request, allowApiKey: boolean) {
+  const authHeader = req.headers.get('authorization')
+  const hasBearer = /^Bearer\s+/i.test(authHeader ?? '')
+  const hasApiKey = Boolean(req.headers.get('x-api-key') || /^ApiKey\s+/i.test(authHeader ?? ''))
+
+  if (allowApiKey && hasApiKey && !hasBearer) {
+    const apiAuth = await requireApiKeyUser(req)
+    return {
+      supabaseUserId: apiAuth.supabaseUserId ?? `api:${apiAuth.userId}`,
+      email: apiAuth.email ?? `api-user:${apiAuth.userId}@local.invalid`,
+      identifier: `apikey:${apiAuth.apiKeyId}`,
+    }
+  }
+
+  const bearer = await requireSupabaseUserFromRequest(req)
+  return {
+    ...bearer,
+    identifier: `supabase:${bearer.supabaseUserId}`,
+  }
 }
 
 export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
   return async function POST(req: Request) {
     try {
+      const auth = await resolveAuth(req, config.allowApiKey ?? true)
       rateLimitOrThrow(req, {
         keyPrefix: config.rateLimitKey,
         limit: config.rateLimit,
         windowMs: config.windowMs ?? 60_000,
+        identifier: auth.identifier,
       })
 
-      const auth = await requireSupabaseUserFromRequest(req)
       const body = config.schema.parse(await req.json())
       const user = await getOrCreateAppUser(auth)
       await enforceDailyCreditLimit(user.id, user.planType)
@@ -45,17 +101,68 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
         description: fromCatalog?.description ?? null,
       })
 
-      const prompt = config.buildPrompt(body)
+      const rawPrompt = config.buildPrompt(body)
+      const prompt = buildStructuredToolPrompt(config.toolSlug, rawPrompt)
+      const cacheKey = `${user.id}:${config.toolSlug}:${JSON.stringify(body)}`
+      const now = Date.now()
+      const cached = cacheStore.get(cacheKey)
+
+      if (cached && cached.expiresAt > now) {
+        const result = await runDynamicCreditDeduction({
+          userId: user.id,
+          toolId: tool.id,
+          toolSlug: config.toolSlug,
+          payload: body,
+          execute: async () => ({
+            result: cached.result,
+            inputTokens: cached.inputTokens,
+            outputTokens: cached.outputTokens,
+            cacheHit: true,
+          }),
+        })
+
+        return NextResponse.json({
+          ok: true,
+          result: result.result,
+          estimatedCredits: result.estimatedCredits,
+          creditsUsed: result.creditsUsed,
+          remainingBalance: result.balance,
+          cacheHit: true,
+        })
+      }
+
       const result = await runDynamicCreditDeduction({
         userId: user.id,
         toolId: tool.id,
         toolSlug: config.toolSlug,
         payload: body,
         execute: async () => {
-          const gemini = await runGeminiTool({
-            prompt,
-            maxOutputTokens: config.maxOutputTokens,
-            temperature: config.temperature,
+          let runner = inFlightStore.get(cacheKey)
+          if (!runner) {
+            runner = runGeminiTool({
+              prompt,
+              maxOutputTokens: config.maxOutputTokens,
+              temperature: config.temperature,
+              timeoutMs: 25_000,
+              retries: 2,
+            }).then((gemini) => ({
+              result: gemini.result,
+              inputTokens: gemini.inputTokens,
+              outputTokens: gemini.outputTokens,
+            }))
+
+            inFlightStore.set(cacheKey, runner)
+          }
+
+          const gemini = await runner.finally(() => {
+            inFlightStore.delete(cacheKey)
+          })
+
+          cacheStore.set(cacheKey, {
+            result: gemini.result,
+            inputTokens: gemini.inputTokens,
+            outputTokens: gemini.outputTokens,
+            expiresAt: Date.now() + 10 * 60_000,
           })
 
           return {
@@ -87,7 +194,14 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
         )
       }
 
-      const code = msg === 'missing_bearer_token' || msg === 'invalid_token' ? 401 : withCreditErrorStatus(msg)
+      const code =
+        msg === 'missing_bearer_token' ||
+        msg === 'invalid_token' ||
+        msg === 'missing_api_key' ||
+        msg === 'invalid_api_key' ||
+        msg === 'invalid_api_key_user'
+          ? 401
+          : withCreditErrorStatus(msg)
       return NextResponse.json({ ok: false, error: msg }, { status: code })
     }
   }

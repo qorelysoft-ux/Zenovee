@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server'
 
 import { getRazorpayConfig } from '@/lib/billing'
-import { getCreditPacks } from '@/lib/credits'
+import { getCreditPacks, getSubscriptionPlans } from '@/lib/credits'
 
 export async function GET() {
   const config = getRazorpayConfig()
   const packs = await getCreditPacks()
+  const plans = await getSubscriptionPlans()
 
   return NextResponse.json({
     ok: true,
     billingConfigured: config.isConfigured,
     webhookConfigured: Boolean(config.webhookSecret),
-    packs,
+    addons: packs,
+    plans,
   })
 }

@@ -5,8 +5,6 @@ import { prisma } from '../../_lib/prisma'
 import { getCreditBalance } from '@/lib/credits'
 import { getDailyCreditLimitForPlan } from '@/lib/aiCredits'
 
-const DEFAULT_PLAN_TYPE = 'FREE' as const
-
 export async function GET(req: Request) {
   try {
     const { supabaseUserId, email } = await requireSupabaseUserFromRequest(req)
@@ -16,7 +14,7 @@ export async function GET(req: Request) {
       where: { email: safeEmail },
       create: { email: safeEmail, supabaseUserId },
       update: { supabaseUserId },
-      select: { id: true },
+      select: { id: true, planType: true },
     })
 
     const balance = await getCreditBalance(user.id)
@@ -64,8 +62,8 @@ export async function GET(req: Request) {
       balance,
       ledger: recentLedger,
       usage: {
-        planType: DEFAULT_PLAN_TYPE,
-        dailyLimit: getDailyCreditLimitForPlan(DEFAULT_PLAN_TYPE),
+        planType: user.planType,
+        dailyLimit: getDailyCreditLimitForPlan(user.planType),
         usedToday: usageAggregate._sum.creditsUsed ?? 0,
         requestsToday: usageAggregate._count._all,
         inputTokensToday: usageAggregate._sum.inputTokens ?? 0,

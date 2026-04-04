@@ -29,6 +29,15 @@ export async function POST(req: Request) {
     null
 
   if (eventId) {
+    const existing = await prisma.webhookEvent.findUnique({
+      where: { provider_eventId: { provider: 'RAZORPAY', eventId } },
+      select: { id: true, processedAt: true },
+    })
+
+    if (existing?.processedAt) {
+      return NextResponse.json({ ok: true, duplicate: true })
+    }
+
     await prisma.webhookEvent.upsert({
       where: { provider_eventId: { provider: 'RAZORPAY', eventId } },
       create: {
@@ -37,12 +46,10 @@ export async function POST(req: Request) {
         eventId,
         signature,
         payload: json as never,
-        processedAt: new Date(),
       },
       update: {
         signature,
         payload: json as never,
-        processedAt: new Date(),
         error: null,
       },
     })
@@ -54,7 +61,6 @@ export async function POST(req: Request) {
         eventId: null,
         signature,
         payload: json as never,
-        processedAt: new Date(),
       },
     })
   }
@@ -66,12 +72,22 @@ export async function POST(req: Request) {
       amount?: number
       currency?: string
       status?: string
-      notes?: { prismaUserId?: string; packId?: string; credits?: string }
+      notes?: { prismaUserId?: string; packId?: string; credits?: string; billingKind?: string; planId?: string; monthlyCredits?: string }
     }
 
     if (entity.notes?.prismaUserId && entity.amount && entity.currency && entity.id) {
-      const creditsGranted = Number(entity.notes?.credits ?? 0)
-      const paymentStatus = entity.status === 'captured' ? 'CAPTURED' : entity.status === 'authorized' ? 'AUTHORIZED' : 'CREATED'
+      const isSubscriptionPayment = entity.notes?.billingKind === 'subscription'
+      const creditsGranted = Number(
+        isSubscriptionPayment ? entity.notes?.monthlyCredits ?? 0 : entity.notes?.credits ?? 0,
+      )
+      const paymentStatus =
+        entity.status === 'captured'
+          ? 'CAPTURED'
+          : entity.status === 'authorized'
+            ? 'AUTHORIZED'
+            : entity.status === 'failed'
+              ? 'FAILED'
+              : 'CREATED'
 
       await prisma.$transaction(async (tx) => {
         const payment = await tx.payment.upsert({
@@ -82,7 +98,7 @@ export async function POST(req: Request) {
             status: paymentStatus,
             amount: entity.amount!,
             currency: entity.currency!,
-            creditPackId: entity.notes?.packId ?? null,
+            creditPackId: isSubscriptionPayment ? null : entity.notes?.packId ?? null,
             creditsGranted: creditsGranted || null,
             razorpayPaymentId: entity.id,
             razorpayOrderId: entity.order_id ?? null,
@@ -90,7 +106,7 @@ export async function POST(req: Request) {
           },
           update: {
             status: paymentStatus,
-            creditPackId: entity.notes?.packId ?? null,
+            creditPackId: isSubscriptionPayment ? null : entity.notes?.packId ?? null,
             creditsGranted: creditsGranted || null,
             rawPayload: json as never,
           },
@@ -116,10 +132,24 @@ export async function POST(req: Request) {
                 metadata: json as never,
               },
             })
+
+            if (isSubscriptionPayment && entity.notes?.planId) {
+              await tx.user.update({
+                where: { id: entity.notes.prismaUserId! },
+                data: { planType: entity.notes.planId as never },
+              })
+            }
           }
         }
       })
     }
+  }
+
+  if (eventId) {
+    await prisma.webhookEvent.update({
+      where: { provider_eventId: { provider: 'RAZORPAY', eventId } },
+      data: { processedAt: new Date(), error: null },
+    })
   }
 
   return NextResponse.json({ ok: true })

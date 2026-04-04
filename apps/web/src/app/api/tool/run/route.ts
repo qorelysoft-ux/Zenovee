@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 
 import { requireSupabaseUserFromRequest } from '../../_lib/auth'
+import { requireApiKeyUser } from '../../_lib/apiKeyAuth'
 import { rateLimitOrThrow } from '../../_lib/rateLimit'
 import { getToolBySlug } from '@/lib/toolsCatalog'
 import { CREDIT_RATE_LIMITS, enforceDailyCreditLimit, ensureToolRecord, getEstimatedCreditsForTool, getOrCreateAppUser, runDynamicCreditDeduction, withCreditErrorStatus } from '@/lib/creditRuntime'
@@ -15,9 +16,24 @@ const bodySchema = z.object({
 
 export async function POST(req: Request) {
   try {
-    rateLimitOrThrow(req, { keyPrefix: 'dynamic:tool_run', limit: CREDIT_RATE_LIMITS.toolRunPerMinute, windowMs: 60_000 })
+    const authHeader = req.headers.get('authorization')
+    const hasBearer = /^Bearer\s+/i.test(authHeader ?? '')
+    const hasApiKey = Boolean(req.headers.get('x-api-key') || /^ApiKey\s+/i.test(authHeader ?? ''))
+    const auth = hasApiKey && !hasBearer
+      ? await requireApiKeyUser(req).then((u) => ({
+          supabaseUserId: u.supabaseUserId ?? `api:${u.userId}`,
+          email: u.email ?? `api-user:${u.userId}@local.invalid`,
+          rateIdentifier: `apikey:${u.apiKeyId}`,
+        }))
+      : await requireSupabaseUserFromRequest(req).then((u) => ({ ...u, rateIdentifier: `supabase:${u.supabaseUserId}` }))
 
-    const auth = await requireSupabaseUserFromRequest(req)
+    rateLimitOrThrow(req, {
+      keyPrefix: 'dynamic:tool_run',
+      limit: CREDIT_RATE_LIMITS.toolRunPerMinute,
+      windowMs: 60_000,
+      identifier: auth.rateIdentifier,
+    })
+
     const body = bodySchema.parse(await req.json())
     const catalogTool = getToolBySlug(body.toolId)
     const user = await getOrCreateAppUser(auth)
@@ -37,7 +53,13 @@ export async function POST(req: Request) {
       })
     }
 
-    const prompt = JSON.stringify(body.payload, null, 2)
+    const prompt = [
+      'You are a senior specialist producing production-ready output.',
+      `Tool: ${tool.name}`,
+      'Use headings, bullets, and include an Execution Plan + Primary Output + Alternative Variations.',
+      'Payload:',
+      JSON.stringify(body.payload, null, 2),
+    ].join('\n\n')
 
     const result = await runDynamicCreditDeduction({
       userId: user.id,
@@ -46,9 +68,11 @@ export async function POST(req: Request) {
       payload: body.payload,
       execute: async () => {
         const gemini = await runGeminiTool({
-          prompt: `Tool: ${tool.name}\n\nPayload:\n${prompt}`,
+          prompt,
           maxOutputTokens: 1600,
           temperature: 0.7,
+          timeoutMs: 25_000,
+          retries: 2,
         })
         return {
           result: gemini.result,
@@ -68,7 +92,11 @@ export async function POST(req: Request) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'unknown'
     const explicit = (e as { status?: number })?.status
-    const code = explicit ?? (msg === 'missing_bearer_token' || msg === 'invalid_token' ? 401 : withCreditErrorStatus(msg))
+    const code =
+      explicit ??
+      (msg === 'missing_bearer_token' || msg === 'invalid_token' || msg === 'missing_api_key' || msg === 'invalid_api_key' || msg === 'invalid_api_key_user'
+        ? 401
+        : withCreditErrorStatus(msg))
     return NextResponse.json({ ok: false, error: msg }, { status: code })
   }
 }

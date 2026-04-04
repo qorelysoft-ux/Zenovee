@@ -14,3 +14,5 @@ apps/extension/release/
 certs/
 scripts/pg-test.js
 {console.error(e)
+.vercel
+.env*.local

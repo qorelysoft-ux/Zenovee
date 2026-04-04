@@ -19,6 +19,11 @@ const openDashboardBtn = document.getElementById('openDashboard')
 const toolSearchEl = document.getElementById('toolSearch')
 const openSearchResultsBtn = document.getElementById('openSearchResults')
 const openMarketingToolBtn = document.getElementById('openMarketingTool')
+const apiKeyEl = document.getElementById('apiKey')
+const toolSlugEl = document.getElementById('toolSlug')
+const toolPayloadEl = document.getElementById('toolPayload')
+const runApiToolBtn = document.getElementById('runApiTool')
+const apiToolResultEl = document.getElementById('apiToolResult')
 
 const categoryToUrls = {
   MARKETING: ['viral-short-creator-engine'],
@@ -46,6 +51,10 @@ function setQuickToolAccess(entitlements = []) {
 
 function openUrl(url) {
   chrome.tabs.create({ url })
+}
+
+function setApiToolResult(text) {
+  if (apiToolResultEl) apiToolResultEl.textContent = text
 }
 
 function buildToolsSearchUrl(query, extra = '') {
@@ -145,6 +154,50 @@ loginBtn.addEventListener('click', async () => {
 logoutBtn.addEventListener('click', async () => {
   await supabase.auth.signOut()
   await refresh()
+})
+
+runApiToolBtn?.addEventListener('click', async () => {
+  try {
+    const apiKey = (apiKeyEl?.value || '').trim()
+    const toolSlug = (toolSlugEl?.value || '').trim()
+    const payloadText = (toolPayloadEl?.value || '').trim()
+
+    if (!apiKey || !toolSlug || !payloadText) {
+      setApiToolResult('Provide API key, tool slug, and payload JSON')
+      return
+    }
+
+    let payload
+    try {
+      payload = JSON.parse(payloadText)
+    } catch {
+      setApiToolResult('Invalid JSON payload')
+      return
+    }
+
+    setApiToolResult('Running…')
+    const res = await fetch('https://www.zenovee.in/api/tool/run', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': apiKey,
+      },
+      body: JSON.stringify({ toolId: toolSlug, payload }),
+    })
+
+    const json = await res.json().catch(() => ({}))
+    if (!res.ok || !json?.ok) {
+      setApiToolResult(`Error: ${json?.error || `http_${res.status}`}`)
+      return
+    }
+
+    const preview = String(json.result || '').slice(0, 220)
+    const used = json.creditsUsed ?? '—'
+    const left = json.remainingBalance ?? '—'
+    setApiToolResult(`Credits: -${used}, left: ${left}\n${preview}${preview.length >= 220 ? '…' : ''}`)
+  } catch (e) {
+    setApiToolResult(e?.message || 'Failed to run tool')
+  }
 })
 
 refresh()

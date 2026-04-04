@@ -24,10 +24,10 @@ function getClientIp(req: Request): string {
  */
 export function rateLimitOrThrow(
   req: Request,
-  opts: { keyPrefix: string; limit: number; windowMs: number },
+  opts: { keyPrefix: string; limit: number; windowMs: number; identifier?: string },
 ) {
   const ip = getClientIp(req)
-  const key = `${opts.keyPrefix}:${ip}`
+  const key = `${opts.keyPrefix}:${opts.identifier ?? ip}`
   const now = Date.now()
   const existing = buckets.get(key)
 
