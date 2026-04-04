@@ -98,29 +98,6 @@ export default function CheckoutClient() {
         Buy credits once and use them across every Zenovee tool. One credit powers one tool run, regardless of category.
       </p>
 
-      <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-100">
-        Credits are shared across all tools. Once your Razorpay payment is captured, credits are added automatically by webhook.
-      </div>
-
-      <div className="mt-4 rounded-xl border border-zinc-200 p-4 text-sm text-zinc-600 dark:border-zinc-800 dark:text-zinc-300">
-        Use Razorpay test keys during development. Switch to live keys later to accept real payments and auto-top up balances.
-      </div>
-
-      {billingConfig ? (
-        <div className="mt-4 rounded-xl border border-zinc-200 p-4 text-sm text-zinc-700 dark:border-zinc-800 dark:text-zinc-200">
-          <div className="font-medium">Billing readiness</div>
-          <div className="mt-2">Keys configured: {billingConfig.billingConfigured ? 'Yes' : 'No'}</div>
-          <div>Webhook secret configured: {billingConfig.webhookConfigured ? 'Yes' : 'No'}</div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {billingConfig.packs.map((pack) => (
-              <span key={pack.id} className="rounded-full border border-zinc-200 px-3 py-1 text-xs dark:border-zinc-700">
-                {pack.name}: {(pack.amountInr / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
-              </span>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
       {status ? (
         <div className="mt-4 rounded-xl border border-zinc-200 p-4 text-sm text-zinc-700 dark:border-zinc-800 dark:text-zinc-200">
           {status}
