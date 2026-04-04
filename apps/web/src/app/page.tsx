@@ -172,7 +172,7 @@ export default function Home() {
           </div>
           <h2 className="mx-auto mt-5 max-w-3xl text-4xl font-semibold text-white">Stop stitching together random tools. Start using one premium system that helps you execute faster.</h2>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-300">
-            During this launch period, free tools are ready now and costly tools are marked as upcoming. Start using what is available today, and upgrade later when Razorpay goes live.
+            Use one shared credit wallet to access premium tools across marketing, development, SEO, image workflows, and business automation.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <a href="/tools" className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-950 hover:bg-slate-100">
