@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import './globals.css'
 
@@ -31,12 +32,21 @@ export const metadata: Metadata = {
     title: 'Zenovee — AI Tools, Developer Tools, SEO Tools, Image Tools & Utilities',
     description:
       'Zenovee is a SaaS tools platform for AI workflows, developer utilities, SEO tools, image tools, and business automation.',
+    images: [
+      {
+        url: '/logo.svg',
+        width: 1024,
+        height: 1024,
+        alt: 'Zenovee Logo',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Zenovee — AI Tools, Developer Tools, SEO Tools, Image Tools & Utilities',
     description:
       'Use Zenovee for AI workflows, developer utilities, SEO tools, image tools, and business automation.',
+    image: '/logo.svg',
   },
   robots: {
     index: true,
@@ -62,8 +72,15 @@ export default function RootLayout({
         <div className="zen-shell min-h-screen">
           <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/70 backdrop-blur-xl">
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-              <Link href="/" className="text-lg font-semibold tracking-tight text-white">
-                Zenovee
+              <Link href="/" className="flex items-center gap-2">
+                <Image
+                  src="/logo.svg"
+                  alt="Zenovee Logo"
+                  width={40}
+                  height={40}
+                  className="h-10 w-10"
+                />
+                <span className="text-lg font-semibold tracking-tight text-white">Zenovee</span>
               </Link>
               <nav className="flex flex-wrap items-center gap-5 text-sm text-slate-300">
                 <Link href="/tools" className="hover:text-white">
@@ -89,9 +106,18 @@ export default function RootLayout({
 
           <footer className="border-t border-white/10 py-12">
             <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 text-sm text-slate-400 md:flex-row md:items-center md:justify-between">
-              <div>
-                <div className="font-semibold text-white">Zenovee</div>
-                <div className="mt-1">Premium workflow suites designed to convert time into revenue.</div>
+              <div className="flex items-center gap-3">
+                <Image
+                  src="/logo.svg"
+                  alt="Zenovee Logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8"
+                />
+                <div>
+                  <div className="font-semibold text-white">Zenovee</div>
+                  <div className="mt-1">Premium workflow suites designed to convert time into revenue.</div>
+                </div>
               </div>
               <div className="flex flex-wrap gap-x-6 gap-y-2">
                 <Link href="/documentation" className="hover:text-white">
