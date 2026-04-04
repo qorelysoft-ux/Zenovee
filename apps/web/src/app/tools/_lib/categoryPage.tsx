@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 import type { ToolCategory } from '@/lib/entitlements'
-import { isToolUpcoming, sortToolsForLaunch, toolsCatalog } from '@/lib/toolsCatalog'
+import { sortToolsForLaunch, toolsCatalog } from '@/lib/toolsCatalog'
 
 const categoryDescriptions: Partial<Record<ToolCategory, string>> = {
   MARKETING: 'Premium AI workflows for growth, outreach, copy, and conversion execution.',
@@ -20,7 +20,6 @@ export function CategoryToolsList({
 }) {
   const tools = sortToolsForLaunch(toolsCatalog.filter((t) => t.category === category))
   const featured = tools.slice(0, 3)
-  const freeCount = tools.filter((t) => !isToolUpcoming(t)).length
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16">
@@ -29,7 +28,7 @@ export function CategoryToolsList({
       </div>
       <h1 className="mt-5 text-5xl font-semibold text-white">{title}</h1>
       <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
-        {categoryDescriptions[category] ?? 'Tools in this category are grouped into free-now tools first, then upcoming cost-heavy tools.'}
+        {categoryDescriptions[category] ?? 'Tools in this category are available now and consume credits when you run them.'}
       </p>
 
       <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -38,12 +37,12 @@ export function CategoryToolsList({
           <div className="mt-2 text-3xl font-semibold text-white">{tools.length}</div>
         </div>
         <div className="zen-card rounded-[1.5rem] p-5">
-          <div className="text-sm text-slate-400">Free right now</div>
-          <div className="mt-2 text-xl font-semibold text-white">{freeCount} tools</div>
+          <div className="text-sm text-slate-400">Access model</div>
+          <div className="mt-2 text-xl font-semibold text-white">Paid with credits</div>
         </div>
         <div className="zen-card rounded-[1.5rem] p-5">
           <div className="text-sm text-slate-400">Explore</div>
-          <div className="mt-2 text-sm text-slate-300">Free tools are listed first for faster work. Upcoming tools are shown after them.</div>
+          <div className="mt-2 text-sm text-slate-300">All listed tools are available now and use your shared credit wallet.</div>
         </div>
       </div>
 
@@ -59,15 +58,9 @@ export function CategoryToolsList({
               >
                 <div className="text-base font-medium text-white">{t.name}</div>
                 <div className="mt-2 text-sm leading-7 text-slate-300">{t.description}</div>
-                {isToolUpcoming(t) ? (
-                  <div className="mt-3 inline-flex rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-[11px] font-medium text-amber-200">
-                    {t.availabilityNote}
-                  </div>
-                ) : (
-                  <div className="mt-3 inline-flex rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[11px] font-medium text-emerald-200">
-                    Free to use now
-                  </div>
-                )}
+                <div className="mt-3 inline-flex rounded-full border border-violet-400/30 bg-violet-400/10 px-3 py-1 text-[11px] font-medium text-violet-200">
+                  Paid tool • consumes credits
+                </div>
               </Link>
             ))}
           </div>
@@ -83,15 +76,9 @@ export function CategoryToolsList({
           >
             <div className="text-lg font-medium text-white">{t.name}</div>
             <div className="mt-1 text-sm leading-7 text-slate-300">{t.description}</div>
-            {isToolUpcoming(t) ? (
-              <div className="mt-3 inline-flex rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-[11px] font-medium text-amber-200">
-                {t.availabilityNote}
-              </div>
-            ) : (
-              <div className="mt-3 inline-flex rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[11px] font-medium text-emerald-200">
-                Free to use now
-              </div>
-            )}
+            <div className="mt-3 inline-flex rounded-full border border-violet-400/30 bg-violet-400/10 px-3 py-1 text-[11px] font-medium text-violet-200">
+              Paid tool • consumes credits
+            </div>
           </Link>
         ))}
       </div>

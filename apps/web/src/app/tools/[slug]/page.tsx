@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
-import { getToolBySlug, isToolFree, isToolUpcoming } from '@/lib/toolsCatalog'
+import { getToolBySlug } from '@/lib/toolsCatalog'
 import { ToolGatePlaceholder } from '@/components/ToolGatePlaceholder'
 import { ColdOutreachPersonalizationTool } from '@/components/tools/ColdOutreachPersonalizationTool'
 import { AdCopyConversionTool } from '@/components/tools/AdCopyConversionTool'
@@ -70,9 +70,6 @@ export default async function ToolSeoPage({ params }: { params: Promise<{ slug: 
 
   if (!tool) return notFound()
 
-  const upcoming = isToolUpcoming(tool)
-  const freeNow = isToolFree(tool)
-
   return (
     <div className="mx-auto max-w-7xl px-4 py-16">
       <section className="zen-card-strong rounded-[2rem] px-8 py-10">
@@ -87,33 +84,24 @@ export default async function ToolSeoPage({ params }: { params: Promise<{ slug: 
           <div className="rounded-[1.5rem] border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-300">
             <div className="text-xs uppercase tracking-[0.2em] text-slate-400">Suite</div>
             <div className="mt-2 font-semibold text-white">{tool.category}</div>
-            {upcoming ? (
-              <div className="mt-3 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs font-medium text-amber-200">
-                {tool.availabilityNote}
-              </div>
-            ) : null}
+            <div className="mt-3 rounded-xl border border-violet-400/30 bg-violet-400/10 px-3 py-2 text-xs font-medium text-violet-200">
+              Paid tool • consumes credits per run
+            </div>
           </div>
         </div>
       </section>
 
       <div className="mt-10">
-        {upcoming ? (
-          <div className="zen-card rounded-[1.75rem] border border-amber-400/20 bg-amber-400/10 p-6 text-amber-100">
-            <div className="text-lg font-semibold">Temporarily marked as upcoming</div>
-            <p className="mt-3 text-sm leading-7">
-              This tool has direct operating cost for us, so it will stay unavailable until paid billing is live.
-              Expected rollout: <span className="font-semibold">20–30 days</span>.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Link href="/pricing" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-zinc-900">
-                View pricing
-              </Link>
-              <Link href="/tools" className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white">
-                Browse available tools
-              </Link>
-            </div>
-          </div>
-        ) : freeNow ? (
+        <ToolGatePlaceholder
+          requiredCategory={tool.category}
+          onUnlock={() => {
+            fetch('/api/tool-runs', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({ toolSlug: tool.slug }),
+            }).catch(() => null)
+          }}
+        >
           <div className="zen-card rounded-[1.75rem] p-6">
             {tool.slug === 'viral-short-creator-engine' ? (
               <ViralShortCreatorTool />
@@ -219,36 +207,19 @@ export default async function ToolSeoPage({ params }: { params: Promise<{ slug: 
               <>
                 <div className="text-sm font-medium text-white">Tool interface</div>
                 <p className="mt-2 text-sm leading-7 text-slate-300">
-                  This tool is free during the launch period until Razorpay is fully enabled.
+                  This premium tool is available now and consumes credits when you run it.
                 </p>
               </>
             )}
           </div>
-        ) : (
-          <ToolGatePlaceholder
-            requiredCategory={tool.category}
-            onUnlock={() => {
-              fetch('/api/tool-runs', {
-                method: 'POST',
-                headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({ toolSlug: tool.slug }),
-              }).catch(() => null)
-            }}
-          >
-            <div className="zen-card rounded-[1.75rem] p-6" />
-          </ToolGatePlaceholder>
-        )}
+        </ToolGatePlaceholder>
       </div>
 
       <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2">
         <section className="zen-card rounded-[1.5rem] p-6">
           <h2 className="text-xl font-semibold text-white">How it works</h2>
           <p className="mt-2 text-sm leading-7 text-slate-300">
-            {upcoming
-              ? `${tool.name} is temporarily marked as upcoming until paid billing goes live.`
-              : freeNow
-                ? `${tool.name} is free to use right now during the launch period.`
-                : `${tool.name} is available through the shared credit wallet and consumes credits when used.`}
+            {`${tool.name} is available through the shared credit wallet and consumes credits when used.`}
           </p>
         </section>
         <section className="zen-card rounded-[1.5rem] p-6">
@@ -266,11 +237,11 @@ export default async function ToolSeoPage({ params }: { params: Promise<{ slug: 
         <div className="mt-3 space-y-3 text-sm leading-7 text-slate-300">
           <p>
             <span className="font-medium text-white">Why is it locked?</span>{' '}
-            {upcoming ? 'This tool has direct operating cost and is delayed until billing is live.' : freeNow ? 'This tool is not locked right now. It is free during the launch period.' : 'This tool requires paid credits to use.'}
+            This tool requires paid credits to use.
           </p>
           <p>
             <span className="font-medium text-white">How do I get access?</span>{' '}
-            {upcoming ? 'Come back when Razorpay goes live in 20–30 days.' : freeNow ? 'Open the tool and start using it for free now.' : 'Buy credits from the pricing or checkout page.'}
+            Buy credits from the pricing or checkout page.
           </p>
         </div>
       </section>

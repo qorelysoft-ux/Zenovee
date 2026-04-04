@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Zenovee — AI Tools, Developer Tools, SEO Tools, Image Tools & Utilities',
   description:
-    'Zenovee is a SaaS tools platform for AI workflows, developer tools, SEO tools, image tools, and business automation. Start with free launch tools and explore upcoming premium tools.',
+    'Zenovee is a SaaS tools platform for AI workflows, developer tools, SEO tools, image tools, and business automation. Buy credits and use premium tools across the full workspace.',
   alternates: {
     canonical: 'https://www.zenovee.in',
   },
@@ -12,31 +12,31 @@ export const metadata: Metadata = {
 const suites = [
   {
     title: 'AI Marketing Engine',
-    price: 'Free + Upcoming mix',
+    price: 'Paid • consumes credits',
     href: '/tools/marketing',
     outcome: 'Turn campaigns, copy, outreach, and conversion work into one repeatable growth system.',
   },
   {
     title: 'AI Developer Assistant',
-    price: 'Free + Upcoming mix',
+    price: 'Paid • consumes credits',
     href: '/tools/dev-assistant',
     outcome: 'Ship faster with cleaner docs, better debugging, stronger schemas, and less engineering drag.',
   },
   {
     title: 'E-commerce Image Engine',
-    price: 'Free + Upcoming mix',
+    price: 'Paid • consumes credits',
     href: '/tools/ecom-image',
     outcome: 'Produce polished product visuals that improve trust, click-through, and conversion quality.',
   },
   {
     title: 'SEO Growth Engine',
-    price: 'Free + Upcoming mix',
+    price: 'Paid • consumes credits',
     href: '/tools/seo-growth',
     outcome: 'Find ranking opportunities faster and turn SEO work into measurable traffic growth.',
   },
   {
     title: 'Business Automation Toolkit',
-    price: 'Free + Upcoming mix',
+    price: 'Paid • consumes credits',
     href: '/tools/business-automation',
     outcome: 'Remove repetitive admin work so your team can focus on higher-value execution.',
   },
@@ -61,35 +61,35 @@ export default function Home() {
         <div className="grid gap-10 md:grid-cols-[1.1fr_0.9fr] md:items-center">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-xs font-medium text-emerald-300">
-              Start free now • Costly tools marked upcoming • Razorpay coming soon
+              Paid tools • Credit-based usage • Premium workspace
             </div>
             <h1 className="mt-6 max-w-4xl text-5xl font-semibold tracking-tight text-white sm:text-6xl">
-              Start with free useful tools now, then unlock cost-heavy tools when billing goes live.
+              Use premium tools with credits from one shared wallet.
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-              Zenovee helps marketers, developers, operators, and e-commerce teams move faster. Right now, tools that do not cost us to run are free for users, and tools with direct running cost are clearly marked as upcoming for the next 20–30 days.
+              Zenovee helps marketers, developers, operators, and e-commerce teams move faster. Every tool is part of the paid workspace and consumes credits when you run real workflows.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a href="/tools" className="rounded-full bg-gradient-to-r from-violet-500 to-blue-500 px-6 py-3 text-sm font-semibold text-white shadow-2xl shadow-violet-950/40 hover:scale-[1.02]">
-                Start for free
+                Start now
               </a>
               <a href="/pricing" className="rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">
-                See upcoming paid tools
+                View pricing
               </a>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-6 text-sm text-slate-300">
               <div><span className="font-semibold text-white">5</span> premium suites</div>
               <div><span className="font-semibold text-white">50+</span> focused workflows</div>
-              <div><span className="font-semibold text-white">Free now</span> for low-cost tools</div>
+               <div><span className="font-semibold text-white">Paid</span> credit-based access</div>
             </div>
           </div>
 
           <div className="zen-card-strong rounded-[1.75rem] p-6">
             <div className="flex items-center justify-between text-sm text-slate-300">
               <span>Launch mode</span>
-              <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-emerald-300">Free tools available now</span>
+               <span className="rounded-full bg-violet-400/15 px-3 py-1 text-violet-200">Credits unlock every tool</span>
             </div>
             <div className="mt-6 grid gap-4">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -100,13 +100,13 @@ export default function Home() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <div className="text-sm text-slate-400">How to use now</div>
-                  <div className="mt-2 font-semibold text-white">Open any free tool first</div>
-                  <div className="mt-1 text-sm text-slate-300">Free tools are placed at the top of each category page for faster work</div>
+                  <div className="mt-2 font-semibold text-white">Buy credits once</div>
+                  <div className="mt-1 text-sm text-slate-300">Use one shared balance across all current tools and categories</div>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <div className="text-sm text-slate-400">Upcoming tools</div>
-                  <div className="mt-2 font-semibold text-white">Marked clearly in amber</div>
-                  <div className="mt-1 text-sm text-slate-300">Those tools will go live after Razorpay rollout in about 20–30 days</div>
+                  <div className="text-sm text-slate-400">Tool access</div>
+                  <div className="mt-2 font-semibold text-white">Everything is unlocked</div>
+                  <div className="mt-1 text-sm text-slate-300">Tools consume credits when you actively run workflows</div>
                 </div>
               </div>
             </div>
@@ -126,7 +126,7 @@ export default function Home() {
       <section className="mt-20">
         <div className="max-w-2xl">
           <div className="text-sm font-semibold uppercase tracking-[0.2em] text-violet-300">Suites</div>
-          <h2 className="mt-3 text-4xl font-semibold text-white">Five categories. Free tools first. Upcoming cost-heavy tools next.</h2>
+           <h2 className="mt-3 text-4xl font-semibold text-white">Five categories. One credit wallet. Every tool available now.</h2>
         </div>
         <div className="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-5">
           {suites.map((suite) => (
@@ -144,7 +144,7 @@ export default function Home() {
         <div className="zen-card rounded-[1.5rem] p-6 md:col-span-2">
           <div className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-300">How it works</div>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {['Choose a category', 'Use the free tools first', 'Come back for upcoming tools after billing launch'].map((step, index) => (
+            {['Choose a category', 'Open any tool', 'Spend credits only when you run workflows'].map((step, index) => (
               <div key={step} className="rounded-2xl border border-white/10 bg-white/5 p-5">
                 <div className="text-sm text-slate-400">Step {index + 1}</div>
                 <div className="mt-2 font-semibold text-white">{step}</div>
@@ -176,10 +176,10 @@ export default function Home() {
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <a href="/tools" className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-950 hover:bg-slate-100">
-              Start for free
+               Start now
             </a>
             <a href="/pricing" className="rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">
-              View upcoming paid tools
+               View pricing
             </a>
           </div>
         </div>
