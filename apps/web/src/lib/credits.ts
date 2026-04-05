@@ -5,6 +5,7 @@ export const DEFAULT_TOOL_CREDIT_COST = 1
 export type CreditPackDef = {
   id: string
   name: string
+  amountUsd: number
   amountInr: number
   credits: number
   isActive: boolean
@@ -20,9 +21,9 @@ export type SubscriptionPlanDef = {
 }
 
 export const fallbackCreditPacks: CreditPackDef[] = [
-  { id: 'addon-120', name: 'Add-on 120', amountInr: 1000, credits: 120, isActive: true, sortOrder: 1 },
-  { id: 'addon-400', name: 'Add-on 400', amountInr: 2500, credits: 400, isActive: true, sortOrder: 2 },
-  { id: 'addon-1000', name: 'Add-on 1000', amountInr: 5000, credits: 1000, isActive: true, sortOrder: 3 },
+  { id: 'addon-120', name: 'Add-on 120', amountUsd: 10, amountInr: 1000, credits: 120, isActive: true, sortOrder: 1 },
+  { id: 'addon-400', name: 'Add-on 400', amountUsd: 25, amountInr: 2500, credits: 400, isActive: true, sortOrder: 2 },
+  { id: 'addon-1000', name: 'Add-on 1000', amountUsd: 50, amountInr: 5000, credits: 1000, isActive: true, sortOrder: 3 },
 ]
 
 export const fallbackSubscriptionPlans: SubscriptionPlanDef[] = [
@@ -33,16 +34,33 @@ export const fallbackSubscriptionPlans: SubscriptionPlanDef[] = [
 
 export async function getCreditPacks() {
   const packs = await prisma.creditPack.findMany({
-    where: { isActive: true },
+    where: { isActive: true, id: { in: fallbackCreditPacks.map((pack) => pack.id) } },
     orderBy: [{ sortOrder: 'asc' }, { amountInr: 'asc' }],
   }).catch(() => [])
 
-  return packs.length > 0 ? packs : fallbackCreditPacks
+  if (!packs.length) {
+    return fallbackCreditPacks
+  }
+
+  const byId = new Map(packs.map((pack) => [pack.id, pack]))
+  return fallbackCreditPacks.map((fallback) => {
+    const fromDb = byId.get(fallback.id)
+    if (!fromDb) return fallback
+    return {
+      id: fromDb.id,
+      name: fromDb.name,
+      amountUsd: fallback.amountUsd,
+      amountInr: fromDb.amountInr,
+      credits: fromDb.credits,
+      isActive: fromDb.isActive,
+      sortOrder: fromDb.sortOrder,
+    }
+  })
 }
 
 export async function getSubscriptionPlans() {
   const plans = await prisma.plan.findMany({
-    where: { isActive: true },
+    where: { isActive: true, id: { in: fallbackSubscriptionPlans.map((plan) => plan.id) } },
     orderBy: { includedCredits: 'asc' },
   }).catch(() => [])
 
@@ -50,13 +68,18 @@ export async function getSubscriptionPlans() {
     return fallbackSubscriptionPlans
   }
 
-  return plans.map((plan) => ({
-    id: plan.id as SubscriptionPlanDef['id'],
-    name: plan.name,
-    monthlyPriceUsd: Number(plan.monthlyPriceUsd),
-    includedCredits: plan.includedCredits,
-    isActive: plan.isActive,
-  }))
+  const byId = new Map(plans.map((plan) => [plan.id, plan]))
+  return fallbackSubscriptionPlans.map((fallback) => {
+    const plan = byId.get(fallback.id)
+    if (!plan) return fallback
+    return {
+      id: fallback.id,
+      name: plan.name,
+      monthlyPriceUsd: Number(plan.monthlyPriceUsd),
+      includedCredits: plan.includedCredits,
+      isActive: plan.isActive,
+    }
+  })
 }
 
 export async function ensureCreditBalance(userId: string) {

@@ -31,11 +31,35 @@ declare global {
   // eslint-disable-next-line no-var
   var __zenoveeToolCache: Map<string, { result: string; expiresAt: number; inputTokens: number; outputTokens: number }> | undefined
   // eslint-disable-next-line no-var
-  var __zenoveeInFlightToolRuns: Map<string, Promise<{ result: string; inputTokens: number; outputTokens: number }>> | undefined
+  var __zenoveeInFlightToolRuns:
+    | Map<
+        string,
+        Promise<{
+          result: string
+          inputTokens: number
+          outputTokens: number
+          costUsd: number
+          modelTier: 'FLASH' | 'PRO'
+          modelName: string
+        }>
+      >
+    | undefined
 }
 
 const cacheStore = globalThis.__zenoveeToolCache ?? new Map<string, { result: string; expiresAt: number; inputTokens: number; outputTokens: number }>()
-const inFlightStore = globalThis.__zenoveeInFlightToolRuns ?? new Map<string, Promise<{ result: string; inputTokens: number; outputTokens: number }>>()
+const inFlightStore =
+  globalThis.__zenoveeInFlightToolRuns ??
+  new Map<
+    string,
+    Promise<{
+      result: string
+      inputTokens: number
+      outputTokens: number
+      costUsd: number
+      modelTier: 'FLASH' | 'PRO'
+      modelName: string
+    }>
+  >()
 if (process.env.NODE_ENV !== 'production') {
   globalThis.__zenoveeToolCache = cacheStore
   globalThis.__zenoveeInFlightToolRuns = inFlightStore
@@ -107,7 +131,11 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
       const prompt = buildStructuredToolPrompt(config.toolSlug, rawPrompt)
 
       if (estimateOnly) {
-        const estimate = await getEstimatedCreditsForTool(config.toolSlug, body)
+        const estimate = await getEstimatedCreditsForTool(config.toolSlug, body, {
+          promptText: prompt,
+          maxOutputTokens: config.maxOutputTokens,
+          conservativeTokenEstimate: true,
+        })
         return NextResponse.json({
           ok: true,
           estimateOnly: true,
@@ -116,6 +144,7 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
           estimatedOutputTokens: estimate.outputTokens,
           estimatedCostUsd: estimate.cost,
           modelTier: estimate.modelTier,
+          estimateMessage: `This will use ~${estimate.credits} credits`,
         })
       }
 
@@ -129,6 +158,11 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
           toolId: tool.id,
           toolSlug: config.toolSlug,
           payload: body,
+          estimateOptions: {
+            promptText: prompt,
+            maxOutputTokens: config.maxOutputTokens,
+            conservativeTokenEstimate: true,
+          },
           execute: async () => ({
             result: cached.result,
             inputTokens: cached.inputTokens,
@@ -152,6 +186,11 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
         toolId: tool.id,
         toolSlug: config.toolSlug,
         payload: body,
+        estimateOptions: {
+          promptText: prompt,
+          maxOutputTokens: config.maxOutputTokens,
+          conservativeTokenEstimate: true,
+        },
         execute: async () => {
           let runner = inFlightStore.get(cacheKey)
           if (!runner) {
@@ -164,6 +203,9 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
               result: ai.output,
               inputTokens: ai.inputTokens,
               outputTokens: ai.outputTokens,
+              costUsd: ai.cost,
+              modelTier: ai.modelTier,
+              modelName: ai.modelName,
             }))
 
             inFlightStore.set(cacheKey, runner)
@@ -184,6 +226,9 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
             result: ai.result,
             inputTokens: ai.inputTokens,
             outputTokens: ai.outputTokens,
+            costUsd: ai.costUsd,
+            modelTier: ai.modelTier,
+            modelName: ai.modelName,
           }
         },
       })

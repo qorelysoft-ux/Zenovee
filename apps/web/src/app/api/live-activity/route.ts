@@ -31,14 +31,7 @@ export async function GET() {
       time: run.createdAt.toISOString(),
     }));
 
-    // If no real activities, add some simulated ones
-    if (recentActivities.length === 0) {
-      recentActivities.push(
-        { user: 'Sarah', action: 'generated SEO article', time: new Date().toISOString() },
-        { user: 'Mike', action: 'created ad copy', time: new Date(Date.now() - 30000).toISOString() },
-        { user: 'Emma', action: 'optimized landing page', time: new Date(Date.now() - 60000).toISOString() }
-      );
-    }
+    // No fallback simulated activities
 
     return NextResponse.json({
       onlineUsers,
@@ -53,11 +46,7 @@ export async function GET() {
       onlineUsers: 87,
       totalUsers: 1250,
       totalWorkflows: 5432,
-      recentActivities: [
-        { user: 'Sarah', action: 'generated SEO article', time: new Date().toISOString() },
-        { user: 'Mike', action: 'created ad copy', time: new Date(Date.now() - 30000).toISOString() },
-        { user: 'Emma', action: 'optimized landing page', time: new Date(Date.now() - 60000).toISOString() },
-      ],
+      recentActivities: [],
     });
   }
 }
