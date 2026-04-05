@@ -67,8 +67,16 @@ export function enforceUploadSize(bytes: number | undefined | null) {
   }
 }
 
-export async function getEstimatedCreditsForTool(toolSlug: string, payload: unknown) {
-  return buildEstimatedCredits(toolSlug, payload)
+export async function getEstimatedCreditsForTool(
+  toolSlug: string,
+  payload: unknown,
+  options?: {
+    promptText?: string
+    maxOutputTokens?: number
+    conservativeTokenEstimate?: boolean
+  },
+) {
+  return buildEstimatedCredits(toolSlug, payload, options)
 }
 
 export async function runDynamicCreditDeduction(params: {
@@ -76,6 +84,11 @@ export async function runDynamicCreditDeduction(params: {
   toolId: string
   toolSlug: string
   payload: unknown
+  estimateOptions?: {
+    promptText?: string
+    maxOutputTokens?: number
+    conservativeTokenEstimate?: boolean
+  }
   execute: () => Promise<{
     result: unknown
     inputTokens?: number
@@ -86,7 +99,7 @@ export async function runDynamicCreditDeduction(params: {
     cacheHit?: boolean
   }>
 }) {
-  const estimate = buildEstimatedCredits(params.toolSlug, params.payload)
+  const estimate = buildEstimatedCredits(params.toolSlug, params.payload, params.estimateOptions)
 
   const txResult = await prisma.$transaction(async (tx) => {
     const balance = await tx.creditBalance.upsert({
@@ -121,19 +134,27 @@ export async function runDynamicCreditDeduction(params: {
         })
 
   const final = await prisma.$transaction(async (tx) => {
-    const currentBalance = await tx.creditBalance.upsert({
+    await tx.creditBalance.upsert({
       where: { userId: params.userId },
       create: { userId: params.userId, balance: 0 },
       update: {},
     })
 
-    if (currentBalance.balance < finalUsage.credits) {
+    const decrement = await tx.creditBalance.updateMany({
+      where: {
+        userId: params.userId,
+        balance: { gte: finalUsage.credits },
+      },
+      data: { balance: { decrement: finalUsage.credits } },
+    })
+
+    if (decrement.count === 0) {
       throw new Error('insufficient_credits')
     }
 
-    const updated = await tx.creditBalance.update({
+    const updated = await tx.creditBalance.findUniqueOrThrow({
       where: { userId: params.userId },
-      data: { balance: { decrement: finalUsage.credits } },
+      select: { balance: true },
     })
 
     await tx.toolRun.create({
