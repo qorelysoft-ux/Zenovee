@@ -12,6 +12,7 @@ import {
   runDynamicCreditDeduction,
   withCreditErrorStatus,
 } from './creditRuntime'
+import { getVertexModelTier } from './aiCredits'
 import { runAIRequest } from './vertexAI'
 import { getToolBySlug } from './toolsCatalog'
 
@@ -167,6 +168,8 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
             result: cached.result,
             inputTokens: cached.inputTokens,
             outputTokens: cached.outputTokens,
+            costUsd: 0,
+            modelTier: getVertexModelTier(config.toolSlug),
             cacheHit: true,
           }),
         })

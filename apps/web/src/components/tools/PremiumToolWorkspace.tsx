@@ -165,6 +165,7 @@ export function PremiumToolWorkspace({ tool }: ToolWorkspaceProps) {
   const [loading, setLoading] = useState(false)
   const [estimating, setEstimating] = useState(false)
   const [estimatedCredits, setEstimatedCredits] = useState<number | null>(null)
+  const [lastCreditsUsed, setLastCreditsUsed] = useState<number | null>(null)
 
   const [result, setResult] = useState('')
   const [variations, setVariations] = useState<string[]>([])
@@ -243,6 +244,7 @@ export function PremiumToolWorkspace({ tool }: ToolWorkspaceProps) {
       const resp = await apiFetch<{
         ok: true
         result: string
+        creditsUsed?: number
       }>('/tool/run', {
         method: 'POST',
         body: JSON.stringify({
@@ -253,6 +255,7 @@ export function PremiumToolWorkspace({ tool }: ToolWorkspaceProps) {
 
       setResult(resp.result)
       setVariations(extractVariations(resp.result))
+      setLastCreditsUsed(typeof resp.creditsUsed === 'number' ? resp.creditsUsed : null)
       setActiveTab('result')
 
       pushHistory({
@@ -412,6 +415,13 @@ export function PremiumToolWorkspace({ tool }: ToolWorkspaceProps) {
                     {estimating ? 'Calculating…' : estimatedCredits ?? '--'}
                   </span>
                 </div>
+
+                {typeof lastCreditsUsed === 'number' ? (
+                  <div className="text-sm text-slate-300">
+                    Last run used:{' '}
+                    <span className="font-semibold text-white">{lastCreditsUsed}</span>
+                  </div>
+                ) : null}
 
                 <button
                   onClick={generateResult}

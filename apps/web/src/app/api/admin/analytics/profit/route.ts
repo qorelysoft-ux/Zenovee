@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { requireAdmin } from '../../../_lib/adminGuard'
 import { prisma } from '../../../_lib/prisma'
 import { rateLimitOrThrow } from '../../../_lib/rateLimit'
+import { CREDIT_VALUE_USD } from '@/lib/aiCredits'
 
 export async function GET(req: Request) {
   try {
@@ -84,7 +85,7 @@ export async function GET(req: Request) {
           category: tool?.category ?? 'MARKETING',
           usageCount: runsByToolId.get(row.toolId) ?? 0,
           costUsd: Number(Number(row._sum.costUsd ?? 0).toFixed(6)),
-          revenueUsd: Number((creditsUsed * 0.05).toFixed(6)),
+          revenueUsd: Number((creditsUsed * CREDIT_VALUE_USD).toFixed(6)),
           creditsUsed,
         }
       })
