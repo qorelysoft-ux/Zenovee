@@ -101,8 +101,7 @@ export default function HeroSlider() {
               <div className="space-y-4">
                 <h1
                   key={`headline-${currentSlide}`}
-                  className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight
-                    animate-in fade-in slide-in-from-left-12 duration-1000 ease-out"
+                  className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight animate-in fade-in slide-in-from-left-12 duration-1000 ease-out"
                 >
                   {slide.headline}
                 </h1>
@@ -111,8 +110,7 @@ export default function HeroSlider() {
               {/* Subtext */}
               <p
                 key={`subtext-${currentSlide}`}
-                className="text-lg md:text-xl text-white/80 max-w-xl font-light
-                  animate-in fade-in slide-in-from-left-12 duration-1000 ease-out delay-200"
+                className="text-lg md:text-xl text-white/80 max-w-xl font-light animate-in fade-in slide-in-from-left-12 duration-1000 ease-out delay-200"
               >
                 {slide.subtext}
               </p>
@@ -120,18 +118,12 @@ export default function HeroSlider() {
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-in fade-in slide-in-from-left-12 duration-1000 ease-out delay-300">
                 <button
-                  className="px-8 py-4 rounded-lg font-semibold text-lg
-                    bg-white text-gray-900 hover:bg-white/90
-                    transition-all duration-300 ease-out
-                    hover:shadow-2xl hover:shadow-white/25"
+                  className="px-8 py-4 rounded-lg font-semibold text-lg bg-white text-gray-900 hover:bg-white/90 transition-all duration-300 ease-out hover:shadow-2xl hover:shadow-white/25"
                 >
                   Get Started Free
                 </button>
                 <button
-                  className="px-8 py-4 rounded-lg font-semibold text-lg
-                    border-2 border-white text-white hover:bg-white/10
-                    transition-all duration-300 ease-out
-                    hover:shadow-2xl hover:shadow-white/10"
+                  className="px-8 py-4 rounded-lg font-semibold text-lg border-2 border-white text-white hover:bg-white/10 transition-all duration-300 ease-out hover:shadow-2xl hover:shadow-white/10"
                 >
                   Watch Demo
                 </button>
@@ -150,18 +142,15 @@ export default function HeroSlider() {
                 >
                   {/* Placeholder with gradient */}
                   <div
-                    className="w-full h-full rounded-2xl border border-white/20 backdrop-blur-sm
-                      bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center
-                      overflow-hidden relative group"
-                  >
-                    {/* Image Loading */}
-                    <img
-                      src={s.image}
-                      alt={s.headline}
-                      className="w-full h-full object-cover opacity-80 group-hover:opacity-100
+                    className="w-full h-full rounded-2xl border border-white/20 backdrop ${
+                    index === currentSlide ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  {/* Placeholder with gradient */}
+                  <div
+                    className="w-full h-full rounded-2xl border border-white/20 backdrop-blur-sm bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center className="w-full h-full object-cover opacity-80 group-hover:opacity-100
                         transition-opacity duration-500"
-                      loading="lazy"
-                      onError={(e) => {
+                      loading="lazy"nError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.style.opacity = '0';
                       }}
@@ -184,17 +173,14 @@ export default function HeroSlider() {
                     </div>
 
                     {/* Glow Border */}
-                    <div className="absolute inset-0 rounded-2xl pointer-events-none
-                      group-hover:shadow-2xl group-hover:shadow-white/20 transition-shadow duration-300" />
+                    <div className="absolute inset-0 rounded-2xl pointer-events-none group-hover:shadow-2xl group-hover:shadow-white/20 transition-shadow duration-300" />
                   </div>
                 </div>
               ))}
 
               {/* Floating Elements */}
               <div
-                className="absolute top-8 right-8 w-32 h-32 rounded-full bg-white/10 backdrop-blur-md
-                  border border-white/20 flex items-center justify-center
-                  animate-pulse shadow-2xl shadow-white/10"
+                className="absolute top-8 right-8 w-32 h-32 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center animate-pulse shadow-2xl shadow-white/10"
               >
                 <span className="text-white/60 text-sm font-semibold">AI Powered</span>
               </div>
