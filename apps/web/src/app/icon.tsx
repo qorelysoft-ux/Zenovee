@@ -6,16 +6,23 @@ export const size = {
   height: 192,
 }
 export const contentType = 'image/png'
+export const revalidate = 86400
 
 export default async function Icon() {
   try {
-    const imageData = await fetch(new URL('../../public/logo.png', import.meta.url)).then((res) =>
-      res.arrayBuffer(),
-    )
+    const imageData = await fetch(new URL('../../public/logo.png', import.meta.url), {
+      next: { revalidate: 86400 },
+    }).then((res) => res.arrayBuffer())
+    
+    if (!imageData || imageData.byteLength === 0) {
+      throw new Error('Logo image is empty')
+    }
+    
     return new ImageResponse(imageData as any, {
       ...size,
     })
   } catch (e) {
-    return new Response(`Failed to generate icon`, { status: 500 })
+    console.error('Icon generation failed:', e)
+    return new Response('Icon unavailable', { status: 500 })
   }
 }

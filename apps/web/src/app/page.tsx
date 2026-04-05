@@ -1,227 +1,229 @@
-import Link from 'next/link'
 import type { Metadata } from 'next'
+import Link from 'next/link'
+import { PremiumHero } from '@/components/PremiumHero'
+import { CategoriesGrid, HowItWorks } from '@/components/CategoryBrowser'
+import { PremiumPricingSection } from '@/components/PremiumPricing'
+import { CheckCircle, Zap, Lock } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Zenovee — AI Tools for Marketing, Development, SEO & Automation',
+  title: 'Zenovee — Premium AI Tools for Marketing, Development, SEO & Automation',
   description:
-    'Choose your goal. Use AI tools. Get results. Zenovee simplifies workflows with premium, credit-based tools.',
+    'Premium AI workflows for marketing, development, design, SEO & automation. Choose your goal, run the tool, get production-ready results instantly.',
   alternates: {
     canonical: 'https://www.zenovee.in',
   },
 }
 
-const goals = [
+const categories = [
   {
-    title: 'Grow with AI Marketing',
-    description: 'Generate high-converting copy, rewrite listings, cold outreach, and viral content.',
+    id: 'marketing',
+    title: 'Marketing Growth',
+    description: 'High-converting copy, viral content, cold outreach, and campaign optimization.',
     icon: '📈',
     href: '/tools/marketing',
-    cta: 'Explore Marketing Tools',
+    toolCount: 18,
+    gradient: 'from-rose-900/30 to-orange-900/20',
+    glowColor: 'bg-gradient-to-br from-rose-500/20 to-orange-500/10',
   },
   {
-    title: 'Build with Developer Tools',
-    description: 'Generate docs, optimize SQL, build schemas, and fix errors faster.',
+    id: 'dev',
+    title: 'Developer Tools',
+    description: 'Code generation, SQL optimization, schema design, and debugging.',
     icon: '⚙️',
     href: '/tools/dev-assistant',
-    cta: 'Explore Developer Tools',
+    toolCount: 15,
+    gradient: 'from-blue-900/30 to-cyan-900/20',
+    glowColor: 'bg-gradient-to-br from-blue-500/20 to-cyan-500/10',
   },
   {
-    title: 'Create Product Images',
-    description: 'Remove backgrounds, upscale images, resize for all platforms.',
+    id: 'design',
+    title: 'Image Creation',
+    description: 'Background removal, upscaling, resizing, and product image optimization.',
     icon: '🎨',
     href: '/tools/ecom-image',
-    cta: 'Explore Image Tools',
+    toolCount: 8,
+    gradient: 'from-purple-900/30 to-pink-900/20',
+    glowColor: 'bg-gradient-to-br from-purple-500/20 to-pink-500/10',
   },
   {
-    title: 'Improve Your SEO',
-    description: 'Find ranking opportunities and create authority content.',
+    id: 'seo',
+    title: 'SEO & Content',
+    description: 'Ranking research, content strategy, keyword optimization, and authority building.',
     icon: '🔍',
     href: '/tools/seo-growth',
-    cta: 'Explore SEO Tools',
+    toolCount: 12,
+    gradient: 'from-green-900/30 to-teal-900/20',
+    glowColor: 'bg-gradient-to-br from-green-500/20 to-teal-500/10',
   },
   {
-    title: 'Automate Business Tasks',
-    description: 'Remove repetitive work and focus on high-value execution.',
+    id: 'automation',
+    title: 'Business Automation',
+    description: 'Task automation, workflow optimization, and productivity enhancement.',
     icon: '🤖',
     href: '/tools/business-automation',
-    cta: 'Explore Automation Tools',
-  },
-]
-
-const steps = [
-  {
-    number: '1',
-    title: 'Choose Your Goal',
-    description: 'Pick what you want to get done.',
-  },
-  {
-    number: '2',
-    title: 'Run AI Tools',
-    description: 'Use premium workflows with your credits.',
-  },
-  {
-    number: '3',
-    title: 'Get Results',
-    description: 'Get production-ready output instantly.',
+    toolCount: 10,
+    gradient: 'from-indigo-900/30 to-violet-900/20',
+    glowColor: 'bg-gradient-to-br from-indigo-500/20 to-violet-500/10',
   },
 ]
 
 const pricingPlans = [
   {
+    id: 'starter',
     name: 'Starter',
     price: '$29',
-    credits: '10,000 credits',
-    description: 'Perfect for getting started',
-    features: ['10,000 credits', 'Full tool access', 'Email support'],
+    credits: 10000,
+    description: 'Perfect for getting started with premium tools.',
+    features: [
+      '10,000 monthly credits',
+      'Full tool access across all categories',
+      'Email support',
+      'Valid for 30 days',
+      'No credit rollover',
+    ],
+    cta: '/checkout?plan=starter',
   },
   {
-    name: 'Professional',
-    price: '$99',
-    credits: '50,000 credits',
-    description: 'Best for active teams',
+    id: 'growth',
+    name: 'Growth',
+    price: '$49',
+    credits: 50000,
+    description: 'Most popular. For active creators and teams.',
+    features: [
+      '50,000 monthly credits',
+      'Full tool access across all categories',
+      'Priority email support',
+      'Valid for 30 days',
+      'Usage analytics dashboard',
+    ],
     featured: true,
-    features: ['50,000 credits', 'Full tool access', 'Priority support', 'Usage analytics'],
+    cta: '/checkout?plan=growth',
   },
   {
-    name: 'Enterprise',
-    price: 'Custom',
-    credits: 'Custom credits',
-    description: 'For high-volume needs',
-    features: ['Custom credits', 'Full tool access', 'Dedicated support', 'Custom integrations'],
+    id: 'scale',
+    name: 'Scale',
+    price: '$99',
+    credits: 200000,
+    description: 'For power users and high-volume operations.',
+    features: [
+      '200,000 monthly credits',
+      'Full tool access across all categories',
+      'Priority support (24-hour response)',
+      'Valid for 30 days',
+      'Advanced analytics and reporting',
+    ],
+    cta: '/checkout?plan=scale',
+  },
+]
+
+const addons = [
+  {
+    id: 'addon-100',
+    name: 'Quick Boost',
+    price: '$10',
+    credits: 10000,
+  },
+  {
+    id: 'addon-500',
+    name: 'Power Pack',
+    price: '$40',
+    credits: 50000,
+  },
+  {
+    id: 'addon-1000',
+    name: 'Mega Pack',
+    price: '$75',
+    credits: 100000,
   },
 ]
 
 export default function Home() {
   return (
-    <main className="w-full">
-      {/* HERO SECTION */}
-      <section className="relative overflow-hidden border-b border-white/10 px-4 py-20 sm:px-6 sm:py-32">
-        <div className="mx-auto max-w-4xl text-center">
-          <h1 className="text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
-            Choose Your Goal.
-            <br />
-            <span className="bg-gradient-to-r from-violet-400 to-blue-400 bg-clip-text text-transparent">
-              Use AI Tools.
-            </span>
-            <br />
-            Get Results.
-          </h1>
-          <p className="mt-8 text-xl text-slate-300 sm:text-2xl">
-            Zenovee simplifies your workflow with premium AI-powered tools. Pick your goal, run the tool, get production-ready results.
+    <main className="w-full bg-black">
+      {/* PREMIUM HERO */}
+      <PremiumHero />
+
+      {/* HOW IT WORKS */}
+      <HowItWorks />
+
+      {/* CATEGORIES BROWSER */}
+      <CategoriesGrid categories={categories} />
+
+      {/* FEATURES SECTION */}
+      <section className="relative border-t border-white/10 px-4 py-20 sm:px-6 lg:py-32">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="text-center text-4xl font-bold text-white sm:text-5xl">Why Choose Zenovee</h2>
+          <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-slate-400">
+            Premium quality. Production-ready results. Pay only for what you use.
           </p>
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Link
-              href="/tools"
-              className="rounded-xl bg-gradient-to-r from-violet-500 to-blue-500 px-8 py-4 text-center font-semibold text-white shadow-2xl shadow-violet-950/40 hover:scale-105 transition-transform"
-            >
-              Start Now
-            </Link>
-            <Link
-              href="/pricing"
-              className="rounded-xl border border-white/20 bg-white/5 px-8 py-4 text-center font-semibold text-white hover:bg-white/10 transition-colors"
-            >
-              View Pricing
-            </Link>
-          </div>
-        </div>
-      </section>
 
-      {/* 3-STEP EXPLANATION */}
-      <section className="border-b border-white/10 px-4 py-20 sm:px-6">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-center text-3xl font-bold text-white sm:text-4xl">How It Works</h2>
           <div className="mt-16 grid gap-8 sm:grid-cols-3">
-            {steps.map((step) => (
-              <div key={step.number} className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
-                <div className="text-5xl font-bold text-violet-400">{step.number}</div>
-                <h3 className="mt-4 text-xl font-semibold text-white">{step.title}</h3>
-                <p className="mt-2 text-slate-400">{step.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 5 GOAL CARDS */}
-      <section className="border-b border-white/10 px-4 py-20 sm:px-6">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-center text-3xl font-bold text-white sm:text-4xl">What Do You Want to Get Done?</h2>
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
-            {goals.map((goal) => (
-              <Link
-                key={goal.title}
-                href={goal.href}
-                className="group rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] p-8 hover:border-violet-400/50 hover:bg-white/10 transition-all"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="text-4xl">{goal.icon}</div>
-                    <h3 className="mt-4 text-2xl font-bold text-white">{goal.title}</h3>
-                    <p className="mt-3 text-slate-300">{goal.description}</p>
-                    <div className="mt-6 inline-block font-semibold text-violet-400 group-hover:text-violet-300">
-                      {goal.cta} →
-                    </div>
-                  </div>
+            <div className="card-premium relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="inline-flex rounded-lg bg-violet-500/20 p-3 mb-6">
+                  <Zap className="h-6 w-6 text-violet-400" />
                 </div>
-              </Link>
-            ))}
+                <h3 className="text-xl font-bold text-white">Instant Results</h3>
+                <p className="mt-4 text-slate-300">
+                  Get production-ready output in seconds. No waiting, no manual post-processing needed.
+                </p>
+              </div>
+            </div>
+
+            <div className="card-premium relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="inline-flex rounded-lg bg-blue-500/20 p-3 mb-6">
+                  <Lock className="h-6 w-6 text-blue-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white">Enterprise Secure</h3>
+                <p className="mt-4 text-slate-300">
+                  Powered by Razorpay for secure payments. Your data is encrypted and protected.
+                </p>
+              </div>
+            </div>
+
+            <div className="card-premium relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="inline-flex rounded-lg bg-emerald-500/20 p-3 mb-6">
+                  <CheckCircle className="h-6 w-6 text-emerald-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white">No Hidden Fees</h3>
+                <p className="mt-4 text-slate-300">
+                  Clear credit-based pricing. No free tier bait. No surprise charges or additional fees.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* PRICING SECTION */}
-      <section className="border-b border-white/10 px-4 py-20 sm:px-6">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-center text-3xl font-bold text-white sm:text-4xl">Simple Pricing</h2>
-          <p className="mt-4 text-center text-slate-300">Buy credits. Use any tool. Pay only for what you use.</p>
-          <div className="mt-16 grid gap-8 sm:grid-cols-3">
-            {pricingPlans.map((plan) => (
-              <div
-                key={plan.name}
-                className={`rounded-2xl border p-8 transition-all ${
-                  plan.featured
-                    ? 'border-violet-400/50 bg-gradient-to-br from-violet-950/20 to-white/5 ring-1 ring-violet-400/20'
-                    : 'border-white/10 bg-white/5'
-                }`}
-              >
-                <h3 className="text-2xl font-bold text-white">{plan.name}</h3>
-                <div className="mt-4">
-                  <div className="text-4xl font-bold text-white">{plan.price}</div>
-                  <div className="mt-2 text-sm text-slate-400">{plan.credits}</div>
-                </div>
-                <p className="mt-4 text-slate-300">{plan.description}</p>
-                <button className="mt-8 w-full rounded-xl bg-violet-500/20 px-4 py-3 font-semibold text-violet-300 hover:bg-violet-500/30 transition-colors">
-                  Get Started
-                </button>
-                <div className="mt-8 space-y-3">
-                  {plan.features.map((feature) => (
-                    <div key={feature} className="flex items-center gap-3 text-sm text-slate-300">
-                      <div className="h-1.5 w-1.5 rounded-full bg-violet-400" />
-                      {feature}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <PremiumPricingSection plans={pricingPlans} addons={addons} />
 
       {/* FINAL CTA */}
-      <section className="px-4 py-20 sm:px-6">
-        <div className="mx-auto max-w-4xl rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-950/30 to-white/5 p-12 text-center">
-          <h2 className="text-3xl font-bold text-white sm:text-4xl">
-            Ready to get started?
-          </h2>
-          <p className="mt-4 text-lg text-slate-300">
-            Pick a goal, buy credits, and start running AI workflows today.
+      <section className="relative overflow-hidden border-t border-white/10 px-4 py-20 sm:px-6 lg:py-32">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-violet-500/5 blur-3xl" />
+        </div>
+
+        <div className="relative mx-auto max-w-4xl text-center">
+          <h2 className="text-4xl font-bold text-white sm:text-5xl">Start Using Premium Tools Today</h2>
+          <p className="mt-6 text-lg text-slate-400">
+            Join hundreds of creators and teams using Zenovee to streamline workflows and deliver better results.
           </p>
-          <Link
-            href="/tools"
-            className="mt-8 inline-block rounded-xl bg-gradient-to-r from-violet-500 to-blue-500 px-8 py-4 font-semibold text-white shadow-2xl shadow-violet-950/40 hover:scale-105 transition-transform"
-          >
-            Explore Tools Now
-          </Link>
+
+          <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
+            <Link href="/tools" className="btn-premium">
+              Start Exploring Tools
+            </Link>
+            <Link href="/pricing" className="btn-secondary">
+              Compare Plans
+            </Link>
+          </div>
+
+          <p className="mt-8 text-sm text-slate-500">
+            No credit card required to browse. Sign up in 30 seconds.
+          </p>
         </div>
       </section>
     </main>

@@ -4,6 +4,25 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        source: '/favicon.ico',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, immutable' }],
+      },
+      {
+        source: '/favicon-*.png',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, immutable' }],
+      },
+      {
+        source: '/apple-touch-icon.png',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, immutable' }],
+      },
+      {
+        source: '/site.webmanifest',
+        headers: [
+          { key: 'Content-Type', value: 'application/manifest+json' },
+          { key: 'Cache-Control', value: 'public, max-age=604800' },
+        ],
+      },
+      {
         source: '/:path*',
         headers: [
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },

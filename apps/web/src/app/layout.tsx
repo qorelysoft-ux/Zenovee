@@ -1,46 +1,48 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
-import Link from 'next/link'
 import './globals.css'
+import { PremiumNavigation, PremiumFooter } from '@/components/PremiumNavigation'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.zenovee.in'),
   title: {
-    default: 'Zenovee — AI Tools, Developer Tools, SEO Tools, Image Tools & Utilities',
+    default: 'Zenovee — Premium AI Tools for Marketing, Development, SEO & Automation',
     template: '%s | Zenovee',
   },
   description:
-    'Zenovee is a SaaS tools platform for AI workflows, developer utilities, SEO tools, image tools, and business automation. Use free launch tools now and explore upcoming premium tools.',
+    'Premium AI tools for marketing, development, design, SEO & automation. 60+ workflows with credit-based pricing. Get production-ready results in seconds.',
   applicationName: 'Zenovee',
   keywords: [
     'Zenovee',
     'AI tools',
+    'AI marketing tools',
     'developer tools',
     'SEO tools',
     'image tools',
-    'business automation tools',
-    'online productivity tools',
-    'SaaS tools platform',
+    'business automation',
+    'SaaS platform',
+    'AI workflows',
   ],
   alternates: {
     canonical: 'https://www.zenovee.in',
   },
   icons: {
     icon: [
-      { url: '/favicon.ico' },
+      { url: '/favicon.ico', sizes: 'any' },
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
     ],
-    apple: '/apple-touch-icon.png',
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+    shortcut: '/favicon.ico',
   },
   manifest: '/site.webmanifest',
+  themeColor: '#000000',
   openGraph: {
     type: 'website',
     url: 'https://www.zenovee.in',
     siteName: 'Zenovee',
-    title: 'Zenovee — AI Tools, Developer Tools, SEO Tools, Image Tools & Utilities',
+    title: 'Zenovee — Premium AI Tools',
     description:
-      'Zenovee is a SaaS tools platform for AI workflows, developer utilities, SEO tools, image tools, and business automation.',
+      'Premium AI workflows for marketing, development, design, SEO & automation. 60+ tools with credit-based pricing.',
     images: [
       {
         url: '/logo.png',
@@ -52,9 +54,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Zenovee — AI Tools, Developer Tools, SEO Tools, Image Tools & Utilities',
+    title: 'Zenovee — Premium AI Tools',
     description:
-      'Use Zenovee for AI workflows, developer utilities, SEO tools, image tools, and business automation.',
+      'Premium AI workflows for marketing, development, design, SEO & automation.',
     images: '/logo.png',
   },
   robots: {
@@ -77,74 +79,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        <div className="zen-shell min-h-screen">
-          <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/70 backdrop-blur-xl">
-            <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-              <Link href="/" className="flex items-center gap-2">
-                <Image
-                  src="/logo.png"
-                  alt="Zenovee Logo"
-                  width={40}
-                  height={40}
-                  className="h-10 w-10"
-                />
-                <span className="text-lg font-semibold tracking-tight text-white">Zenovee</span>
-              </Link>
-              <nav className="flex flex-wrap items-center gap-5 text-sm text-slate-300">
-                <Link href="/tools" className="hover:text-white">
-                  Tools
-                </Link>
-                <Link href="/pricing" className="hover:text-white">
-                  Pricing
-                </Link>
-                <Link href="/documentation" className="hover:text-white">
-                  Documentation
-                </Link>
-                <Link href="/extension" className="hover:text-white">
-                  Extension
-                </Link>
-                <Link href="/dashboard" className="rounded-full border border-white/10 px-4 py-2 text-white hover:border-white/30 hover:bg-white/5">
-                  Dashboard
-                </Link>
-              </nav>
-            </div>
-          </header>
-
+      <body className="antialiased bg-black text-white">
+        <PremiumNavigation />
+        <main className="min-h-screen">
           {children}
-
-          <footer className="border-t border-white/10 py-12">
-            <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 text-sm text-slate-400 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-center gap-3">
-                <Image
-                  src="/logo.svg"
-                  alt="Zenovee Logo"
-                  width={32}
-                  height={32}
-                  className="h-8 w-8"
-                />
-                <div>
-                  <div className="font-semibold text-white">Zenovee</div>
-                  <div className="mt-1">Premium workflow suites designed to convert time into revenue.</div>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-x-6 gap-y-2">
-                <Link href="/documentation" className="hover:text-white">
-                  Documentation
-                </Link>
-                <Link href="/privacy" className="hover:text-white">
-                  Privacy
-                </Link>
-                <Link href="/pricing" className="hover:text-white">
-                  Pricing
-                </Link>
-                <Link href="/extension" className="hover:text-white">
-                  Chrome Extension Install
-                </Link>
-              </div>
-            </div>
-          </footer>
-        </div>
+        </main>
+        <PremiumFooter />
       </body>
     </html>
   )
