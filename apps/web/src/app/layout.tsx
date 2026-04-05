@@ -34,9 +34,9 @@ export const metadata: Metadata = {
       'Zenovee is a SaaS tools platform for AI workflows, developer utilities, SEO tools, image tools, and business automation.',
     images: [
       {
-        url: '/logo.svg',
-        width: 1024,
-        height: 1024,
+        url: '/logo.png',
+        width: 1200,
+        height: 1200,
         alt: 'Zenovee Logo',
       },
     ],
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     title: 'Zenovee — AI Tools, Developer Tools, SEO Tools, Image Tools & Utilities',
     description:
       'Use Zenovee for AI workflows, developer utilities, SEO tools, image tools, and business automation.',
-    images: '/logo.svg',
+    images: '/logo.png',
   },
   robots: {
     index: true,
@@ -74,7 +74,7 @@ export default function RootLayout({
             <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
               <Link href="/" className="flex items-center gap-2">
                 <Image
-                  src="/logo.svg"
+                  src="/logo.png"
                   alt="Zenovee Logo"
                   width={40}
                   height={40}
