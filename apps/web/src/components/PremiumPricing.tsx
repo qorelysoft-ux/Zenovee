@@ -14,7 +14,14 @@ interface PricingPlan {
   cta?: string
 }
 
-export function PremiumPricingSection({ plans, addons }: { plans: PricingPlan[], addons?: PricingPlan[] }) {
+interface Addon {
+  id: string
+  name: string
+  price: string
+  credits: number
+}
+
+export function PremiumPricingSection({ plans, addons }: { plans: PricingPlan[], addons?: Addon[] }) {
   return (
     <section className="relative border-t border-white/10 px-4 py-20 sm:px-6 lg:py-32">
       <div className="mx-auto max-w-7xl">
