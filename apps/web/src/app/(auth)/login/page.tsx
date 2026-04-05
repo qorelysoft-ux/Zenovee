@@ -6,8 +6,6 @@ import { useState } from 'react'
 
 import { supabase } from '@/lib/supabaseClient'
 
-const googleOauthEnabled = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 'true'
-
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
@@ -37,24 +35,6 @@ export default function LoginPage() {
       }
     } finally {
       setLoading(false)
-    }
-  }
-
-  async function onGoogle() {
-    setError(null)
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    })
-    if (error) {
-      const msg = error.message || 'Google login failed'
-      if (msg.toLowerCase().includes('unsupported provider')) {
-        setError('Google login is not enabled yet. Please use email/password login for now, then enable Google provider in Supabase Auth settings.')
-      } else {
-        setError(msg)
-      }
     }
   }
 
@@ -123,20 +103,6 @@ export default function LoginPage() {
         >
           {loading ? 'Signing in…' : 'Sign in'}
         </button>
-
-        {googleOauthEnabled ? (
-          <button
-            type="button"
-            onClick={onGoogle}
-            className="w-full rounded-full border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white"
-          >
-            Continue with Google
-          </button>
-        ) : (
-          <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
-            Google login is currently disabled. Use email/password login.
-          </div>
-        )}
       </form>
 
       <p className="mt-6 text-sm text-slate-300">
