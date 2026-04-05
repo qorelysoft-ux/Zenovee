@@ -39,7 +39,7 @@ export default function LiveActivity() {
   if (!data) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-200 px-4 py-2 text-sm text-gray-600 z-50">
+    <div className="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-sm border-t border-white/10 px-4 py-2 text-sm text-gray-300 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center space-x-6">
           <span className="flex items-center">
