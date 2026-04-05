@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { ArrowRight, Zap } from 'lucide-react'
 
+import { ToolsMarquee } from '@/components/ToolsMarquee'
 import type { ToolCategory } from '@/lib/entitlements'
 import { sortToolsForLaunch, toolsCatalog } from '@/lib/toolsCatalog'
 
@@ -38,7 +39,6 @@ export function CategoryToolsList({
   category: ToolCategory
 }) {
   const tools = sortToolsForLaunch(toolsCatalog.filter((t) => t.category === category))
-  const featured = tools.slice(0, 3)
   const gradient = categoryGradients[category] || 'from-violet-900/30 to-blue-900/20'
   const accent = categoryAccents[category] || 'from-violet-400 to-blue-400'
 
@@ -91,28 +91,11 @@ export function CategoryToolsList({
       </section>
 
       {/* FEATURED TOOLS */}
-      {featured.length > 0 && (
+      {tools.length > 0 && (
         <section className="border-t border-white/10 px-4 py-12 sm:px-6 lg:py-16">
           <div className="mx-auto max-w-6xl">
             <h2 className="mb-6 text-2xl font-bold text-white">Featured Tools</h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {featured.map((t) => (
-                <Link
-                  key={t.slug}
-                  href={`/tools/${t.slug}`}
-                  className="group card-premium hover:border-white/20"
-                >
-                  <h3 className="text-lg font-bold text-white group-hover:text-violet-400 transition-colors">
-                    {t.name}
-                  </h3>
-                  <p className="mt-3 text-slate-300 text-sm">{t.description}</p>
-                  <div className="mt-6 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-400">Run Tool</span>
-                    <ArrowRight className="h-4 w-4 text-slate-400 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <ToolsMarquee tools={tools.slice(0, 12)} speedSeconds={36} />
           </div>
         </section>
       )}

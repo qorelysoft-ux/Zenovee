@@ -56,3 +56,56 @@ a {
     linear-gradient(90deg, rgba(148,163,184,0.06) 1px, transparent 1px);
   background-size: 32px 32px;
 }
+
+@keyframes tools-marquee-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.tools-marquee {
+  --marquee-duration: 32s;
+  --marquee-gap: 1rem;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  mask-image: linear-gradient(to right, transparent 0, black 6%, black 94%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 6%, black 94%, transparent 100%);
+}
+
+.tools-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: tools-marquee-scroll var(--marquee-duration) linear infinite;
+  will-change: transform;
+}
+
+.tools-marquee:hover .tools-marquee-track {
+  animation-play-state: paused;
+}
+
+.tools-marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--marquee-gap);
+  padding-right: var(--marquee-gap);
+}
+
+.tools-marquee-card {
+  flex: 0 0 21rem;
+  min-height: 10.25rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.55);
+  padding: 1rem;
+  backdrop-filter: blur(12px);
+}
+
+@media (max-width: 640px) {
+  .tools-marquee-card {
+    flex-basis: 17rem;
+  }
+}
