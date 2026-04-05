@@ -21,19 +21,19 @@ export function PremiumHero() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-400 opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-violet-400" />
               </span>
-              Production-ready AI tools
+              AI-Powered Marketing Automation
             </div>
 
             {/* Main headline */}
             <h1 className="mt-8 text-5xl font-bold tracking-tight text-white sm:text-7xl lg:text-8xl">
-              <span className="block">Choose Your</span>
-              <span className="mt-2 block text-gradient">Goal</span>
-              <span className="mt-2 block">Get Results</span>
+              <span className="block">Replace your</span>
+              <span className="mt-2 block text-gradient">marketing team</span>
+              <span className="mt-2 block">with AI</span>
             </h1>
 
             {/* Subheadline */}
             <p className="mx-auto mt-8 max-w-2xl text-xl leading-8 text-slate-300 sm:text-2xl">
-              Premium AI tools for marketing, development, design, SEO & automation. Pick your workflow, run the tool, get production-ready output instantly.
+              Generate ads, SEO content, emails, and landing pages in minutes — not hours.
             </p>
 
             {/* CTA Buttons */}
@@ -42,11 +42,11 @@ export function PremiumHero() {
                 href="/tools"
                 className="btn-premium group inline-flex items-center justify-center gap-2"
               >
-                Explore Tools
+                Start Generating
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link href="/pricing" className="btn-secondary">
-                View Pricing
+                View Demo
               </Link>
             </div>
 

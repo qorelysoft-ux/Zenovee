@@ -72,21 +72,21 @@ export function HowItWorks() {
   const steps = [
     {
       step: '1',
-      title: 'Choose Your Category',
-      description: 'Select from marketing, development, design, SEO, or automation.',
-      icon: '📂',
-    },
-    {
-      step: '2',
-      title: 'Pick a Tool',
-      description: 'Browse specialized tools built for your specific workflow.',
+      title: 'Choose your goal',
+      description: 'Select what you want to create: ads, content, emails, landing pages, or workflows.',
       icon: '🎯',
     },
     {
-      step: '3',
-      title: 'Run & Get Results',
-      description: 'Input your data. Get production-ready output in seconds.',
+      step: '2',
+      title: 'Run AI workflow',
+      description: 'Let AI generate production-ready content based on your inputs.',
       icon: '⚡',
+    },
+    {
+      step: '3',
+      title: 'Get production-ready results',
+      description: 'Launch immediately. No editing needed. Start driving results today.',
+      icon: '🚀',
     },
   ]
 

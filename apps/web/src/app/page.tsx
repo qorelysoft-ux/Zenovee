@@ -6,9 +6,9 @@ import { PremiumPricingSection } from '@/components/PremiumPricing'
 import { CheckCircle, Zap, Lock } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Zenovee — Premium AI Tools for Marketing, Development, SEO & Automation',
+  title: 'Zenovee — AI Marketing Automation for Ads, Content & Landing Pages',
   description:
-    'Premium AI workflows for marketing, development, design, SEO & automation. Choose your goal, run the tool, get production-ready results instantly.',
+    'Replace your marketing team with AI. Generate high-converting ads, SEO articles, emails, and landing pages in minutes. Used by founders, marketers, and developers.',
   alternates: {
     canonical: 'https://www.zenovee.in',
   },
@@ -152,20 +152,20 @@ export default function Home() {
       {/* FEATURES SECTION */}
       <section className="relative border-t border-white/10 px-4 py-20 sm:px-6 lg:py-32">
         <div className="mx-auto max-w-7xl">
-          <h2 className="text-center text-4xl font-bold text-white sm:text-5xl">Why Choose Zenovee</h2>
+          <h2 className="text-center text-4xl font-bold text-white sm:text-5xl">What You Can Create</h2>
           <p className="mx-auto mt-6 max-w-2xl text-center text-lg text-slate-400">
-            Premium quality. Production-ready results. Pay only for what you use.
+            All the marketing content your team needs, powered by AI.
           </p>
 
-          <div className="mt-16 grid gap-8 sm:grid-cols-3">
+          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <div className="card-premium relative overflow-hidden">
               <div className="relative z-10">
                 <div className="inline-flex rounded-lg bg-violet-500/20 p-3 mb-6">
                   <Zap className="h-6 w-6 text-violet-400" />
                 </div>
-                <h3 className="text-xl font-bold text-white">Instant Results</h3>
+                <h3 className="text-xl font-bold text-white">Write high-converting ads</h3>
                 <p className="mt-4 text-slate-300">
-                  Get production-ready output in seconds. No waiting, no manual post-processing needed.
+                  Create compelling ad copy that drives clicks and conversions across all platforms.
                 </p>
               </div>
             </div>
@@ -173,11 +173,11 @@ export default function Home() {
             <div className="card-premium relative overflow-hidden">
               <div className="relative z-10">
                 <div className="inline-flex rounded-lg bg-blue-500/20 p-3 mb-6">
-                  <Lock className="h-6 w-6 text-blue-400" />
+                  <CheckCircle className="h-6 w-6 text-blue-400" />
                 </div>
-                <h3 className="text-xl font-bold text-white">Enterprise Secure</h3>
+                <h3 className="text-xl font-bold text-white">Generate SEO articles</h3>
                 <p className="mt-4 text-slate-300">
-                  Powered by Razorpay for secure payments. Your data is encrypted and protected.
+                  Produce rank-optimized content that attracts organic traffic and builds authority.
                 </p>
               </div>
             </div>
@@ -185,11 +185,23 @@ export default function Home() {
             <div className="card-premium relative overflow-hidden">
               <div className="relative z-10">
                 <div className="inline-flex rounded-lg bg-emerald-500/20 p-3 mb-6">
-                  <CheckCircle className="h-6 w-6 text-emerald-400" />
+                  <Lock className="h-6 w-6 text-emerald-400" />
                 </div>
-                <h3 className="text-xl font-bold text-white">No Hidden Fees</h3>
+                <h3 className="text-xl font-bold text-white">Build landing pages</h3>
                 <p className="mt-4 text-slate-300">
-                  Clear credit-based pricing. No free tier bait. No surprise charges or additional fees.
+                  Generate complete landing page copy and strategy in minutes, not days.
+                </p>
+              </div>
+            </div>
+
+            <div className="card-premium relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="inline-flex rounded-lg bg-pink-500/20 p-3 mb-6">
+                  <Zap className="h-6 w-6 text-pink-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white">Automate workflows</h3>
+                <p className="mt-4 text-slate-300">
+                  Streamline repetitive marketing tasks and focus on strategy and growth.
                 </p>
               </div>
             </div>
@@ -207,17 +219,25 @@ export default function Home() {
         </div>
 
         <div className="relative mx-auto max-w-4xl text-center">
-          <h2 className="text-4xl font-bold text-white sm:text-5xl">Start Using Premium Tools Today</h2>
+          <p className="inline-flex items-center gap-2 rounded-full border border-violet-400/30 bg-violet-400/10 px-4 py-2 text-sm font-semibold text-violet-300">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-violet-400" />
+            </span>
+            Used by founders, marketers, and developers
+          </p>
+
+          <h2 className="mt-8 text-4xl font-bold text-white sm:text-5xl">Start using AI workflows today</h2>
           <p className="mt-6 text-lg text-slate-400">
-            Join hundreds of creators and teams using Zenovee to streamline workflows and deliver better results.
+            Replace manual work with AI. Save time. Increase revenue.
           </p>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Link href="/tools" className="btn-premium">
-              Start Exploring Tools
+              Start Generating →
             </Link>
             <Link href="/pricing" className="btn-secondary">
-              Compare Plans
+              View Demo
             </Link>
           </div>
 
