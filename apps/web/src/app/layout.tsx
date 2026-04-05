@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     title: 'Zenovee — AI Tools, Developer Tools, SEO Tools, Image Tools & Utilities',
     description:
       'Use Zenovee for AI workflows, developer utilities, SEO tools, image tools, and business automation.',
-    image: '/logo.svg',
+    images: '/logo.svg',
   },
   robots: {
     index: true,
