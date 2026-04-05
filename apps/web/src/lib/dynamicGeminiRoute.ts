@@ -177,6 +177,11 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
           estimatedCredits: result.estimatedCredits,
           creditsUsed: result.creditsUsed,
           remainingBalance: result.balance,
+          inputTokens: result.inputTokens,
+          outputTokens: result.outputTokens,
+          costUsd: result.costUsd,
+          modelTier: result.modelTier,
+          usageMessage: `Used ${result.creditsUsed} credits. Remaining ${result.balance} credits.`,
           cacheHit: true,
         })
       }
@@ -243,6 +248,7 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
         outputTokens: result.outputTokens,
         costUsd: result.costUsd,
         modelTier: result.modelTier,
+        usageMessage: `Used ${result.creditsUsed} credits. Remaining ${result.balance} credits.`,
       })
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'unknown'

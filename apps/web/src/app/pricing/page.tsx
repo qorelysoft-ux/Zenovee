@@ -13,10 +13,10 @@ const plans = [
     id: 'starter',
     name: 'Starter',
     price: '$29',
-    credits: 10000,
+    credits: 300,
     description: 'Perfect for getting started with premium tools.',
     features: [
-      '10,000 monthly credits',
+      '300 monthly credits',
       'Full tool access across all categories',
       'Email support',
       'Valid for 30 days',
@@ -28,10 +28,10 @@ const plans = [
     id: 'growth',
     name: 'Growth',
     price: '$49',
-    credits: 50000,
+    credits: 800,
     description: 'Most popular. For active creators and teams.',
     features: [
-      '50,000 monthly credits',
+      '800 monthly credits',
       'Full tool access across all categories',
       'Priority email support (4-hour response)',
       'Valid for 30 days',
@@ -45,10 +45,10 @@ const plans = [
     id: 'scale',
     name: 'Scale',
     price: '$99',
-    credits: 200000,
+    credits: 2000,
     description: 'For power users, agencies, and teams.',
     features: [
-      '200,000 monthly credits',
+      '2,000 monthly credits',
       'Full tool access + priority processing',
       '24-hour priority support',
       'Valid for 30 days',
@@ -61,22 +61,22 @@ const plans = [
 
 const addons = [
   {
-    id: 'addon-100',
-    name: 'Quick Boost',
+    id: 'addon-120',
+    name: 'Add-on 120',
     price: '$10',
-    credits: 10000,
+    credits: 120,
   },
   {
-    id: 'addon-500',
-    name: 'Power Pack',
-    price: '$40',
-    credits: 50000,
+    id: 'addon-400',
+    name: 'Add-on 400',
+    price: '$25',
+    credits: 400,
   },
   {
     id: 'addon-1000',
-    name: 'Mega Pack',
-    price: '$75',
-    credits: 100000,
+    name: 'Add-on 1000',
+    price: '$50',
+    credits: 1000,
   },
 ]
 

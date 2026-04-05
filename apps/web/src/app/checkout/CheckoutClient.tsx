@@ -14,7 +14,7 @@ declare global {
 type BillingConfig = {
   billingConfigured: boolean
   webhookConfigured: boolean
-  addons: { id: string; name: string; amountInr: number; credits: number }[]
+  addons: { id: string; name: string; amountUsd: number; amountInr: number; credits: number }[]
   plans: { id: 'STARTER_300' | 'GROWTH_800' | 'SCALE_2000'; name: string; monthlyPriceUsd: number; includedCredits: number }[]
 }
 
@@ -132,7 +132,7 @@ export default function CheckoutClient() {
     <div className="mx-auto max-w-5xl px-4 py-16">
       <h1 className="text-4xl font-semibold">Checkout</h1>
       <p className="mt-3 max-w-3xl text-sm text-zinc-600 dark:text-zinc-300">
-        Buy credits once and use them across every Zenovee tool. One credit powers one tool run, regardless of category.
+        Buy credits and use them across every Zenovee tool. Credits are dynamically calculated from real Vertex AI token costs.
       </p>
 
       {status ? (
@@ -178,7 +178,7 @@ export default function CheckoutClient() {
               <h2 className="text-lg font-medium">{pack.name}</h2>
               <div className="text-right">
                 <div className="text-2xl font-semibold">
-                  {(pack.amountInr / 100).toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
+                  ${pack.amountUsd.toFixed(0)}
                 </div>
                 <div className="text-xs text-zinc-500">one-time add-on</div>
               </div>

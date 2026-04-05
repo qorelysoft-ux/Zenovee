@@ -8,6 +8,8 @@ interface Slide {
   subtext: string;
   image: string;
   gradient: string;
+  button1: string;
+  button2: string;
 }
 
 const slides: Slide[] = [
@@ -17,6 +19,8 @@ const slides: Slide[] = [
     subtext: 'Generate ads, SEO, and content instantly',
     image: '/images/hero-marketing.svg',
     gradient: 'from-blue-600 via-purple-600 to-pink-600',
+    button1: 'Get Started Free',
+    button2: 'Watch Demo',
   },
   {
     id: 2,
@@ -24,6 +28,8 @@ const slides: Slide[] = [
     subtext: 'Automate code, APIs, and workflows',
     image: '/images/hero-developer.svg',
     gradient: 'from-purple-600 via-indigo-600 to-blue-600',
+    button1: 'Start Building',
+    button2: 'View Docs',
   },
   {
     id: 3,
@@ -31,6 +37,8 @@ const slides: Slide[] = [
     subtext: 'Remove backgrounds, upscale, and optimize',
     image: '/images/hero-images.svg',
     gradient: 'from-pink-600 via-rose-600 to-orange-600',
+    button1: 'Try Free',
+    button2: 'See Examples',
   },
   {
     id: 4,
@@ -38,31 +46,63 @@ const slides: Slide[] = [
     subtext: 'Analyze, optimize, and rank faster',
     image: '/images/hero-seo.svg',
     gradient: 'from-orange-600 via-amber-600 to-yellow-600',
+    button1: 'Analyze Now',
+    button2: 'Learn More',
   },
 ];
 
 export default function HeroSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const transitionRef = useRef<NodeJS.Timeout | null>(null);
 
   const slide = slides[currentSlide];
 
+  // Auto-advance slides every 5 seconds
   useEffect(() => {
     if (isHovered) return;
 
     intervalRef.current = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
+      nextSlide();
     }, 5000);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isHovered]);
+  }, [isHovered, currentSlide]);
+
+  // Cleanup transition flag after animation completes
+  useEffect(() => {
+    if (isTransitioning) {
+      transitionRef.current = setTimeout(() => {
+        setIsTransitioning(false);
+      }, 800);
+    }
+
+    return () => {
+      if (transitionRef.current) clearTimeout(transitionRef.current);
+    };
+  }, [isTransitioning]);
+
+  const nextSlide = () => {
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  };
+
+  const prevSlide = () => {
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
 
   const goToSlide = (index: number) => {
-    setCurrentSlide(index);
+    if (index !== currentSlide) {
+      setIsTransitioning(true);
+      setCurrentSlide(index);
+    }
   };
+
 
   return (
     <section
@@ -70,9 +110,92 @@ export default function HeroSlider() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      <style>{`
+        @keyframes slideInFromRight {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+
+        @keyframes fadeInScale {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes slideOutToLeft {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+        }
+
+        @keyframes fadeOut {
+          from {
+            opacity: 1;
+            transform: scale(1);
+          }
+          to {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+        }
+
+        .slide-in-text {
+          animation: fadeInScale 0.7s ease-out forwards;
+          animation-delay: 0.2s;
+          opacity: 0;
+        }
+
+        .slide-in-subtext {
+          animation: fadeInScale 0.7s ease-out forwards;
+          animation-delay: 0.35s;
+          opacity: 0;
+        }
+
+        .slide-in-buttons {
+          animation: fadeInScale 0.7s ease-out forwards;
+          animation-delay: 0.5s;
+          opacity: 0;
+        }
+
+        .slide-in-image {
+          animation: slideInFromRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          opacity: 0;
+        }
+
+        .gradient-transition {
+          transition: background 1s ease-out;
+        }
+
+        .slide-exit-text {
+          animation: fadeOut 0.4s ease-in forwards;
+        }
+
+        .slide-exit-image {
+          animation: slideOutToLeft 0.6s ease-in forwards;
+        }
+      `}</style>
+
       {/* Animated Background */}
       <div className="absolute inset-0 z-0">
-        <div className={`absolute inset-0 bg-gradient-to-br ${slide.gradient} transition-all duration-1000 ease-out`} />
+        <div
+          className={`gradient-transition absolute inset-0 bg-gradient-to-br ${slide.gradient}`}
+        />
         <div className="absolute inset-0 backdrop-blur-3xl opacity-40" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl opacity-20 -mr-48 -mt-48 animate-pulse" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl opacity-20 -ml-48 -mb-48 animate-pulse" />
@@ -84,40 +207,73 @@ export default function HeroSlider() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left: Text Content */}
             <div className="flex flex-col justify-center space-y-8">
-              <div className="space-y-4">
-                <h1 key={`headline-${currentSlide}`} className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+              <div className="space-y-4 overflow-hidden">
+                <h1
+                  className={`text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight ${
+                    isTransitioning ? 'slide-exit-text' : 'slide-in-text'
+                  }`}
+                >
                   {slide.headline}
                 </h1>
               </div>
 
-              <p key={`subtext-${currentSlide}`} className="text-lg md:text-xl text-white/80 max-w-xl font-light">
+              <p
+                className={`text-lg md:text-xl text-white/80 max-w-xl font-light ${
+                  isTransitioning ? 'slide-exit-text' : 'slide-in-subtext'
+                }`}
+              >
                 {slide.subtext}
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <button className="px-8 py-4 rounded-lg font-semibold text-lg bg-white text-gray-900 hover:bg-white/90 transition-all duration-300">
-                  Get Started Free
+              <div
+                className={`flex flex-col sm:flex-row gap-4 pt-4 ${
+                  isTransitioning ? 'slide-exit-text' : 'slide-in-buttons'
+                }`}
+              >
+                <button className="px-8 py-4 rounded-lg font-semibold text-lg bg-white text-gray-900 hover:bg-white/90 transition-all duration-300 hover:shadow-xl hover:shadow-white/20">
+                  {slide.button1}
                 </button>
                 <button className="px-8 py-4 rounded-lg font-semibold text-lg border-2 border-white text-white hover:bg-white/10 transition-all duration-300">
-                  Watch Demo
+                  {slide.button2}
                 </button>
               </div>
             </div>
 
             {/* Right: Image / Mockup */}
             <div className="relative h-96 lg:h-full min-h-96 flex items-center justify-center overflow-hidden">
-              {slides.map((s, index) => (
-                <div key={s.id} className={`absolute inset-0 transition-opacity duration-1000 ease-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}>
-                  <div className="w-full h-full rounded-2xl border border-white/20 backdrop-blur-sm bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center overflow-hidden relative group">
-                    <img src={s.image} alt={s.headline} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500" loading="lazy" onError={(e) => {const target = e.target as HTMLImageElement; target.style.display = 'none';}} />
-                    <div className="absolute inset-0 flex items-center justify-center bg-white/5">
-                      <svg className="w-32 h-32 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
+              <div
+                className={`absolute inset-0 ${
+                  isTransitioning ? 'slide-exit-image' : 'slide-in-image'
+                } will-change-transform`}
+              >
+                <div className="w-full h-full rounded-2xl border border-white/20 backdrop-blur-sm bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center overflow-hidden relative group">
+                  <img
+                    src={slide.image}
+                    alt={slide.headline}
+                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                    loading="lazy"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                    }}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/5">
+                    <svg
+                      className="w-32 h-32 text-white/20"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={0.5}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
                   </div>
                 </div>
-              ))}
+              </div>
 
               <div className="absolute top-8 right-8 w-32 h-32 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center animate-pulse shadow-2xl shadow-white/10">
                 <span className="text-white/60 text-sm font-semibold">AI Powered</span>
@@ -130,7 +286,16 @@ export default function HeroSlider() {
       {/* Navigation Dots */}
       <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-50 flex gap-3">
         {slides.map((_, index) => (
-          <button key={index} onClick={() => goToSlide(index)} className={`h-3 rounded-full transition-all duration-300 ease-out ${index === currentSlide ? 'w-8 bg-white' : 'w-3 bg-white/40 hover:bg-white/60'}`} aria-label={`Go to slide ${index + 1}`} />
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            className={`h-3 rounded-full transition-all duration-300 ease-out cursor-pointer ${
+              index === currentSlide
+                ? 'w-8 bg-white shadow-lg shadow-white/50'
+                : 'w-3 bg-white/40 hover:bg-white/60'
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
         ))}
       </div>
 
