@@ -10,23 +10,32 @@ type DashboardStats = {
     totalRevenueUsd: number
     totalAiCostUsd: number
     totalProfitUsd: number
-    activeUsers: number
   }
-  toolPerformance: Array<{
-    name: string
-    runs: number
-    profitUsd: number
+  perToolAnalytics: Array<{
+    toolName: string
+    usageCount: number
+    costUsd: number
+    revenueUsd: number
   }>
-  recentUsers: Array<{
+  userAnalytics: {
+    topUsers: Array<{
+      email: string
+      runs: number
+      creditsUsed: number
+      spendUsd: number
+    }>
+    highestSpenders: Array<{
+      email: string
+      runs: number
+      creditsUsed: number
+      spendUsd: number
+    }>
+    creditUsage: Array<{
+      userId: string
     email: string
-    spendUsd: number
-    createdAt: string
-  }>
-  topUsers: Array<{
-    email: string
-    spendUsd: number
-    runs: number
-  }>
+      creditsUsed: number
+    }>
+  }
 }
 
 export default function AdminDashboardPage() {
@@ -46,8 +55,7 @@ export default function AdminDashboardPage() {
       }
 
       try {
-        // Try to fetch admin stats - if it fails, user is not admin
-        const response = await apiFetch<DashboardStats>('/admin/dashboard-stats')
+        const response = await apiFetch<DashboardStats>('/admin/analytics/profit')
         if (!mounted) return
         setStats(response)
       } catch (e) {
@@ -109,9 +117,13 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <p className="text-sm text-slate-400">Active Users</p>
-            <h2 className="mt-3 text-3xl font-bold text-white">{stats.totals.activeUsers}</h2>
-            <p className="mt-2 text-xs text-slate-500">Total registered</p>
+            <p className="text-sm text-slate-400">Profit Margin</p>
+            <h2 className="mt-3 text-3xl font-bold text-white">
+              {stats.totals.totalRevenueUsd > 0
+                ? `${((stats.totals.totalProfitUsd / stats.totals.totalRevenueUsd) * 100).toFixed(1)}%`
+                : '0.0%'}
+            </h2>
+            <p className="mt-2 text-xs text-slate-500">Revenue minus AI cost</p>
           </div>
         </div>
 
@@ -119,16 +131,17 @@ export default function AdminDashboardPage() {
         <div className="grid gap-8 lg:grid-cols-2">
           {/* TOOL PERFORMANCE */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-8">
-            <h2 className="text-xl font-bold text-white">Tool Performance</h2>
+            <h2 className="text-xl font-bold text-white">Per Tool Analytics</h2>
             <div className="mt-6 space-y-3">
-              {stats.toolPerformance.slice(0, 8).map((tool, idx) => (
+              {stats.perToolAnalytics.slice(0, 8).map((tool, idx) => (
                 <div key={idx} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-4">
                   <div>
-                    <p className="font-medium text-white">{tool.name}</p>
-                    <p className="text-xs text-slate-400">{tool.runs} runs</p>
+                    <p className="font-medium text-white">{tool.toolName}</p>
+                    <p className="text-xs text-slate-400">{tool.usageCount} runs</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-violet-400">${tool.profitUsd.toFixed(2)}</p>
+                    <p className="font-semibold text-emerald-400">${(tool.revenueUsd - tool.costUsd).toFixed(2)} profit</p>
+                    <p className="text-xs text-slate-400">${tool.revenueUsd.toFixed(2)} rev / ${tool.costUsd.toFixed(2)} cost</p>
                   </div>
                 </div>
               ))}
@@ -137,13 +150,13 @@ export default function AdminDashboardPage() {
 
           {/* TOP USERS */}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-8">
-            <h2 className="text-xl font-bold text-white">Top Users</h2>
+            <h2 className="text-xl font-bold text-white">Highest Spenders</h2>
             <div className="mt-6 space-y-3">
-              {stats.topUsers.slice(0, 8).map((user, idx) => (
+              {stats.userAnalytics.highestSpenders.slice(0, 8).map((user, idx) => (
                 <div key={idx} className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-4">
                   <div>
                     <p className="font-medium text-white truncate">{user.email}</p>
-                    <p className="text-xs text-slate-400">{user.runs} runs</p>
+                    <p className="text-xs text-slate-400">{user.runs} runs • {user.creditsUsed} credits</p>
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-emerald-400">${user.spendUsd.toFixed(2)}</p>
@@ -154,26 +167,22 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* RECENT USERS */}
+        {/* TOP CREDIT USERS */}
         <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-8">
-          <h2 className="text-xl font-bold text-white">Recent Users</h2>
+          <h2 className="text-xl font-bold text-white">Top Credit Usage</h2>
           <div className="mt-6 overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/10">
                   <th className="px-4 py-3 text-left font-semibold text-slate-300">Email</th>
-                  <th className="px-4 py-3 text-right font-semibold text-slate-300">Spending</th>
-                  <th className="px-4 py-3 text-right font-semibold text-slate-300">Joined</th>
+                  <th className="px-4 py-3 text-right font-semibold text-slate-300">Credits Used</th>
                 </tr>
               </thead>
               <tbody>
-                {stats.recentUsers.map((user, idx) => (
+                {stats.userAnalytics.creditUsage.map((user, idx) => (
                   <tr key={idx} className="border-b border-white/10 hover:bg-white/5">
                     <td className="px-4 py-3 text-white truncate">{user.email}</td>
-                    <td className="px-4 py-3 text-right text-violet-400">${user.spendUsd.toFixed(2)}</td>
-                    <td className="px-4 py-3 text-right text-slate-400 text-xs">
-                      {new Date(user.createdAt).toLocaleDateString()}
-                    </td>
+                    <td className="px-4 py-3 text-right text-violet-400">{user.creditsUsed.toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>

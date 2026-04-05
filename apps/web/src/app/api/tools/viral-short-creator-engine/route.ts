@@ -6,11 +6,12 @@ import { requireSupabaseUserFromRequest } from '../../_lib/auth'
 import {
   enforceDailyCreditLimit,
   ensureToolRecord,
+  getEstimatedCreditsForTool,
   getOrCreateAppUser,
   runDynamicCreditDeduction,
   withCreditErrorStatus,
 } from '@/lib/creditRuntime'
-import { runGeminiTool } from '@/lib/gemini'
+import { runAIRequest } from '@/lib/vertexAI'
 import { getToolBySlug } from '@/lib/toolsCatalog'
 
 const bodySchema = z.object({
@@ -52,6 +53,7 @@ export async function POST(req: Request) {
     const auth = await requireSupabaseUserFromRequest(req)
 
     const body = bodySchema.parse(await req.json())
+    const estimateOnly = new URL(req.url).searchParams.get('estimateOnly') === '1'
     const user = await getOrCreateAppUser(auth)
     await enforceDailyCreditLimit(user.id, user.planType)
 
@@ -64,22 +66,39 @@ export async function POST(req: Request) {
 
     const prompt = buildPrompt(body)
 
+    if (estimateOnly) {
+      const estimate = await getEstimatedCreditsForTool('viral-short-creator-engine', body)
+      return NextResponse.json({
+        ok: true,
+        estimateOnly: true,
+        estimatedCredits: estimate.credits,
+        estimatedInputTokens: estimate.inputTokens,
+        estimatedOutputTokens: estimate.outputTokens,
+        estimatedCostUsd: estimate.cost,
+        modelTier: estimate.modelTier,
+      })
+    }
+
     const result = await runDynamicCreditDeduction({
       userId: user.id,
       toolId: tool.id,
       toolSlug: 'viral-short-creator-engine',
       payload: body,
       execute: async () => {
-        const gemini = await runGeminiTool({
-          prompt,
+        const ai = await runAIRequest({
+          toolId: 'viral-short-creator-engine',
+          input: prompt,
           maxOutputTokens: 1800,
           temperature: 0.8,
         })
 
         return {
-          result: gemini.result,
-          inputTokens: gemini.inputTokens,
-          outputTokens: gemini.outputTokens,
+          result: ai.output,
+          inputTokens: ai.inputTokens,
+          outputTokens: ai.outputTokens,
+          costUsd: ai.cost,
+          modelTier: ai.modelTier,
+          modelName: ai.modelName,
         }
       },
     })
@@ -90,6 +109,10 @@ export async function POST(req: Request) {
       estimatedCredits: result.estimatedCredits,
       creditsUsed: result.creditsUsed,
       remainingBalance: result.balance,
+      inputTokens: result.inputTokens,
+      outputTokens: result.outputTokens,
+      costUsd: result.costUsd,
+      modelTier: result.modelTier,
     })
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'unknown'

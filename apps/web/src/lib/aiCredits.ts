@@ -18,10 +18,20 @@ export const COMPLEXITY_MULTIPLIERS = {
 
 export type ToolComplexity = keyof typeof COMPLEXITY_MULTIPLIERS
 
-export const GEMINI_PRICING = {
-  inputPricePer1K: 0.000075,
-  outputPricePer1K: 0.0003,
+export type ToolType = 'LOW' | 'MEDIUM' | 'HIGH' | 'EXTREME'
+
+export const VERTEX_MODEL_PRICING_USD_PER_1K = {
+  FLASH: {
+    input: 0.000075,
+    output: 0.0003,
+  },
+  PRO: {
+    input: 0.00125,
+    output: 0.005,
+  },
 } as const
+
+export type VertexModelTier = keyof typeof VERTEX_MODEL_PRICING_USD_PER_1K
 
 const COMPLEXITY_MAP: Record<string, ToolComplexity> = {
   'api-schema-converter': 'LOW',
@@ -71,20 +81,49 @@ export function getToolComplexity(toolId: string): ToolComplexity {
   return COMPLEXITY_MAP[toolId] ?? 'MEDIUM'
 }
 
-export function calculateApiCost(inputTokens: number, outputTokens: number) {
-  const inputCost = (inputTokens / 1000) * GEMINI_PRICING.inputPricePer1K
-  const outputCost = (outputTokens / 1000) * GEMINI_PRICING.outputPricePer1K
+export function getToolType(toolId: string): ToolType {
+  return getToolComplexity(toolId)
+}
+
+export function getVertexModelTier(toolId: string): VertexModelTier {
+  const toolType = getToolType(toolId)
+  // Cheap + Medium => Flash, Premium => Pro
+  return toolType === 'HIGH' || toolType === 'EXTREME' ? 'PRO' : 'FLASH'
+}
+
+export function calculateApiCost(inputTokens: number, outputTokens: number, modelTier: VertexModelTier = 'FLASH') {
+  const pricing = VERTEX_MODEL_PRICING_USD_PER_1K[modelTier]
+  const inputCost = (inputTokens / 1000) * pricing.input
+  const outputCost = (outputTokens / 1000) * pricing.output
   return Number((inputCost + outputCost).toFixed(6))
 }
 
-export function calculateCredits(toolId: string, inputTokens: number, outputTokens: number) {
-  const complexity = getToolComplexity(toolId)
-  const multiplier = COMPLEXITY_MULTIPLIERS[complexity]
-  const cost = calculateApiCost(inputTokens, outputTokens)
+export function calculateCredits(cost: number, toolType: ToolType) {
+  const multiplier = COMPLEXITY_MULTIPLIERS[toolType]
   const rawCredits = Math.ceil((cost * multiplier) / CREDIT_VALUE_USD)
   const credits = Math.max(MINIMUM_CREDITS_PER_REQUEST, Math.min(MAXIMUM_CREDITS_PER_REQUEST, rawCredits))
 
-  return { credits, cost, complexity, multiplier }
+  const revenueUsd = credits * CREDIT_VALUE_USD
+  if (revenueUsd <= cost) {
+    throw new Error('unprofitable_request_cost')
+  }
+
+  return { credits, cost, toolType, multiplier, revenueUsd }
+}
+
+export function calculateCreditsForUsage(params: {
+  toolId: string
+  inputTokens: number
+  outputTokens: number
+  modelTier?: VertexModelTier
+}) {
+  const toolType = getToolType(params.toolId)
+  const modelTier = params.modelTier ?? getVertexModelTier(params.toolId)
+  const cost = calculateApiCost(params.inputTokens, params.outputTokens, modelTier)
+  return {
+    ...calculateCredits(cost, toolType),
+    modelTier,
+  }
 }
 
 export function estimateTokensFromPayload(payload: unknown) {
@@ -98,7 +137,7 @@ export function buildEstimatedCredits(toolId: string, payload: unknown) {
   return {
     inputTokens,
     outputTokens,
-    ...calculateCredits(toolId, inputTokens, outputTokens),
+    ...calculateCreditsForUsage({ toolId, inputTokens, outputTokens }),
   }
 }
 

@@ -5,7 +5,7 @@ import { apiFetch } from '@/lib/api'
 
 export function EnvironmentConfigGeneratorTool() {
   const [stack, setStack] = useState('Next.js + Express + PostgreSQL + Supabase')
-  const [services, setServices] = useState('Supabase auth, PostgreSQL, Razorpay, Gemini, OpenAI')
+  const [services, setServices] = useState('Supabase auth, PostgreSQL, Razorpay, Vertex AI (Gemini models)')
   const [environment, setEnvironment] = useState<'local' | 'staging' | 'production'>('production')
   const [securityRequirements, setSecurityRequirements] = useState('Separate public and secret keys, avoid committing secrets, and use strong JWT secrets.')
   const [result, setResult] = useState('')

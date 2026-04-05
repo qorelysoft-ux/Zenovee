@@ -8,10 +8,11 @@ import {
   enforceDailyCreditLimit,
   ensureToolRecord,
   getOrCreateAppUser,
+  getEstimatedCreditsForTool,
   runDynamicCreditDeduction,
   withCreditErrorStatus,
 } from './creditRuntime'
-import { runGeminiTool } from './gemini'
+import { runAIRequest } from './vertexAI'
 import { getToolBySlug } from './toolsCatalog'
 
 type Config<T> = {
@@ -91,6 +92,7 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
       })
 
       const body = config.schema.parse(await req.json())
+      const estimateOnly = new URL(req.url).searchParams.get('estimateOnly') === '1'
       const user = await getOrCreateAppUser(auth)
       await enforceDailyCreditLimit(user.id, user.planType)
 
@@ -103,6 +105,20 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
 
       const rawPrompt = config.buildPrompt(body)
       const prompt = buildStructuredToolPrompt(config.toolSlug, rawPrompt)
+
+      if (estimateOnly) {
+        const estimate = await getEstimatedCreditsForTool(config.toolSlug, body)
+        return NextResponse.json({
+          ok: true,
+          estimateOnly: true,
+          estimatedCredits: estimate.credits,
+          estimatedInputTokens: estimate.inputTokens,
+          estimatedOutputTokens: estimate.outputTokens,
+          estimatedCostUsd: estimate.cost,
+          modelTier: estimate.modelTier,
+        })
+      }
+
       const cacheKey = `${user.id}:${config.toolSlug}:${JSON.stringify(body)}`
       const now = Date.now()
       const cached = cacheStore.get(cacheKey)
@@ -139,36 +155,35 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
         execute: async () => {
           let runner = inFlightStore.get(cacheKey)
           if (!runner) {
-            runner = runGeminiTool({
-              prompt,
+            runner = runAIRequest({
+              toolId: config.toolSlug,
+              input: prompt,
               maxOutputTokens: config.maxOutputTokens,
               temperature: config.temperature,
-              timeoutMs: 25_000,
-              retries: 2,
-            }).then((gemini) => ({
-              result: gemini.result,
-              inputTokens: gemini.inputTokens,
-              outputTokens: gemini.outputTokens,
+            }).then((ai) => ({
+              result: ai.output,
+              inputTokens: ai.inputTokens,
+              outputTokens: ai.outputTokens,
             }))
 
             inFlightStore.set(cacheKey, runner)
           }
 
-          const gemini = await runner.finally(() => {
+          const ai = await runner.finally(() => {
             inFlightStore.delete(cacheKey)
           })
 
           cacheStore.set(cacheKey, {
-            result: gemini.result,
-            inputTokens: gemini.inputTokens,
-            outputTokens: gemini.outputTokens,
+            result: ai.result,
+            inputTokens: ai.inputTokens,
+            outputTokens: ai.outputTokens,
             expiresAt: Date.now() + 10 * 60_000,
           })
 
           return {
-            result: gemini.result,
-            inputTokens: gemini.inputTokens,
-            outputTokens: gemini.outputTokens,
+            result: ai.result,
+            inputTokens: ai.inputTokens,
+            outputTokens: ai.outputTokens,
           }
         },
       })
@@ -179,6 +194,10 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
         estimatedCredits: result.estimatedCredits,
         creditsUsed: result.creditsUsed,
         remainingBalance: result.balance,
+        inputTokens: result.inputTokens,
+        outputTokens: result.outputTokens,
+        costUsd: result.costUsd,
+        modelTier: result.modelTier,
       })
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'unknown'
@@ -206,3 +225,5 @@ export function createDynamicGeminiToolHandler<T>(config: Config<T>) {
     }
   }
 }
+
+export const createDynamicVertexToolHandler = createDynamicGeminiToolHandler

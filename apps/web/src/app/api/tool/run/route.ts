@@ -6,7 +6,7 @@ import { requireApiKeyUser } from '../../_lib/apiKeyAuth'
 import { rateLimitOrThrow } from '../../_lib/rateLimit'
 import { getToolBySlug } from '@/lib/toolsCatalog'
 import { CREDIT_RATE_LIMITS, enforceDailyCreditLimit, ensureToolRecord, getEstimatedCreditsForTool, getOrCreateAppUser, runDynamicCreditDeduction, withCreditErrorStatus } from '@/lib/creditRuntime'
-import { runGeminiTool } from '@/lib/gemini'
+import { runAIRequest } from '@/lib/vertexAI'
 
 const bodySchema = z.object({
   toolId: z.string().min(1).max(120),
@@ -50,6 +50,10 @@ export async function POST(req: Request) {
       return NextResponse.json({
         ok: true,
         estimatedCredits: estimated.credits,
+        estimatedInputTokens: estimated.inputTokens,
+        estimatedOutputTokens: estimated.outputTokens,
+        estimatedCostUsd: estimated.cost,
+        modelTier: estimated.modelTier,
       })
     }
 
@@ -67,17 +71,19 @@ export async function POST(req: Request) {
       toolSlug: body.toolId,
       payload: body.payload,
       execute: async () => {
-        const gemini = await runGeminiTool({
-          prompt,
+        const ai = await runAIRequest({
+          toolId: body.toolId,
+          input: prompt,
           maxOutputTokens: 1600,
           temperature: 0.7,
-          timeoutMs: 25_000,
-          retries: 2,
         })
         return {
-          result: gemini.result,
-          inputTokens: gemini.inputTokens,
-          outputTokens: gemini.outputTokens,
+          result: ai.output,
+          inputTokens: ai.inputTokens,
+          outputTokens: ai.outputTokens,
+          costUsd: ai.cost,
+          modelTier: ai.modelTier,
+          modelName: ai.modelName,
         }
       },
     })
@@ -88,6 +94,10 @@ export async function POST(req: Request) {
       estimatedCredits: result.estimatedCredits,
       creditsUsed: result.creditsUsed,
       remainingBalance: result.balance,
+      inputTokens: result.inputTokens,
+      outputTokens: result.outputTokens,
+      costUsd: result.costUsd,
+      modelTier: result.modelTier,
     })
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'unknown'

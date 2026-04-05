@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { prisma } from '../../../_lib/prisma'
 import { requireAdmin } from '../../../_lib/adminGuard'
 import { rateLimitOrThrow } from '../../../_lib/rateLimit'
+import { CREDIT_VALUE_USD } from '@/lib/aiCredits'
 
 const querySchema = z.object({
   take: z.coerce.number().int().min(1).max(50).optional(),
@@ -42,13 +43,15 @@ export async function GET(req: Request) {
 
     const rows = topTools.map((r) => {
       const usage = usageByToolId.get(r.toolId)
+      const creditsUsed = Number(r._sum.creditsUsed ?? usage?._sum.creditsUsed ?? 0)
       return {
         tool: toolById.get(r.toolId) ?? { id: r.toolId, slug: 'unknown', name: 'Unknown', category: 'MARKETING' },
         runCount: r._count.toolId,
-        creditsUsed: Number(r._sum.creditsUsed ?? usage?._sum.creditsUsed ?? 0),
+        creditsUsed,
         inputTokens: Number(usage?._sum.inputTokens ?? 0),
         outputTokens: Number(usage?._sum.outputTokens ?? 0),
         costUsd: Number(usage?._sum.costUsd ?? 0),
+        revenueUsd: Number((creditsUsed * CREDIT_VALUE_USD).toFixed(4)),
       }
     })
 

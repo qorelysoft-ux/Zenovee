@@ -6,9 +6,11 @@ import {
   MAX_REQUESTS_PER_MINUTE,
   buildEstimatedCredits,
   calculateCredits,
+  calculateCreditsForUsage,
   decimalCost,
   estimateTokensFromPayload,
   getDailyCreditLimitForPlan,
+  getToolType,
 } from './aiCredits'
 
 export async function getOrCreateAppUser(input: { supabaseUserId: string; email: string | null }) {
@@ -74,7 +76,15 @@ export async function runDynamicCreditDeduction(params: {
   toolId: string
   toolSlug: string
   payload: unknown
-  execute: () => Promise<{ result: unknown; inputTokens?: number; outputTokens?: number; cacheHit?: boolean }>
+  execute: () => Promise<{
+    result: unknown
+    inputTokens?: number
+    outputTokens?: number
+    costUsd?: number
+    modelTier?: 'FLASH' | 'PRO'
+    modelName?: string
+    cacheHit?: boolean
+  }>
 }) {
   const estimate = buildEstimatedCredits(params.toolSlug, params.payload)
 
@@ -97,7 +107,18 @@ export async function runDynamicCreditDeduction(params: {
   const execution = await params.execute()
   const inputTokens = execution.inputTokens ?? estimateTokensFromPayload(params.payload)
   const outputTokens = execution.outputTokens ?? 0
-  const finalUsage = calculateCredits(params.toolSlug, inputTokens, outputTokens)
+  const finalUsage =
+    typeof execution.costUsd === 'number'
+      ? {
+          ...calculateCredits(execution.costUsd, getToolType(params.toolSlug)),
+          modelTier: execution.modelTier ?? estimate.modelTier,
+        }
+      : calculateCreditsForUsage({
+          toolId: params.toolSlug,
+          inputTokens,
+          outputTokens,
+          modelTier: execution.modelTier,
+        })
 
   const final = await prisma.$transaction(async (tx) => {
     const currentBalance = await tx.creditBalance.upsert({
@@ -147,6 +168,8 @@ export async function runDynamicCreditDeduction(params: {
           inputTokens,
           outputTokens,
           costUsd: finalUsage.cost,
+          modelTier: execution.modelTier ?? finalUsage.modelTier,
+          modelName: execution.modelName,
           estimatedCredits: estimate.credits,
           finalCredits: finalUsage.credits,
         } as never,
@@ -160,7 +183,8 @@ export async function runDynamicCreditDeduction(params: {
       inputTokens,
       outputTokens,
       costUsd: finalUsage.cost,
-      complexity: finalUsage.complexity,
+      toolType: finalUsage.toolType,
+      modelTier: execution.modelTier ?? finalUsage.modelTier,
       result: execution.result,
     }
   })
