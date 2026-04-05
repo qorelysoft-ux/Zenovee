@@ -1,0 +1,22 @@
+<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="seoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f97316;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#eab308;stop-opacity:0.1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#seoGrad)"/>
+  <g opacity="0.3">
+    <circle cx="200" cy="300" r="80" stroke="#f97316" stroke-width="2" fill="none"/>
+    <circle cx="400" cy="250" r="100" stroke="#fbbf24" stroke-width="2" fill="none"/>
+    <circle cx="600" cy="350" r="90" stroke="#facc15" stroke-width="2" fill="none"/>
+    <circle cx="850" cy="280" r="85" stroke="#f97316" stroke-width="2" fill="none"/>
+  </g>
+  <g stroke="#ffffff" stroke-width="2" opacity="0.2">
+    <path d="M 200 200 L 300 150 L 400 180 L 500 130 L 600 160 L 700 120 L 800 150 L 900 100"/>
+    <circle cx="200" cy="200" r="5" fill="#ffffff"/>
+    <circle cx="300" cy="150" r="5" fill="#ffffff"/>
+    <circle cx="400" cy="180" r="5" fill="#ffffff"/>
+  </g>
+  <text x="600" y="500" font-size="48" font-weight="bold" text-anchor="middle" fill="#ffffff" opacity="0.2">SEO Growth</text>
+</svg>

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { PremiumHero } from '@/components/PremiumHero'
+import HeroSlider from '@/components/HeroSlider'
 import { CategoriesGrid, HowItWorks } from '@/components/CategoryBrowser'
 import { PremiumPricingSection } from '@/components/PremiumPricing'
 import { CheckCircle, Zap, Lock } from 'lucide-react'
@@ -141,7 +141,7 @@ export default function Home() {
   return (
     <main className="w-full bg-black">
       {/* PREMIUM HERO */}
-      <PremiumHero />
+      <HeroSlider />
 
       {/* HOW IT WORKS */}
       <HowItWorks />

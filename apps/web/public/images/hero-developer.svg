@@ -1,0 +1,21 @@
+<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="devGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#devGrad)"/>
+  <g opacity="0.3">
+    <rect x="150" y="100" width="300" height="400" rx="20" stroke="#8b5cf6" stroke-width="2" fill="none"/>
+    <rect x="550" y="80" width="300" height="420" rx="20" stroke="#3b82f6" stroke-width="2" fill="none"/>
+    <rect x="950" y="120" width="200" height="360" rx="20" stroke="#06b6d4" stroke-width="2" fill="none"/>
+  </g>
+  <g stroke="#ffffff" stroke-width="1" opacity="0.2">
+    <line x1="200" y1="200" x2="400" y2="200"/>
+    <line x1="200" y1="250" x2="400" y2="250"/>
+    <line x1="200" y1="300" x2="400" y2="300"/>
+    <circle cx="200" cy="150" r="15" fill="none"/>
+  </g>
+  <text x="600" y="300" font-size="48" font-weight="bold" text-anchor="middle" fill="#ffffff" opacity="0.2">Developer Tools</text>
+</svg>
