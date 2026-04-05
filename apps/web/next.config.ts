@@ -1,14 +1,11 @@
 import type { NextConfig } from 'next'
 
+// Force clean build on Vercel
 const nextConfig: NextConfig = {
   async headers() {
     return [
       {
         source: '/favicon.ico',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, immutable' }],
-      },
-      {
-        source: '/favicon-*.png',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=2592000, immutable' }],
       },
       {
