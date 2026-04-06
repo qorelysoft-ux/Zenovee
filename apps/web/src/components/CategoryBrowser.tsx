@@ -15,23 +15,23 @@ interface CategoryCard {
 
 export function CategoriesGrid({ categories }: { categories: CategoryCard[] }) {
   return (
-    <section className="relative overflow-hidden px-4 py-20 sm:px-6 lg:py-32">
-      <div className="mx-auto max-w-7xl">
+    <section className="section-light relative overflow-hidden px-4 py-24 sm:px-6 lg:py-32">
+      <div className="container-premium">
         {/* Section header */}
-        <div className="mb-20 text-center">
-          <h2 className="text-4xl font-bold text-white sm:text-5xl">Browse by Category</h2>
-          <p className="mt-6 text-lg text-slate-400">
+        <div className="mb-16 text-center sm:mb-20">
+          <h2 className="text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">Browse by Category</h2>
+          <p className="mx-auto mt-6 max-w-3xl text-lg text-slate-600">
             Explore tools organized by your workflow. Each category contains specialized tools designed to deliver results.
           </p>
         </div>
 
         {/* Categories grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {categories.map((category) => (
             <Link
               key={category.id}
               href={category.href}
-              className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br ${category.gradient} p-8 transition-all duration-300 hover:border-white/20`}
+              className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 shadow-light-sm transition-all duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-light-lg"
             >
               {/* Glow effect */}
               <div className={`absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${category.glowColor}`} />
@@ -39,16 +39,16 @@ export function CategoriesGrid({ categories }: { categories: CategoryCard[] }) {
               {/* Content */}
               <div className="relative z-10">
                 <div className="text-4xl">{category.icon}</div>
-                <h3 className="mt-6 text-xl font-bold text-white">{category.title}</h3>
-                <p className="mt-3 text-sm text-slate-300">{category.description}</p>
+                <h3 className="mt-6 text-xl font-bold text-slate-900">{category.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-slate-600">{category.description}</p>
 
                 {/* Tool count */}
                 <div className="mt-6 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-400">
+                  <span className="text-xs font-semibold text-slate-500">
                     {category.toolCount} tools
                   </span>
                   <svg
-                    className="h-5 w-5 text-white/50 transition-transform duration-300 group-hover:translate-x-1"
+                    className="h-5 w-5 text-slate-400 transition-all duration-300 group-hover:translate-x-1 group-hover:text-violet-500"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -57,9 +57,6 @@ export function CategoriesGrid({ categories }: { categories: CategoryCard[] }) {
                   </svg>
                 </div>
               </div>
-
-              {/* Background gradient */}
-              <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
             </Link>
           ))}
         </div>
@@ -91,19 +88,22 @@ export function HowItWorks() {
   ]
 
   return (
-    <section className="relative border-t border-white/10 px-4 py-20 sm:px-6 lg:py-32">
-      <div className="mx-auto max-w-7xl">
-        <h2 className="text-center text-4xl font-bold text-white sm:text-5xl">Simple Workflow</h2>
+    <section className="section-light relative border-b border-slate-200/80 px-4 py-24 sm:px-6 lg:py-32">
+      <div className="container-premium">
+        <h2 className="text-center text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">Simple Workflow</h2>
+        <p className="mx-auto mt-5 max-w-2xl text-center text-lg text-slate-600">
+          Three steps to go from idea to launch-ready output.
+        </p>
 
-        <div className="mt-16 grid gap-8 sm:grid-cols-3">
+        <div className="mt-14 grid gap-8 sm:grid-cols-3">
           {steps.map((step, idx) => (
-            <div key={idx} className="card-premium">
+            <div key={idx} className="card-light p-8">
               <div className="text-5xl">{step.icon}</div>
               <div className="mt-4 flex items-baseline gap-3">
                 <span className="text-3xl font-bold text-transparent bg-gradient-premium bg-clip-text">{step.step}</span>
-                <h3 className="text-lg font-semibold text-white">{step.title}</h3>
+                <h3 className="text-lg font-semibold text-slate-900">{step.title}</h3>
               </div>
-              <p className="mt-4 text-slate-300">{step.description}</p>
+              <p className="mt-4 text-slate-600">{step.description}</p>
             </div>
           ))}
         </div>

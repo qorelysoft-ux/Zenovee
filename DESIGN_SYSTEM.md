@@ -27,15 +27,53 @@ Home → Choose Goal → Run Tool → Get Results → Upgrade
 
 ---
 
-## Color Palette
+## Color Palette — Ultra Premium SaaS
 
-- **Primary**: Violet-500 (`bg-violet-500`, `text-violet-500`)
-- **Secondary**: Blue-500 (`bg-blue-500`)
-- **Background**: Slate-950 (`bg-slate-950`)
-- **Cards**: White/5 to White/10 (semi-transparent white)
-- **Text**: White (headings), Slate-300 (body), Slate-400 (secondary)
-- **Success**: Emerald-400
-- **Error**: Red-400
+### Primary Colors
+- **Primary Gradient**: `#7C5CFF` → `#5B9CFF` (Violet → Blue)
+- **Accent Glow**: `#8B5CF6` (Purple glow accent)
+
+### Dark Mode
+- **Background**: `#0B0F19` (Deep dark)
+- **Secondary Dark**: `#111827` (Card backgrounds)
+- **Card Dark**: `rgba(255,255,255,0.05)` (Subtle overlay)
+
+### Light Mode
+- **Background**: `#F9FAFB` (Off-white)
+- **Section Light**: `#FFFFFF` (Pure white for sections)
+- **Border Light**: `#E5E7EB` (Light borders)
+
+### Text
+- **Dark BG Text**: `#FFFFFF` (White on dark)
+- **Light BG Text**: `#111827` (Dark on light)
+- **Secondary Text**: `#6B7280` (Muted gray)
+
+### Status Colors
+- **Success**: `#22C55E` (Green)
+- **Error**: `#EF4444` (Red)
+
+### Shadow System
+- **Light Shadows**: Subtle soft gray (for light mode)
+- **Dark Shadows**: Purple/blue glow (for dark mode)
+
+---
+
+## Color System Rules
+
+### 🎨 Design Principles
+- **NEVER** use pure black everywhere — maintain dark `#0B0F19` instead
+- **ALWAYS** mix light + dark modes for contrast and hierarchy
+- **USE** gradients for all CTAs (primary purple to blue)
+- **APPLY** glows for premium visual hierarchy (accent `#8B5CF6`)
+
+### 📐 Implementation Guidelines
+1. **Primary Gradient for CTAs**: Always use `#7C5CFF → #5B9CFF` with shadow glow
+2. **Text on Dark**: White (`#FFFFFF`) for dark backgrounds
+3. **Text on Light**: Dark (`#111827`) for light backgrounds
+4. **Secondary Elements**: Space-filling text `#6B7280` (gray)
+5. **Borders**: Use slight transparency (`rgba(255,255,255,0.1)` on dark, `#E5E7EB` on light)
+6. **Cards**: Dark mode uses `rgba(255,255,255,0.05)`, light mode uses `#FFFFFF`
+7. **Glow Effects**: Dark mode uses purple/blue shadow (e.g., `box-shadow: 0 0 30px rgba(124, 92, 255, 0.3)`)
 
 ---
 

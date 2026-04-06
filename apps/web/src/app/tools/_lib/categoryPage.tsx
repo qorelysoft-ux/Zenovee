@@ -41,6 +41,18 @@ export function CategoryToolsList({
   const tools = sortToolsForLaunch(toolsCatalog.filter((t) => t.category === category))
   const gradient = categoryGradients[category] || 'from-violet-900/30 to-blue-900/20'
   const accent = categoryAccents[category] || 'from-violet-400 to-blue-400'
+  const featuredSections = [
+    {
+      title: `${title} Highlights`,
+      speedSeconds: 36,
+      cards: tools.slice(0, 12).map((tool) => ({
+        name: tool.name,
+        description: tool.description,
+        icon: '⚡',
+        href: `/tools/${tool.slug}`,
+      })),
+    },
+  ]
 
   return (
     <main className="min-h-screen w-full bg-black">
@@ -95,7 +107,7 @@ export function CategoryToolsList({
         <section className="border-t border-white/10 px-4 py-12 sm:px-6 lg:py-16">
           <div className="mx-auto max-w-6xl">
             <h2 className="mb-6 text-2xl font-bold text-white">Featured Tools</h2>
-            <ToolsMarquee tools={tools.slice(0, 12)} speedSeconds={36} />
+            <ToolsMarquee sections={featuredSections} />
           </div>
         </section>
       )}

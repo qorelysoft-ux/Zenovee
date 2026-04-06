@@ -210,6 +210,7 @@ function ShowcaseMarqueeRow({
         <span className="tools-showcase-card-icon" aria-hidden="true">
           {card.icon}
         </span>
+
         <div className="min-w-0">
           <h4 className="tools-showcase-card-title">{card.name}</h4>
           <p className="tools-showcase-card-copy">{card.description}</p>
@@ -240,11 +241,11 @@ export function ToolsMarquee({ sections = showcaseSections }: { sections?: Showc
   if (!sections.length) return null
 
   return (
-    <section className="relative border-t border-white/10 px-4 py-20 sm:px-6 lg:py-24">
-      <div className="mx-auto max-w-7xl">
+    <section className="section-dark relative border-y border-white/10 px-4 py-24 sm:px-6 lg:py-28">
+      <div className="container-premium">
         <div className="mb-10 text-center">
-          <h2 className="text-3xl font-bold text-white sm:text-4xl">Live Tool Streams</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-400 sm:text-base">
+          <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl">Live Tool Streams</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-300 sm:text-base">
             Explore dynamic AI stacks moving in real time across every growth category.
           </p>
         </div>
@@ -253,9 +254,8 @@ export function ToolsMarquee({ sections = showcaseSections }: { sections?: Showc
           {sections.map((section) => (
             <ShowcaseMarqueeRow key={section.title} {...section} />
           ))}
-          {renderCards('group-b')}
         </div>
+      </div>
     </section>
-    </div>
   )
 }
