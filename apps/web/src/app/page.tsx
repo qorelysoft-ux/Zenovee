@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import HeroSlider from '@/components/HeroSlider'
-import { CategoriesGrid, HowItWorks } from '@/components/CategoryBrowser'
+import { HowItWorks } from '@/components/CategoryBrowser'
 import { PremiumPricingSection } from '@/components/PremiumPricing'
 import { ToolsMarquee } from '@/components/ToolsMarquee'
-import { CheckCircle, Zap, Lock } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { CheckCircle, Lock, Rocket, Sparkles, Target, Zap } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Zenovee — AI Marketing Automation for Ads, Content & Landing Pages',
@@ -17,56 +18,56 @@ export const metadata: Metadata = {
 
 const trustedBrands = ['PIXELFORGE', 'NEXAVIEW', 'GROWSTACK', 'CLOUDFLOW', 'RAPIDHUB', 'CREATORLAB']
 
-const categories = [
+type FeatureHighlight = {
+  title: string
+  description: string
+  icon: LucideIcon
+  iconColor: string
+  iconBg: string
+}
+
+const featureHighlights: FeatureHighlight[] = [
   {
-    id: 'marketing',
-    title: 'Marketing Growth',
-    description: 'High-converting copy, viral content, cold outreach, and campaign optimization.',
-    icon: '📈',
-    href: '/tools/marketing',
-    toolCount: 18,
-    gradient: 'from-rose-900/30 to-orange-900/20',
-    glowColor: 'bg-gradient-to-br from-rose-500/20 to-orange-500/10',
+    title: 'Write high-converting ads',
+    description: 'Create compelling ad copy that drives clicks and conversions across all major channels.',
+    icon: Zap,
+    iconColor: 'text-violet-500',
+    iconBg: 'bg-violet-500/15',
   },
   {
-    id: 'dev',
-    title: 'Developer Tools',
-    description: 'Code generation, SQL optimization, schema design, and debugging.',
-    icon: '⚙️',
-    href: '/tools/dev-assistant',
-    toolCount: 15,
-    gradient: 'from-blue-900/30 to-cyan-900/20',
-    glowColor: 'bg-gradient-to-br from-blue-500/20 to-cyan-500/10',
+    title: 'Generate SEO content',
+    description: 'Produce rank-ready articles and metadata built around intent and keyword strategy.',
+    icon: CheckCircle,
+    iconColor: 'text-blue-500',
+    iconBg: 'bg-blue-500/15',
   },
   {
-    id: 'design',
-    title: 'Image Creation',
-    description: 'Background removal, upscaling, resizing, and product image optimization.',
-    icon: '🎨',
-    href: '/tools/ecom-image',
-    toolCount: 8,
-    gradient: 'from-purple-900/30 to-pink-900/20',
-    glowColor: 'bg-gradient-to-br from-purple-500/20 to-pink-500/10',
+    title: 'Build landing pages',
+    description: 'Generate complete page messaging, structure, and CTA blocks in a guided flow.',
+    icon: Lock,
+    iconColor: 'text-emerald-500',
+    iconBg: 'bg-emerald-500/15',
   },
   {
-    id: 'seo',
-    title: 'SEO & Content',
-    description: 'Ranking research, content strategy, keyword optimization, and authority building.',
-    icon: '🔍',
-    href: '/tools/seo-growth',
-    toolCount: 12,
-    gradient: 'from-green-900/30 to-teal-900/20',
-    glowColor: 'bg-gradient-to-br from-green-500/20 to-teal-500/10',
+    title: 'Automate workflows',
+    description: 'Eliminate repetitive marketing operations and keep execution moving around the clock.',
+    icon: Rocket,
+    iconColor: 'text-pink-500',
+    iconBg: 'bg-pink-500/15',
   },
   {
-    id: 'automation',
-    title: 'Business Automation',
-    description: 'Task automation, workflow optimization, and productivity enhancement.',
-    icon: '🤖',
-    href: '/tools/business-automation',
-    toolCount: 10,
-    gradient: 'from-indigo-900/30 to-violet-900/20',
-    glowColor: 'bg-gradient-to-br from-indigo-500/20 to-violet-500/10',
+    title: 'Personalize outreach',
+    description: 'Craft messages by segment, intent, and audience profile to improve response quality.',
+    icon: Target,
+    iconColor: 'text-amber-500',
+    iconBg: 'bg-amber-500/15',
+  },
+  {
+    title: 'Scale with AI insights',
+    description: 'Track output quality and performance cues to keep each campaign improving over time.',
+    icon: Sparkles,
+    iconColor: 'text-indigo-500',
+    iconBg: 'bg-indigo-500/15',
   },
 ]
 
@@ -119,46 +120,24 @@ const pricingPlans = [
   },
 ]
 
-const addons = [
-  {
-    id: 'addon-100',
-    name: 'Quick Boost',
-    price: '$10',
-    credits: 10000,
-  },
-  {
-    id: 'addon-500',
-    name: 'Power Pack',
-    price: '$40',
-    credits: 50000,
-  },
-  {
-    id: 'addon-1000',
-    name: 'Mega Pack',
-    price: '$75',
-    credits: 100000,
-  },
-]
-
 export default function Home() {
   return (
     <main className="w-full">
-      {/* PREMIUM HERO */}
+      {/* 1) HERO (DARK + GRADIENT) */}
       <HeroSlider />
 
-      {/* TRUSTED BY */}
-      <section className="section-dark relative border-t border-white/10 px-4 py-12 sm:px-6 lg:py-16">
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.4),rgba(15,23,42,0.08))]" />
-        <div className="container-premium relative">
-          <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-300/90 sm:text-sm">
-            Trusted by creators & teams
+      {/* 2) TRUST BAR (LIGHT) */}
+      <section className="section-light relative border-b border-slate-200/80 px-4 py-14 sm:px-6 lg:py-20">
+        <div className="container-premium">
+          <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 sm:text-sm">
+            Trusted by…
           </p>
 
           <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {trustedBrands.map((brand) => (
               <div
                 key={brand}
-                className="flex h-12 items-center justify-center rounded-xl border border-white/15 bg-white/10 px-3 text-center text-xs font-semibold tracking-[0.14em] text-slate-100/85 backdrop-blur-xl shadow-[0_0_22px_rgba(124,92,255,0.18)] sm:text-sm"
+                className="flex h-12 items-center justify-center rounded-xl border border-slate-200 bg-white px-3 text-center text-xs font-semibold tracking-[0.14em] text-slate-700 shadow-light-sm sm:text-sm"
               >
                 {brand}
               </div>
@@ -167,16 +146,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <HowItWorks />
-
-      {/* CATEGORIES BROWSER */}
-      <CategoriesGrid categories={categories} />
-
-      {/* LIVE TOOL STREAMS */}
+      {/* 3) AUTO SCROLL TOOLS (DARK) */}
       <ToolsMarquee />
 
-      {/* FEATURES SECTION */}
+      {/* 4) FEATURES (LIGHT) */}
       <section className="section-light relative border-b border-slate-200/80 px-4 py-24 sm:px-6 lg:py-32">
         <div className="container-premium">
           <h2 className="text-center text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">What You Can Create</h2>
@@ -184,62 +157,33 @@ export default function Home() {
             All the marketing content your team needs, powered by AI.
           </p>
 
-          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="card-light relative overflow-hidden p-8">
-              <div className="relative z-10">
-                <div className="inline-flex rounded-lg bg-violet-500/20 p-3 mb-6">
-                  <Zap className="h-6 w-6 text-violet-400" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900">Write high-converting ads</h3>
-                <p className="mt-4 text-slate-600">
-                  Create compelling ad copy that drives clicks and conversions across all platforms.
-                </p>
-              </div>
-            </div>
+          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {featureHighlights.map((feature) => {
+              const Icon = feature.icon
 
-            <div className="card-light relative overflow-hidden p-8">
-              <div className="relative z-10">
-                <div className="inline-flex rounded-lg bg-blue-500/20 p-3 mb-6">
-                  <CheckCircle className="h-6 w-6 text-blue-400" />
+              return (
+                <div key={feature.title} className="card-light relative overflow-hidden p-8">
+                  <div className="relative z-10">
+                    <div className={`mb-6 inline-flex rounded-lg p-3 ${feature.iconBg}`}>
+                      <Icon className={`h-6 w-6 ${feature.iconColor}`} />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900">{feature.title}</h3>
+                    <p className="mt-4 text-slate-600">{feature.description}</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">Generate SEO articles</h3>
-                <p className="mt-4 text-slate-600">
-                  Produce rank-optimized content that attracts organic traffic and builds authority.
-                </p>
-              </div>
-            </div>
-
-            <div className="card-light relative overflow-hidden p-8">
-              <div className="relative z-10">
-                <div className="inline-flex rounded-lg bg-emerald-500/20 p-3 mb-6">
-                  <Lock className="h-6 w-6 text-emerald-400" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900">Build landing pages</h3>
-                <p className="mt-4 text-slate-600">
-                  Generate complete landing page copy and strategy in minutes, not days.
-                </p>
-              </div>
-            </div>
-
-            <div className="card-light relative overflow-hidden p-8">
-              <div className="relative z-10">
-                <div className="inline-flex rounded-lg bg-pink-500/20 p-3 mb-6">
-                  <Zap className="h-6 w-6 text-pink-400" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900">Automate workflows</h3>
-                <p className="mt-4 text-slate-600">
-                  Streamline repetitive marketing tasks and focus on strategy and growth.
-                </p>
-              </div>
-            </div>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* PRICING SECTION */}
-      <PremiumPricingSection plans={pricingPlans} addons={addons} />
+      {/* 5) HOW IT WORKS (LIGHT) */}
+      <HowItWorks />
 
-      {/* FINAL CTA */}
+      {/* 6) PRICING PREVIEW (LIGHT) */}
+      <PremiumPricingSection plans={pricingPlans} />
+
+      {/* 7) FINAL CTA (GRADIENT) */}
       <section className="section-gradient relative overflow-hidden px-4 py-24 sm:px-6 lg:py-32">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-white/15 blur-3xl" />
@@ -273,6 +217,9 @@ export default function Home() {
           </p>
         </div>
       </section>
+
+      {/* 8) FOOTER (DARK) */}
+      {/* Rendered globally via <PremiumFooter /> in app/layout.tsx */}
     </main>
   )
 }
